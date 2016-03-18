@@ -1,0 +1,13 @@
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/entity/Professor.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/Application.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/dao/impl/ProfessorDAO.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/dao/impl/StudentDAO.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/dao/DataAccessObject.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/dao/impl/UserDAO.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/entity/Course.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/entity/Student.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/constants/CourseType.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/constants/Semester.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/datamodel/entity/User.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/controller/UserController.java
+/Users/dawu/georgiaTech/softwareArch/projectThree/src/main/java/edu/gatech/projectThree/service/Scheduler.java
