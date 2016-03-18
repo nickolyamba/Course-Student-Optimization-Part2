@@ -11,7 +11,7 @@ import gurobi.*;
 /**
  * Created by dawu on 3/18/16.
  */
-@Service
+@Service("scheduler")
 public class Scheduler {
 
     @Autowired
