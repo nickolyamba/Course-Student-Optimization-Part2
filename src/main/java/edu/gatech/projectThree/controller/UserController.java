@@ -1,5 +1,6 @@
 package edu.gatech.projectThree.controller;
 
+import edu.gatech.projectThree.constants.UserType;
 import edu.gatech.projectThree.datamodel.entity.User;
 import edu.gatech.projectThree.service.Scheduler;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class UserController {
 
     @RequestMapping(value = "/user", produces = "application/json")
     public @ResponseBody User getUser() {
-        User user = new User("dwu45", "password");
+        User user = new User("dwu45", UserType.STUDENT, "password");
         LOGGER.info("user={}", user);
         return user;
     }
