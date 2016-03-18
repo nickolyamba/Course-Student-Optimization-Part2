@@ -2,10 +2,12 @@ package edu.gatech.projectThree.datamodel.dao.impl;
 
 import edu.gatech.projectThree.datamodel.dao.DataAccessObject;
 import edu.gatech.projectThree.datamodel.entity.User;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by dawu on 3/18/16.
  */
+@Component("userDAO")
 public class UserDAO implements DataAccessObject<User>{
 
     @Override
