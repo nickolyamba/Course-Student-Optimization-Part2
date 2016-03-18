@@ -1,6 +1,7 @@
 package edu.gatech.projectThree.datamodel.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.gatech.projectThree.constants.UserType;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,11 +20,14 @@ public class User {
 
     private String userName;
 
+    private UserType userType;
+
     @JsonIgnore
     private String password;
 
-    public User(String userName, String password) {
+    public User(String userName, UserType userType, String password) {
         this.userName = userName;
+        this.userType = userType;
         this.password = password;
     }
 
@@ -51,12 +55,20 @@ public class User {
         this.password = password;
     }
 
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
+                ", userType=" + userType +
                 '}';
     }
 }
