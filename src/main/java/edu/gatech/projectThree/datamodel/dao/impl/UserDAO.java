@@ -29,4 +29,9 @@ public class UserDAO implements DataAccessObject<User>{
     public User get(long index) {
         return null;
     }
+
+    @Override
+    public User[] getAll() {
+        return null;
+    }
 }

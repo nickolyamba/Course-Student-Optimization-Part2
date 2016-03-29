@@ -28,4 +28,9 @@ public class ProfessorDAO implements DataAccessObject<Professor>{
     public Professor get(long index) {
         return null;
     }
+
+    @Override
+    public Professor[] getAll() {
+        return null;
+    }
 }
