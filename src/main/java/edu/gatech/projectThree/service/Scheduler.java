@@ -1,6 +1,7 @@
 package edu.gatech.projectThree.service;
 
 import edu.gatech.projectThree.datamodel.dao.impl.CourseDAO;
+import edu.gatech.projectThree.datamodel.dao.impl.OfferingDAO;
 import edu.gatech.projectThree.datamodel.dao.impl.ProfessorDAO;
 import edu.gatech.projectThree.datamodel.dao.impl.StudentDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,8 @@ public class Scheduler {
     @Autowired
     @Qualifier("professorDAO")
     ProfessorDAO professorDAO;
-
+    
+    @Autowired
+    @Qualifier("offeringDAO")
+    OfferingDAO offeringDAO;
 }
