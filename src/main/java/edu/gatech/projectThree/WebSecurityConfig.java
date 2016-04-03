@@ -15,6 +15,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
+                .antMatchers("/console/**").permitAll() // to enable console
+                .and()
+            .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
@@ -23,6 +26,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .logout()
                 .permitAll();
+
+        // required to enable H2 console for development - can be removed after development is finished
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
     }
 
     @Autowired

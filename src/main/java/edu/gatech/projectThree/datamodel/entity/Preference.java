@@ -1,9 +1,7 @@
 package edu.gatech.projectThree.datamodel.entity;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * Created by nick on 3/18/16.
@@ -13,23 +11,23 @@ public class Preference implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
     private long id;
     
-    @Column(nullable = false)
+    @Column
 	private int priority;
     
     @Column(nullable = true)
 	private String recommend;
-    
+
+	@Column(nullable = true, columnDefinition="bit(1) default 1")
     private boolean isAssigned;
     
-    @ManyToOne(fetch=FetchType.LAZY, cascade={CascadeType.ALL})
-    @JoinColumn(name="STUDENT_ID")
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="STUDENT_ID", nullable = false)
     private Student student;
     
-    @ManyToOne(fetch=FetchType.LAZY, cascade={CascadeType.ALL})
-    @JoinColumn(name="OFFERING_ID")
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="OFFERING_ID", nullable = false)
     private Offering offering;
     
     public Preference() {
@@ -37,14 +35,13 @@ public class Preference implements Serializable {
     }
 	
 	// constructor
-	// @param: none
 	public Preference(Student student, Offering offering, int priority) {
 		this.student = student;
 		this.offering = offering;
 		this.priority = priority;
 		isAssigned = false; // by default Student is not assigned to a course, until 
 		                    // Compute Engine produces solution that have a Student 
-		                    // assigned to the Course 
+		                    // assigned to the Course. Set upon results of Gurobi computation
 	}
 
 	/**
@@ -102,7 +99,6 @@ public class Preference implements Serializable {
 	public void setRecommend(String recommend) {
 		this.recommend = recommend;
 	}
-
 	
     /**
 	 * @return the id

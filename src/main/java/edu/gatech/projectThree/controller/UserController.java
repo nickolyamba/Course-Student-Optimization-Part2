@@ -31,7 +31,7 @@ public class UserController {
 
     @RequestMapping(value = "/user", produces = "application/json")
     public @ResponseBody User getUser() {
-        User user = new User("dwu45", UserType.STUDENT, "password");
+        User user = new User("dwu45", "password", "David", "Wu", UserType.STUDENT);
         LOGGER.info("user={}", user);
         return user;
     }

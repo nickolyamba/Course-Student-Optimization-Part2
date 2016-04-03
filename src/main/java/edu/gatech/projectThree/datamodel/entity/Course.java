@@ -1,39 +1,47 @@
 package edu.gatech.projectThree.datamodel.entity;
 
 import edu.gatech.projectThree.constants.CourseType;
-
-import java.util.Set;
-
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by dawu on 3/18/16.
  */
 @Entity
-public class Course {
+public class Course implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
-    private long id;
+    private int id;
     
     @Column(nullable = false)
     private String course_name;
     
     @Column(nullable = false)
     private String course_num;
-    
-    @Column(nullable = false)
+
+	private boolean fall_term;
+
+	private boolean spring_term;
+
+	private boolean summer_term;
+
+	@Column(nullable = true)
     private CourseType type;
     
     // Recursive aggregation
-    @ManyToOne
-    private Course parent;
-    
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="parent")
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(name = "PreCourse",
+			joinColumns =
+			@JoinColumn(name = "course", referencedColumnName = "ID"),
+			inverseJoinColumns =
+			@JoinColumn(name = "prereq", referencedColumnName = "ID"))
     private Set<Course> prereqs;
-    
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="course")
+
+    @OneToMany(mappedBy="course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Offering> offerings;
+
+	public Course(){}
 
     public Course(int course_id, String course_name, String course_num) {
         this.id = course_id;
@@ -41,14 +49,13 @@ public class Course {
         this.course_num = course_num;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
-
 
     public CourseType getType() {
         return type;
@@ -86,41 +93,62 @@ public class Course {
 		this.course_num = course_num;
 	}
 
-	/**
-	 * @return the prereq
-	 */
-	public Set<Course> getPrereq() {
-		return prereqs;
+	public boolean isFall_term() {
+		return fall_term;
 	}
 
-	/**
-	 * @param prereq the prereq to set
-	 */
-	public void setPrereq(Set<Course> prereq) {
-		this.prereqs = prereq;
-	}
-	
-	/**
-	 * @return the offering
-	 */
-	public Set<Offering> getOffering() {
-		return offerings;
+	public void setFall_term(boolean fall_term) {
+		this.fall_term = fall_term;
 	}
 
-	/**
-	 * @param offering the offering to set
-	 */
-	public void setOffering(Set<Offering> offering) {
-		this.offerings = offering;
+	public boolean isSpring_term() {
+		return spring_term;
+	}
+
+	public void setSpring_term(boolean spring_term) {
+		this.spring_term = spring_term;
+	}
+
+	public boolean isSummer_term() {
+		return summer_term;
+	}
+
+	public void setSummer_term(boolean summer_term) {
+		this.summer_term = summer_term;
 	}
 	
 	public void addPrereq(Course course) {
 		prereqs.add(course);
-		parent = this;
 	}
-	
+
+	public void removePrereq(Course course) {
+		prereqs.remove(course);
+	}
+
 	public void addOffering(Offering offering) {
 		offerings.add(offering);
+		offering.setCourse(this);
+	}
+
+	public void removeOffering(Offering offering) {
+		this.offerings.remove(offering);
+		offering.setCourse(null);
+	}
+
+	public Set<Course> getPrereqs() {
+		return prereqs;
+	}
+
+	public void setPrereqs(Set<Course> prereqs) {
+		this.prereqs = prereqs;
+	}
+
+	public Set<Offering> getOfferings() {
+		return offerings;
+	}
+
+	public void setOfferings(Set<Offering> offerings) {
+		this.offerings = offerings;
 	}
 
 	@Override
