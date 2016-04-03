@@ -1,38 +1,31 @@
 package edu.gatech.projectThree.datamodel.entity;
 
-import java.util.Set;
-
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by nick on 3/18/16.
  */
 @Entity
-public class Offering {
+public class Offering implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
     private long id;
     
     // https://en.wikibooks.org/wiki/Java_Persistence/OneToMany
-    @ManyToOne(fetch=FetchType.LAZY, cascade={CascadeType.ALL})
-    @JoinColumn(name="SEMESTER_ID")
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="SEMESTER_ID", nullable = false)
     private Semester semester;
     
-    @ManyToOne(fetch=FetchType.LAZY, cascade={CascadeType.ALL})
-    @JoinColumn(name="COURSE_ID")
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="COURSE_ID", nullable = false)
     private Course course;
     
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="offering")
+    @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Preference> preferences;
 
-    /*
-    @ManyToMany(cascade={CascadeType.ALL})
-    @JoinTable(
-        name="OFFER_STUD",
-        joinColumns=@JoinColumn(name="OFFERING_ID", referencedColumnName="ID"),
-        inverseJoinColumns=@JoinColumn(name="STUDENT_ID", referencedColumnName="ID"))
-    private Set<Student> studentsAssigned;*/
+    public Offering(){}
 
     public Offering(Semester semester, Course course) {
         this.semester = semester;
@@ -59,18 +52,22 @@ public class Offering {
         return semester;
     }
 
-    /*public void setSemester(Semester semester) {
+    public void setSemester(Semester semester) {
         this.semester = semester;
-    }*/
+        if (!semester.getOfferings().contains(this))
+            semester.getOfferings().add(this);
+    }
 
     public Course getCourse() {
         return course;
     }
 
-    /*
+
     public void setCourse(Course course) {
         this.course = course;
-    }*/
+        if (!course.getOfferings().contains(this))
+            course.getOfferings().add(this);
+    }
     
     public void addStudent(Student student, int priority){
     	preferences.add(new Preference(student, this, priority));

@@ -2,33 +2,41 @@ package edu.gatech.projectThree.datamodel.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.gatech.projectThree.constants.UserType;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by dawu on 3/18/16.
  */
+
+// https://en.wikibooks.org/wiki/Java_Persistence/Inheritance#Joined.2C_Multiple_Table_Inheritance
 @Entity
-public class User {
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="userType")
+@Table(name="USER")
+public class User implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+
     private long id;
-
-    private String userName;
-
-    private UserType userType;
+    private String user_name;
+    private String first_name;
+    private String last_name;
 
     @JsonIgnore
     private String password;
 
-    public User(String userName, UserType userType, String password) {
-        this.userName = userName;
+    private UserType userType;
+
+    public User(){}
+
+    public User(String user_name, String password, String first_name, String last_name, UserType userType) {
+        this.user_name = user_name;
         this.userType = userType;
         this.password = password;
+        this.first_name = first_name;
+        this.last_name = last_name;
     }
 
     public long getId() {
@@ -39,12 +47,28 @@ public class User {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUser_name() {
+        return user_name;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public String getFirst_name() {
+        return first_name;
+    }
+
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
+    }
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
     }
 
     public String getPassword() {
@@ -67,7 +91,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", userName='" + userName + '\'' +
+                ", user_name='" + user_name + '\'' +
                 ", userType=" + userType +
                 '}';
     }

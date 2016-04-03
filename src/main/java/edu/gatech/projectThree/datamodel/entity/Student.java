@@ -1,34 +1,30 @@
 package edu.gatech.projectThree.datamodel.entity;
 
-import javax.persistence.*;
+import edu.gatech.projectThree.constants.UserType;
 
-import java.io.Serializable;
+import javax.persistence.*;
 import java.util.Set;
 
 /**
  * Created by dawu on 3/18/16.
  */
 @Entity
-public class Student implements Serializable {
-
-    @Id
+@DiscriminatorValue("STUDENT")
+@Table(name="STUDENT")
+public class Student extends User {
+    /*@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
-    private long id;
-    
-    private String firstName;
-    private String lastName;
+    private long id;*/
     
     @OneToMany(fetch=FetchType.LAZY, mappedBy="student")
     private Set<Preference> preference;
 
-    public Student(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-    
+    public Student(){}
 
-    
+    public Student(String userName, String password, String first_name, String last_name, UserType userType) {
+        super(userName, password, first_name, last_name, userType);
+    }
+
     /*
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="OFFERING_ID")
@@ -48,9 +44,10 @@ public class Student implements Serializable {
     @Override
     public String toString() {
         return "Student{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                "id=" + super.getId() +
+                ", first_name='" + super.getFirst_name() + '\'' +
+                ", last_name='" + super.getLast_name() + '\'' +
+                ", user_name='" + super.getUser_name() + '\'' +
                 '}';
     }
 }
