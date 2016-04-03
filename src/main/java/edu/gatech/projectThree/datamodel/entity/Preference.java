@@ -13,13 +13,13 @@ public class Preference implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     
-    @Column
+    @Column(nullable = false)
 	private int priority;
     
-    @Column(nullable = true)
+    @Column
 	private String recommend;
 
-	@Column(nullable = true, columnDefinition="bit(1) default 1")
+	@Column(columnDefinition="bit(1) default 0")
     private boolean isAssigned;
     
     @ManyToOne(fetch=FetchType.LAZY)

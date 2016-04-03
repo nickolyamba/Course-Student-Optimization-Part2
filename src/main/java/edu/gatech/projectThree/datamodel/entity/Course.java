@@ -131,7 +131,7 @@ public class Course implements Serializable {
 	}
 
 	public void removeOffering(Offering offering) {
-		this.offerings.remove(offering);
+		offerings.remove(offering);
 		offering.setCourse(null);
 	}
 
