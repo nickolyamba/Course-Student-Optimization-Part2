@@ -2,6 +2,7 @@ package edu.gatech.projectThree.datamodel.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -23,7 +24,7 @@ public class Offering implements Serializable {
     private Course course;
     
     @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Preference> preferences;
+    private Set<Preference> preferences = new HashSet<Preference>();
 
     public Offering(){}
 
@@ -31,14 +32,6 @@ public class Offering implements Serializable {
         this.semester = semester;
         this.course = course;
     }
-    
-    /*
-    public void addStudentsAssigned(Student student) {
-        this.studentsAssigned.add(student);
-        if (student.getOwner() != this) {
-        	student.setOwner(this);
-        }
-    }*/
 
     public long getId() {
         return id;
@@ -70,8 +63,42 @@ public class Offering implements Serializable {
     }
     
     public void addStudent(Student student, int priority){
-    	preferences.add(new Preference(student, this, priority));
+        Preference preference = new Preference(student, this, priority);
+        preferences.add(preference);
+        preference.setOffering(this);
     	
+    }
+
+    public void removeStudent(Student student){
+        // O(n) - expensive,
+        // so if we going to use this method, we can override
+        // equals() and hashCode() in Preference
+        for(Preference preference : preferences)
+        {
+            if(preference.getStudent() == student)
+            {
+                preferences.remove(preference);
+                preference.setOffering(null);
+            }
+        }
+    }
+
+    public void addPreference(Preference preference) {
+        preferences.add(preference);
+        preference.setOffering(this);
+    }
+
+    public void removePreference(Preference preference) {
+        preferences.remove(preference);
+        preference.setOffering(null);
+    }
+
+    public Set<Preference> getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(Set<Preference> preferences) {
+        this.preferences = preferences;
     }
 
     @Override
