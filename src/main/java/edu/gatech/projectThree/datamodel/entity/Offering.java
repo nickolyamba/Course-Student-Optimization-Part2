@@ -26,6 +26,12 @@ public class Offering implements Serializable {
     @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Preference> preferences = new HashSet<Preference>();
 
+    @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TeacherPool> teacherPool = new HashSet<TeacherPool>();
+
+    @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Demand> demands = new HashSet<Demand>();
+
     public Offering(){}
 
     public Offering(Semester semester, Course course) {
@@ -99,6 +105,32 @@ public class Offering implements Serializable {
 
     public void setPreferences(Set<Preference> preferences) {
         this.preferences = preferences;
+    }
+
+    public Set<TeacherPool> getTeacherPool() {
+        return teacherPool;
+    }
+
+    public void setTeacherPool(Set<TeacherPool> teacherPool) {
+        this.teacherPool = teacherPool;
+    }
+
+    public Set<Demand> getDemands() {
+        return demands;
+    }
+
+    public void setDemands(Set<Demand> demands) {
+        this.demands = demands;
+    }
+
+    public void addDemand(Demand demand) {
+        demands.add(demand);
+        demand.setOffering(this);
+    }
+
+    public void removeDemand(Demand demand) {
+        demands.remove(demand);
+        demand.setOffering(null);
     }
 
     @Override

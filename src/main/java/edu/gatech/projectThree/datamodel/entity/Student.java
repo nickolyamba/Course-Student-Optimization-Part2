@@ -25,6 +25,9 @@ public class Student extends User {
     @OneToMany(mappedBy="student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Preference> preferences = new HashSet<Preference>();
 
+    @OneToMany(mappedBy="student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Request> requests = new HashSet<Request>();
+
     // list of courses taken in previous semesters
     //https://en.wikibooks.org/wiki/Java_Persistence/ManyToMany#Example_of_a_ManyToMany_relationship_database
     @ManyToMany(fetch=FetchType.LAZY) //unidirectional

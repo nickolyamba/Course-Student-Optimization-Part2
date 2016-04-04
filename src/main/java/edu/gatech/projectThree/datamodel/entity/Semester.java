@@ -4,6 +4,7 @@ import edu.gatech.projectThree.constants.Season;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -29,7 +30,7 @@ public class Semester implements Serializable {
     private Date end_date;
 
     @OneToMany(mappedBy="semester", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Offering> offerings;
+    private Set<Offering> offerings = new HashSet<Offering>();
 
     public Semester() {
     }
