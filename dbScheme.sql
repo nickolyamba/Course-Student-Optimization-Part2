@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost:3306
--- Generation Time: Apr 04, 2016 at 02:38 AM
+-- Generation Time: Apr 04, 2016 at 06:14 AM
 -- Server version: 5.5.41-log
 -- PHP Version: 7.0.0
 
@@ -111,6 +111,16 @@ CREATE TABLE IF NOT EXISTS `pre_course` (
   `prereq` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `pre_course`
+--
+
+INSERT INTO `pre_course` (`course`, `prereq`) VALUES
+(2, 1),
+(3, 7),
+(9, 13),
+(4, 16);
+
 -- --------------------------------------------------------
 
 --
@@ -141,29 +151,29 @@ CREATE TABLE IF NOT EXISTS `request` (
 
 CREATE TABLE IF NOT EXISTS `semester` (
 `id` int(11) NOT NULL,
-  `end_date` date DEFAULT NULL,
   `season` int(11) NOT NULL,
+  `year` varchar(255) NOT NULL,
   `start_date` date DEFAULT NULL,
-  `year` varchar(255) NOT NULL
+  `end_date` date DEFAULT NULL
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `semester`
 --
 
-INSERT INTO `semester` (`id`, `end_date`, `season`, `start_date`, `year`) VALUES
-(1, '2015-12-01', 1, '2015-08-01', '2015'),
-(2, '2016-06-01', 2, '2016-02-01', '2016'),
-(3, '2016-08-01', 3, '2016-06-01', '2016'),
-(4, '2016-12-01', 1, '2016-08-01', '2016'),
-(5, '2017-06-01', 2, '2017-02-01', '2017'),
-(6, '2017-08-01', 3, '2017-06-01', '2017'),
-(7, '2017-12-01', 1, '2017-08-01', '2017'),
-(8, '2018-06-01', 2, '2018-02-01', '2018'),
-(9, '2018-08-01', 3, '2018-06-01', '2018'),
-(10, '2018-12-01', 1, '2018-08-01', '2018'),
-(11, '2019-06-01', 2, '2019-02-01', '2019'),
-(12, '2019-08-01', 3, '2019-06-01', '2019');
+INSERT INTO `semester` (`id`, `season`, `year`, `start_date`, `end_date`) VALUES
+(1, 1, '2015', '2015-08-01', '2015-12-01'),
+(2, 2, '2016', '2016-02-01', '2016-06-01'),
+(3, 3, '2016', '2016-06-01', '2016-08-01'),
+(4, 1, '2016', '2016-08-01', '2016-12-01'),
+(5, 2, '2017', '2017-02-01', '2017-06-01'),
+(6, 3, '2017', '2017-06-01', '2017-08-01'),
+(7, 1, '2017', '2017-08-01', '2017-12-01'),
+(8, 2, '2018', '2018-02-01', '2018-06-01'),
+(9, 3, '2018', '2018-06-01', '2018-08-01'),
+(10, 1, '2018', '2018-08-01', '2018-12-01'),
+(11, 2, '2019', '2019-02-01', '2019-06-01'),
+(12, 3, '2019', '2019-06-01', '2019-08-01');
 
 -- --------------------------------------------------------
 
@@ -201,10 +211,10 @@ CREATE TABLE IF NOT EXISTS `ta` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `teacher_pool`
+-- Table structure for table `teacher_offering`
 --
 
-CREATE TABLE IF NOT EXISTS `teacher_pool` (
+CREATE TABLE IF NOT EXISTS `teacher_offering` (
 `id` bigint(20) NOT NULL,
   `user_type` int(11) DEFAULT NULL,
   `offering_id` bigint(20) NOT NULL,
@@ -297,10 +307,10 @@ ALTER TABLE `ta`
  ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `teacher_pool`
+-- Indexes for table `teacher_offering`
 --
-ALTER TABLE `teacher_pool`
- ADD PRIMARY KEY (`id`), ADD KEY `FK_s9txhyigroasl5b75urfou6gm` (`offering_id`), ADD KEY `FK_55orlv0pjbuyybkg67gdnbugb` (`user_id`);
+ALTER TABLE `teacher_offering`
+ ADD PRIMARY KEY (`id`), ADD KEY `FK_tdls6vdo8lex5r777ho4pmhrq` (`offering_id`), ADD KEY `FK_7dlm321yb5houk9ju6lxjawgu` (`user_id`);
 
 --
 -- Indexes for table `user`
@@ -343,9 +353,9 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `semester`
 MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 --
--- AUTO_INCREMENT for table `teacher_pool`
+-- AUTO_INCREMENT for table `teacher_offering`
 --
-ALTER TABLE `teacher_pool`
+ALTER TABLE `teacher_offering`
 MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `user`
@@ -416,11 +426,11 @@ ALTER TABLE `ta`
 ADD CONSTRAINT `FK_17v02tgqleaku2aic44s1dq5b` FOREIGN KEY (`id`) REFERENCES `user` (`id`);
 
 --
--- Constraints for table `teacher_pool`
+-- Constraints for table `teacher_offering`
 --
-ALTER TABLE `teacher_pool`
-ADD CONSTRAINT `FK_55orlv0pjbuyybkg67gdnbugb` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-ADD CONSTRAINT `FK_s9txhyigroasl5b75urfou6gm` FOREIGN KEY (`offering_id`) REFERENCES `offering` (`id`);
+ALTER TABLE `teacher_offering`
+ADD CONSTRAINT `FK_7dlm321yb5houk9ju6lxjawgu` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+ADD CONSTRAINT `FK_tdls6vdo8lex5r777ho4pmhrq` FOREIGN KEY (`offering_id`) REFERENCES `offering` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
