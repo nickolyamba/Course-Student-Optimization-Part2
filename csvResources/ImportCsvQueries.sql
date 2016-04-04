@@ -24,3 +24,6 @@ fall_term=cast(@fall_term as signed),
 spring_term=cast(@spring_term as signed),
 summer_term=cast(@summer_term as signed)
 show warnings;
+
+#pre_course
+INSERT INTO pre_course VALUES(4,16), (2,1), (9,13), (3,7)
