@@ -15,7 +15,7 @@ import java.util.Set;
 public class Professor extends User{
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeacherPool> professorPools = new HashSet<TeacherPool>();
+    private Set<TeacherOffering> profOfferings = new HashSet<TeacherOffering>();
 
     public Professor(){}
 
@@ -23,22 +23,39 @@ public class Professor extends User{
         super(userName, password, first_name, last_name, userType);
     }
 
-    public Set<TeacherPool> getProfessorPools() {
-        return professorPools;
+    public Set<TeacherOffering> getProfOfferings() {
+        return profOfferings;
     }
 
-    public void setProfessorPools(Set<TeacherPool> professorPools) {
-        this.professorPools = professorPools;
+    public void setProfOfferings(Set<TeacherOffering> profOfferings) {
+        this.profOfferings = profOfferings;
     }
 
-    public void addProfessorPool(TeacherPool teacherPool) {
-        professorPools.add(teacherPool);
-        teacherPool.setUser(this);
+    public void addProfessorPool(TeacherOffering teacherOffering) {
+        profOfferings.add(teacherOffering);
+        teacherOffering.setUser(this);
     }
 
-    public void removeProfessorPool(TeacherPool teacherPool) {
-        professorPools.remove(teacherPool);
-        teacherPool.setUser(null);
+    public void removeProfessorPool(TeacherOffering teacherOffering) {
+        profOfferings.remove(teacherOffering);
+        teacherOffering.setUser(null);
+    }
+
+    public void addOffering(Offering offering) {
+        TeacherOffering teacherOffering = new TeacherOffering(this, offering);
+        profOfferings.add(teacherOffering);
+        teacherOffering.setUser(this);
+    }
+
+    public void removeOffering(Offering offering) {
+        for(TeacherOffering to : profOfferings)
+        {
+            if (to.getOffering() == offering)
+            {
+                profOfferings.remove(to);
+                to.setUser(null);
+            }
+        }
     }
 
     @Override

@@ -27,7 +27,7 @@ public class Offering implements Serializable {
     private Set<Preference> preferences = new HashSet<Preference>();
 
     @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeacherPool> teacherPool = new HashSet<TeacherPool>();
+    private Set<TeacherOffering> teacherPool = new HashSet<TeacherOffering>();
 
     @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Demand> demands = new HashSet<Demand>();
@@ -107,12 +107,39 @@ public class Offering implements Serializable {
         this.preferences = preferences;
     }
 
-    public Set<TeacherPool> getTeacherPool() {
+    public Set<TeacherOffering> getTeacherPool() {
         return teacherPool;
     }
 
-    public void setTeacherPool(Set<TeacherPool> teacherPool) {
+    public void setTeacherPool(Set<TeacherOffering> teacherPool) {
         this.teacherPool = teacherPool;
+    }
+
+    public void addTecherOffering(TeacherOffering teacherOffering) {
+        teacherPool.add(teacherOffering);
+        teacherOffering.setOffering(this);
+    }
+
+    public void removeTeacherOffering(TeacherOffering teacherOffering) {
+        teacherPool.remove(teacherOffering);
+        teacherOffering.setOffering(null);
+    }
+
+    public void addTecher(User user) {
+        TeacherOffering teacherOffering = new TeacherOffering(user, this);
+        teacherPool.add(teacherOffering);
+        teacherOffering.setOffering(this);
+    }
+
+    public void removeTecher(User user) {
+        for(TeacherOffering to : teacherPool)
+        {
+            if (to.getUser() == user)
+            {
+                teacherPool.remove(to);
+                to.setOffering(null);
+            }
+        }
     }
 
     public Set<Demand> getDemands() {

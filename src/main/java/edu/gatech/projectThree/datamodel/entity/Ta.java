@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by dawu on 3/18/16.
+ * Created by nick on 3/18/16.
  */
 @Entity
 @DiscriminatorValue("TA")
@@ -15,7 +15,7 @@ import java.util.Set;
 public class Ta extends User {
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeacherPool> taPools = new HashSet<TeacherPool>();
+    private Set<TeacherOffering> taOfferings = new HashSet<TeacherOffering>();
 
     public Ta(){}
 
@@ -23,22 +23,39 @@ public class Ta extends User {
         super(userName, password, first_name, last_name, userType);
     }
 
-    public Set<TeacherPool> getTaPools() {
-        return taPools;
+    public Set<TeacherOffering> getTaOfferings() {
+        return taOfferings;
     }
 
-    public void setTaPools(Set<TeacherPool> taPools) {
-        this.taPools = taPools;
+    public void setTaOfferings(Set<TeacherOffering> taOfferings) {
+        this.taOfferings = taOfferings;
     }
 
-    public void addTaPool(TeacherPool teacherPool) {
-        taPools.add(teacherPool);
-        teacherPool.setUser(this);
+    public void addTaOffering(TeacherOffering teacherOffering) {
+        taOfferings.add(teacherOffering);
+        teacherOffering.setUser(this);
     }
 
-    public void removeProfessorPool(TeacherPool teacherPool) {
-        taPools.remove(teacherPool);
-        teacherPool.setUser(null);
+    public void removeTaOffering(TeacherOffering teacherOffering) {
+        taOfferings.remove(teacherOffering);
+        teacherOffering.setUser(null);
+    }
+
+    public void addOffering(Offering offering) {
+        TeacherOffering teacherOffering = new TeacherOffering(this, offering);
+        taOfferings.add(teacherOffering);
+        teacherOffering.setUser(this);
+    }
+
+    public void removeOffering(Offering offering) {
+        for(TeacherOffering to : taOfferings)
+        {
+            if (to.getOffering() == offering)
+            {
+                taOfferings.remove(to);
+                to.setUser(null);
+            }
+        }
     }
 
     @Override
