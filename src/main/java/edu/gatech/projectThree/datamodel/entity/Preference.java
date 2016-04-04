@@ -19,7 +19,7 @@ public class Preference implements Serializable {
     @Column
 	private String recommend;
 
-	@Column(columnDefinition="bit(1) default 0")
+    @Transient
     private boolean isAssigned;
     
     @ManyToOne(fetch=FetchType.LAZY)
@@ -29,6 +29,10 @@ public class Preference implements Serializable {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="OFFERING_ID", nullable = false)
     private Offering offering;
+
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name="REQUEST_ID", nullable = false)
+    private Request request;
     
     public Preference() {
         
@@ -39,96 +43,69 @@ public class Preference implements Serializable {
 		this.student = student;
 		this.offering = offering;
 		this.priority = priority;
+        this.request = null;
 		isAssigned = false; // by default Student is not assigned to a course, until 
 		                    // Compute Engine produces solution that have a Student 
 		                    // assigned to the Course. Set upon results of Gurobi computation
 	}
 
-	/**
-	 * @return the student
-	 */
 	public Student getStudent() {
 		return student;
 	}
 
-	/**
-	 * @param student the student to set
-	 */
 	public void setStudent(Student student) {
 		this.student = student;
 	}
 
-	/**
-	 * @return the offering
-	 */
 	public Offering getOffering() {
 		return offering;
 	}
 
-	/**
-	 * @param offering the offering to set
-	 */
 	public void setOffering(Offering offering) {
 		this.offering = offering;
 	}
 
-	/**
-	 * @return the priority
-	 */
 	public int getPriority() {
 		return priority;
 	}
 
-	/**
-	 * @param priority the priority to set
-	 */
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
 
-	/**
-	 * @return the recommend
-	 */
 	public String getRecommend() {
 		return recommend;
 	}
 
-	/**
-	 * @param recommend the recommend to set
-	 */
 	public void setRecommend(String recommend) {
 		this.recommend = recommend;
 	}
-	
-    /**
-	 * @return the id
-	 */
+
 	public long getId() {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(long id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the isAssigned
-	 */
 	public boolean isAssigned() {
 		return isAssigned;
 	}
 
-	/**
-	 * @param isAssigned the isAssigned to set
-	 */
 	public void setAssigned(boolean isAssigned) {
 		this.isAssigned = isAssigned;
 	}
 
-	@Override
+    public Request getRequest() {
+        return request;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
+    @Override
     public String toString() {
         return "Preference{" +
                 "id=" + id +
@@ -136,6 +113,7 @@ public class Preference implements Serializable {
                 ", offering='" + offering.toString() + '\'' +
                 ", priority='" + priority + '\'' +
                 ", recommendation='" + recommend + '\'' +
+				", isAssigned='" + isAssigned + '\'' +
                 '}';
     }
 	

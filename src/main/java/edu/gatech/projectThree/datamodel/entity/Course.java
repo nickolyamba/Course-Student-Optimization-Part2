@@ -3,6 +3,7 @@ package edu.gatech.projectThree.datamodel.entity;
 import edu.gatech.projectThree.constants.CourseType;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -39,7 +40,7 @@ public class Course implements Serializable {
     private Set<Course> prereqs;
 
     @OneToMany(mappedBy="course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Offering> offerings;
+    private Set<Offering> offerings = new HashSet<Offering>();
 
 	public Course(){}
 
