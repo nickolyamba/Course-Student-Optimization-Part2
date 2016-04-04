@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 
 @Entity
-public class TeacherPool implements Serializable {
+public class TeacherOffering implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,11 +29,11 @@ public class TeacherPool implements Serializable {
     @Transient
 	private boolean isAssigned;
 
-    public TeacherPool(){
+    public TeacherOffering(){
     }
 
 	// constructor
-	public TeacherPool(User user, Offering offering) {
+	public TeacherOffering(User user, Offering offering) {
 		this.user = user;
 		this.userType = user.getUserType();
 		this.offering = offering;
@@ -108,7 +108,7 @@ public class TeacherPool implements Serializable {
 
 	@Override
     public String toString() {
-        return "TeacherPool{" +
+        return "TeacherOffering{" +
                 "id=" + id +
                 ", userType='" + userType.name() + '\'' +
                 ", user='" + user.toString() + '\'' +

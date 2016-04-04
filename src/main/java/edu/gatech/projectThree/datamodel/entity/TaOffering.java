@@ -6,14 +6,14 @@ package edu.gatech.projectThree.datamodel.entity;
 /*
 @Entity
 @DiscriminatorValue("userType")*/
-public class TaPool extends TeacherPool {
+public class TaOffering extends TeacherOffering {
 
-	public TaPool(){
+	public TaOffering(){
 
 	}
 
 	// constructor
-	public TaPool(User user, Offering offering) {
+	public TaOffering(User user, Offering offering) {
 		super(user, offering);
 	}
 
