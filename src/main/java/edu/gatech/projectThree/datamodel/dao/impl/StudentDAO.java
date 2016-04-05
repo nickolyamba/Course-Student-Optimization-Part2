@@ -30,4 +30,9 @@ public class StudentDAO implements DataAccessObject<Student> {
     public Student get(long index) {
         return null;
     }
+
+    @Override
+    public Student[] getAll() {
+        return null;
+    }
 }

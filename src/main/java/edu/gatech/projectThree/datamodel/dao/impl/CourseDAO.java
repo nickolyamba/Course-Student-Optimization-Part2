@@ -29,4 +29,9 @@ public class CourseDAO implements DataAccessObject<Course> {
     public Course get(long index) {
         return null;
     }
+
+    @Override
+    public Course[] getAll() {
+        return null;
+    }
 }
