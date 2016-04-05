@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import gurobi.*;
 
-import java.util.Arrays;
-
 /**
  * Created by dawu on 3/18/16.
  */
@@ -51,14 +49,9 @@ public class Scheduler {
             GRBVar[][][] yijk = new GRBVar[students.length][courses.length][professors.length];
             // initialize variables here
 
-            Arrays.stream(constraints)
-                .forEach(constraint -> {
-                    try {
-                        constraint.addConstraint(model, yijk);
-                    } catch (GRBException e) {
-                        e.printStackTrace();
-                    }
-                });
+            for (Constraint constraint : constraints) {
+                constraint.addConstraint(model, yijk);
+            }
 
             model.optimize();
             result = model.get(GRB.DoubleAttr.ObjVal);
