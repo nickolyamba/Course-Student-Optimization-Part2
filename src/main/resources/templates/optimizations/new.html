@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Project 3</title>
+</head>
+    <body>
+        <div layout:fragment="content">
+            <h1>Create a new optimization</h1>
+            <form>
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <label for="semesterSelect">Select a semester</label>
+                        <select id="semesterSelect" class="form-control">
+                            <option>Fall 2016</option>
+                            <option>Spring 2017</option>
+                            <option>Summer 2017</option>
+                            <option>Fall 2018</option>
+                            <option>Spring 2018</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="courseSelect">Select courses</label>
+                        <select id="courseSelect" multiple class="form-control">
+                            <option>CS 6300 Software Development Process</option>
+                            <option>CS 6310 Software Architecture and Design</option>
+                            <option>CS 6505 Computability, Complexity and Algorithms</option>
+                            <option>CS 6601 Artificial Intelligence</option>
+                            <option>CS 7641 Machine Learning</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
