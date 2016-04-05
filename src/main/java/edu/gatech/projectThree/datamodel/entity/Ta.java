@@ -7,52 +7,52 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by dawu on 3/18/16.
+ * Created by nick on 3/18/16.
  */
 @Entity
-@DiscriminatorValue("PROFESSOR")
-@Table(name="PROFESSOR")
-public class Professor extends User{
+@DiscriminatorValue("TA")
+@Table(name="TA")
+public class Ta extends User {
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeacherOffering> profOfferings = new HashSet<TeacherOffering>();
+    private Set<TeacherOffering> taOfferings = new HashSet<TeacherOffering>();
 
-    public Professor(){}
+    public Ta(){}
 
-    public Professor(String userName, String password, String first_name, String last_name, UserType userType) {
+    public Ta(String userName, String password, String first_name, String last_name, UserType userType) {
         super(userName, password, first_name, last_name, userType);
     }
 
-    public Set<TeacherOffering> getProfOfferings() {
-        return profOfferings;
+    public Set<TeacherOffering> getTaOfferings() {
+        return taOfferings;
     }
 
-    public void setProfOfferings(Set<TeacherOffering> profOfferings) {
-        this.profOfferings = profOfferings;
+    public void setTaOfferings(Set<TeacherOffering> taOfferings) {
+        this.taOfferings = taOfferings;
     }
 
-    public void addProfessorPool(TeacherOffering teacherOffering) {
-        profOfferings.add(teacherOffering);
+    public void addTaOffering(TeacherOffering teacherOffering) {
+        taOfferings.add(teacherOffering);
         teacherOffering.setUser(this);
     }
 
-    public void removeProfessorPool(TeacherOffering teacherOffering) {
-        profOfferings.remove(teacherOffering);
+    public void removeTaOffering(TeacherOffering teacherOffering) {
+        taOfferings.remove(teacherOffering);
         teacherOffering.setUser(null);
     }
 
     public void addOffering(Offering offering) {
         TeacherOffering teacherOffering = new TeacherOffering(this, offering);
-        profOfferings.add(teacherOffering);
+        taOfferings.add(teacherOffering);
         teacherOffering.setUser(this);
     }
 
     public void removeOffering(Offering offering) {
-        for(TeacherOffering to : profOfferings)
+        for(TeacherOffering to : taOfferings)
         {
             if (to.getOffering() == offering)
             {
-                profOfferings.remove(to);
+                taOfferings.remove(to);
                 to.setUser(null);
             }
         }
@@ -60,7 +60,7 @@ public class Professor extends User{
 
     @Override
     public String toString() {
-        return "Professor{" +
+        return "Ta{" +
                 "id=" + super.getId() +
                 ", first_name='" + super.getFirst_name() + '\'' +
                 ", last_name='" + super.getLast_name() + '\'' +
