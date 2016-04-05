@@ -52,6 +52,8 @@ public class Scheduler implements ApplicationContextAware {
         this.context = applicationContext;
     }
 
+
+    // TODO: Redesign constraint template to not use multi-dimensional arrays
     public double schedule() {
         double result = 0;
         try {
