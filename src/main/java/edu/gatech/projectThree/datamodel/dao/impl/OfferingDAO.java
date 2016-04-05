@@ -30,4 +30,9 @@ public class OfferingDAO implements DataAccessObject<Offering> {
     public Offering get(long index) {
         return null;
     }
+
+    @Override
+    public Offering[] getAll() {
+        return new Offering[0];
+    }
 }
