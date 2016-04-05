@@ -8,5 +8,5 @@ import gurobi.GRBVar;
  * Created by dawu on 3/18/16.
  */
 public interface Constraint {
-    void addConstraint(GRBModel model, GRBVar[][][] yijk) throws GRBException;
+    void addConstraint(GRBModel model, GRBVar[][][] yijk, GRBVar X) throws GRBException;
 }
