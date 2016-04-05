@@ -12,6 +12,5 @@ public class ExampleConstraint extends BaseConstraint implements Constraint {
 
     @Override
     public void constrain(GRBModel model, GRBVar[][][] yijk) {
-
     }
 }
