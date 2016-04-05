@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+    <head>
+        <title>Login</title>
+        <link rel="stylesheet" th:href="@{/css/login.css}"
+              href="../../css/login.css" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="alert alert-warning alert-dismissible" role="alert" th:if="${param.error}">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                Invalid username and password.
+            </div>
+            <div class="alert alert-warning alert-dismissible" role="alert" th:if="${param.logout}">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                You have been logged out.
+            </div>
+            <form class="form-signin" th:action="@{/login}" method="post">
+                <h2 class="form-signin-heading">Please sign in</h2>
+                <label for="inputGtid" class="sr-only">GT ID</label>
+                <input type="text" id="inputGtid" class="form-control" placeholder="GT ID" required autofocus name="username">
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required name="password">
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </form>
+        </div>
+    </body>
+</html>

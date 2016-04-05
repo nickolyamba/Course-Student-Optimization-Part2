@@ -35,4 +35,10 @@ public class UserController {
         LOGGER.info("user={}", user);
         return user;
     }
+
+    @RequestMapping(value = "/login", method = GET)
+    public String login(ModelMap model) {
+        return "login";
+    }
 }
+

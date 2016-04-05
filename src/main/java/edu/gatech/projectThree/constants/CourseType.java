@@ -6,5 +6,4 @@ package edu.gatech.projectThree.constants;
 public enum CourseType {
     COMPUTER_SCIENCE,
     ENGINEERING;
-
 }
