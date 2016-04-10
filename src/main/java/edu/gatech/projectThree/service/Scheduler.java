@@ -6,24 +6,19 @@ import edu.gatech.projectThree.datamodel.entity.Professor;
 import edu.gatech.projectThree.datamodel.entity.Semester;
 import edu.gatech.projectThree.datamodel.entity.Student;
 import edu.gatech.projectThree.service.Constraint.Constraint;
-import org.aspectj.weaver.ast.Var;
-import org.springframework.beans.BeansException;
+import gurobi.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import gurobi.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Created by dawu on 3/18/16.
  */
 @Service("scheduler")
-public class Scheduler implements ApplicationContextAware {
+public class Scheduler{
 
     @Autowired
     @Qualifier("studentDAO")
@@ -45,12 +40,14 @@ public class Scheduler implements ApplicationContextAware {
     @Qualifier("semesterDAO")
     SemesterDAO semesterDAO;
 
+    @Autowired
     private ApplicationContext context;
 
+    /* http://stackoverflow.com/questions/21553120/how-does-applicationcontextaware-work-in-spring
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
-    }
+    }*/
 
 
     // TODO: Redesign constraint template to not use multi-dimensional arrays
@@ -58,7 +55,7 @@ public class Scheduler implements ApplicationContextAware {
         double result = 0;
         try {
             GRBEnv env = new GRBEnv("mip1.log");
-            env.set(GRB.IntParam.LogToConsole, 0);
+            env.set(GRB.IntParam.LogToConsole, 1);
             GRBModel model = new GRBModel(env);
 
             Student[] students = studentDAO.getAll();
