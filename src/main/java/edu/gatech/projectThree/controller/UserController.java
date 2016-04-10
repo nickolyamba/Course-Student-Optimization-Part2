@@ -16,6 +16,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 /**
  * Created by dawu on 3/18/16.
  */
+
 @Controller
 public class UserController {
 

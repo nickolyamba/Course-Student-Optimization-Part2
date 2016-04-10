@@ -27,3 +27,21 @@ show warnings;
 
 #pre_course
 INSERT INTO pre_course VALUES(4,16), (2,1), (9,13), (3,7)
+
+CREATE PROCEDURE insert_range(IN start INT, IN end INT)
+BEGIN
+  DECLARE i INT DEFAULT start;
+  WHILE i <= end DO
+    INSERT tablename (id) VALUES (i);
+    SET i = i + 1;
+  END WHILE;
+END
+
+DROP PROCEDURE `insert_range`;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_range`(IN `start` INT, IN `end` INT, IN `table_name` VARCHAR(25)) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER BEGIN
+  DECLARE i INT DEFAULT start;
+  WHILE i <= end DO
+    INSERT table_name (id) VALUES (i);
+    SET i = i + 1;
+  END WHILE;
+END

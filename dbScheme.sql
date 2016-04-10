@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost:3306
--- Generation Time: Apr 04, 2016 at 06:14 AM
+-- Generation Time: Apr 10, 2016 at 12:06 AM
 -- Server version: 5.5.41-log
 -- PHP Version: 7.0.0
 
@@ -19,6 +19,21 @@ SET time_zone = "+00:00";
 --
 -- Database: `projectdb`
 --
+
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_range`(IN `start` INT, IN `end` INT)
+BEGIN
+  DECLARE i INT DEFAULT start;
+  WHILE i <= end DO
+    INSERT ta (id) VALUES (i);
+    SET i = i + 1;
+  END WHILE;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -131,6 +146,30 @@ CREATE TABLE IF NOT EXISTS `professor` (
   `id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `professor`
+--
+
+INSERT INTO `professor` (`id`) VALUES
+(4),
+(5),
+(6),
+(7),
+(8),
+(9);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `professor_offering`
+--
+
+CREATE TABLE IF NOT EXISTS `professor_offering` (
+`id` bigint(20) NOT NULL,
+  `offering_id` bigint(20) NOT NULL,
+  `prof_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
 -- --------------------------------------------------------
 
 --
@@ -151,29 +190,29 @@ CREATE TABLE IF NOT EXISTS `request` (
 
 CREATE TABLE IF NOT EXISTS `semester` (
 `id` int(11) NOT NULL,
+  `end_date` date DEFAULT NULL,
   `season` int(11) NOT NULL,
-  `year` varchar(255) NOT NULL,
   `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL
+  `year` varchar(255) NOT NULL
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `semester`
 --
 
-INSERT INTO `semester` (`id`, `season`, `year`, `start_date`, `end_date`) VALUES
-(1, 1, '2015', '2015-08-01', '2015-12-01'),
-(2, 2, '2016', '2016-02-01', '2016-06-01'),
-(3, 3, '2016', '2016-06-01', '2016-08-01'),
-(4, 1, '2016', '2016-08-01', '2016-12-01'),
-(5, 2, '2017', '2017-02-01', '2017-06-01'),
-(6, 3, '2017', '2017-06-01', '2017-08-01'),
-(7, 1, '2017', '2017-08-01', '2017-12-01'),
-(8, 2, '2018', '2018-02-01', '2018-06-01'),
-(9, 3, '2018', '2018-06-01', '2018-08-01'),
-(10, 1, '2018', '2018-08-01', '2018-12-01'),
-(11, 2, '2019', '2019-02-01', '2019-06-01'),
-(12, 3, '2019', '2019-06-01', '2019-08-01');
+INSERT INTO `semester` (`id`, `end_date`, `season`, `start_date`, `year`) VALUES
+(1, '2015-12-01', 1, '2015-08-01', '2015'),
+(2, '2016-06-01', 2, '2016-02-01', '2016'),
+(3, '2016-08-01', 3, '2016-06-01', '2016'),
+(4, '2016-12-01', 1, '2016-08-01', '2016'),
+(5, '2017-06-01', 2, '2017-02-01', '2017'),
+(6, '2017-08-01', 3, '2017-06-01', '2017'),
+(7, '2017-12-01', 1, '2017-08-01', '2017'),
+(8, '2018-06-01', 2, '2018-02-01', '2018'),
+(9, '2018-08-01', 3, '2018-06-01', '2018'),
+(10, '2018-12-01', 1, '2018-08-01', '2018'),
+(11, '2019-06-01', 2, '2019-02-01', '2019'),
+(12, '2019-08-01', 3, '2019-06-01', '2019');
 
 -- --------------------------------------------------------
 
@@ -182,10 +221,19 @@ INSERT INTO `semester` (`id`, `season`, `year`, `start_date`, `end_date`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `student` (
-  `gpa` double DEFAULT NULL,
+  `id` bigint(20) NOT NULL,
   `seniority` int(11) DEFAULT NULL,
-  `id` bigint(20) NOT NULL
+  `gpa` double DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `student`
+--
+
+INSERT INTO `student` (`id`, `seniority`, `gpa`) VALUES
+(1, NULL, NULL),
+(2, NULL, NULL),
+(3, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -208,17 +256,34 @@ CREATE TABLE IF NOT EXISTS `ta` (
   `id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `ta`
+--
+
+INSERT INTO `ta` (`id`) VALUES
+(12),
+(13),
+(14),
+(15),
+(16),
+(17),
+(18),
+(19),
+(20),
+(21),
+(22),
+(23);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `teacher_offering`
+-- Table structure for table `ta_offering`
 --
 
-CREATE TABLE IF NOT EXISTS `teacher_offering` (
+CREATE TABLE IF NOT EXISTS `ta_offering` (
 `id` bigint(20) NOT NULL,
-  `user_type` int(11) DEFAULT NULL,
   `offering_id` bigint(20) NOT NULL,
-  `user_id` bigint(20) NOT NULL
+  `ta_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -228,13 +293,42 @@ CREATE TABLE IF NOT EXISTS `teacher_offering` (
 --
 
 CREATE TABLE IF NOT EXISTS `user` (
-  `user_type` varchar(31) NOT NULL,
 `id` bigint(20) NOT NULL,
   `first_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) DEFAULT NULL,
+  `user_name` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `user_name` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  `user_type` varchar(31) NOT NULL
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `first_name`, `last_name`, `user_name`, `password`, `user_type`) VALUES
+(1, 'AUDREY', 'BERGER', 'ABERGE1', '123', '1'),
+(2, 'ROBERT', 'ORTIZ', 'RORTIZ1', '123', '1'),
+(3, 'CLARENCE', 'MILLS', 'CMILLS1', '123', '1'),
+(4, 'ANDREW', 'BAILEY', 'ABAILE1', '123', '3'),
+(5, 'DENISE', 'WILSON', 'DWILSO1', '123', '3'),
+(6, 'LAURA', 'GREEN', 'LGREEN1', '123', '3'),
+(7, 'PAMELA', 'BOOTH', 'PBOOTH1', '123', '3'),
+(8, 'JUDITH', 'HEBERT', 'JHEBER1', '123', '3'),
+(9, 'Robert', 'Payne', 'Youstaired', '123', '3'),
+(10, 'Helen', 'Arnold', 'Shavan', '123', '4'),
+(11, 'Virginia', 'Webb', 'Aniced', '123', '4'),
+(12, 'Edward', 'Snook', 'Hilooppat', '123', '2'),
+(13, 'Edward', 'Demello', 'Ancomettiody', '123', '2'),
+(14, 'Forrest', 'Lopez', 'Castand', '123', '2'),
+(15, 'Steve', 'Floyd', 'Alask1980', '123', '2'),
+(16, 'Mary', 'Basquez', 'Fectionce', '123', '2'),
+(17, 'Andrew', 'Skaggs', 'Dord1973', '123', '2'),
+(18, 'Timothy', 'Moore', 'Waallovar', '123', '2'),
+(19, 'Jeffery', 'Dodson', 'Makess', '123', '2'),
+(20, 'Pam', 'Knowles', 'Roing1964', '123', '2'),
+(21, 'James', 'Curtis', 'Vaid1950', '123', '2'),
+(22, 'Becky', 'Rubino', 'Tride1994', '123', '2'),
+(23, 'Ralph', 'Pearson', 'Thettles', '123', '2');
 
 --
 -- Indexes for dumped tables
@@ -277,6 +371,12 @@ ALTER TABLE `professor`
  ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `professor_offering`
+--
+ALTER TABLE `professor_offering`
+ ADD PRIMARY KEY (`id`), ADD KEY `FK_fclmm8gdj7flmrmuscqivates` (`offering_id`), ADD KEY `FK_e7w5t86fmnwkl1cvmyjsso9eb` (`prof_id`);
+
+--
 -- Indexes for table `request`
 --
 ALTER TABLE `request`
@@ -307,10 +407,10 @@ ALTER TABLE `ta`
  ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `teacher_offering`
+-- Indexes for table `ta_offering`
 --
-ALTER TABLE `teacher_offering`
- ADD PRIMARY KEY (`id`), ADD KEY `FK_tdls6vdo8lex5r777ho4pmhrq` (`offering_id`), ADD KEY `FK_7dlm321yb5houk9ju6lxjawgu` (`user_id`);
+ALTER TABLE `ta_offering`
+ ADD PRIMARY KEY (`id`), ADD KEY `FK_6acxwx2jbmnelacdfocacioq` (`offering_id`), ADD KEY `FK_19ii2vfwg83r5rsyfjxbqrbqw` (`ta_id`);
 
 --
 -- Indexes for table `user`
@@ -343,6 +443,11 @@ MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `preference`
 MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `professor_offering`
+--
+ALTER TABLE `professor_offering`
+MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `request`
 --
 ALTER TABLE `request`
@@ -353,15 +458,15 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `semester`
 MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 --
--- AUTO_INCREMENT for table `teacher_offering`
+-- AUTO_INCREMENT for table `ta_offering`
 --
-ALTER TABLE `teacher_offering`
+ALTER TABLE `ta_offering`
 MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=24;
 --
 -- Constraints for dumped tables
 --
@@ -401,6 +506,13 @@ ALTER TABLE `professor`
 ADD CONSTRAINT `FK_mw7fqu259ujbc08jyrlecjrm4` FOREIGN KEY (`id`) REFERENCES `user` (`id`);
 
 --
+-- Constraints for table `professor_offering`
+--
+ALTER TABLE `professor_offering`
+ADD CONSTRAINT `FK_e7w5t86fmnwkl1cvmyjsso9eb` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`),
+ADD CONSTRAINT `FK_fclmm8gdj7flmrmuscqivates` FOREIGN KEY (`offering_id`) REFERENCES `offering` (`id`);
+
+--
 -- Constraints for table `request`
 --
 ALTER TABLE `request`
@@ -426,11 +538,11 @@ ALTER TABLE `ta`
 ADD CONSTRAINT `FK_17v02tgqleaku2aic44s1dq5b` FOREIGN KEY (`id`) REFERENCES `user` (`id`);
 
 --
--- Constraints for table `teacher_offering`
+-- Constraints for table `ta_offering`
 --
-ALTER TABLE `teacher_offering`
-ADD CONSTRAINT `FK_7dlm321yb5houk9ju6lxjawgu` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-ADD CONSTRAINT `FK_tdls6vdo8lex5r777ho4pmhrq` FOREIGN KEY (`offering_id`) REFERENCES `offering` (`id`);
+ALTER TABLE `ta_offering`
+ADD CONSTRAINT `FK_19ii2vfwg83r5rsyfjxbqrbqw` FOREIGN KEY (`ta_id`) REFERENCES `ta` (`id`),
+ADD CONSTRAINT `FK_6acxwx2jbmnelacdfocacioq` FOREIGN KEY (`offering_id`) REFERENCES `offering` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
