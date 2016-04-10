@@ -1,17 +1,23 @@
 package edu.gatech.projectThree.service;
 
 import edu.gatech.projectThree.datamodel.dao.impl.*;
-import edu.gatech.projectThree.datamodel.entity.Course;
+import edu.gatech.projectThree.datamodel.entity.Offering;
 import edu.gatech.projectThree.datamodel.entity.Professor;
-import edu.gatech.projectThree.datamodel.entity.Semester;
 import edu.gatech.projectThree.datamodel.entity.Student;
+import edu.gatech.projectThree.datamodel.entity.Ta;
+import edu.gatech.projectThree.repository.OfferingRepository;
+import edu.gatech.projectThree.repository.ProfessorRepository;
+import edu.gatech.projectThree.repository.StudentRepository;
+import edu.gatech.projectThree.repository.TaRepository;
 import edu.gatech.projectThree.service.Constraint.Constraint;
 import gurobi.*;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -40,15 +46,38 @@ public class Scheduler{
     @Qualifier("semesterDAO")
     SemesterDAO semesterDAO;
 
+    private StudentRepository studRepository;
+    private OfferingRepository offeringRepository;
+    private ProfessorRepository profRepository;
+    private TaRepository taRepository;
+
     @Autowired
     private ApplicationContext context;
 
-    /* http://stackoverflow.com/questions/21553120/how-does-applicationcontextaware-work-in-spring
-    @Override
+    //http://stackoverflow.com/questions/21553120/how-does-applicationcontextaware-work-in-spring
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
-    }*/
+    }
 
+    @Autowired
+    public void setStudentRepository(StudentRepository studRepository) {
+        this.studRepository = studRepository;
+    }
+
+    @Autowired
+    public void setOfferingRepository(OfferingRepository offeringRepository) {
+        this.offeringRepository = offeringRepository;
+    }
+
+    @Autowired
+    public void setProfRepository(ProfessorRepository profRepository) {
+        this.profRepository = profRepository;
+    }
+
+    @Autowired
+    public void setTaRepository(TaRepository taRepository) {
+        this.taRepository = taRepository;
+    }
 
     // TODO: Redesign constraint template to not use multi-dimensional arrays
     public double schedule() {
@@ -58,18 +87,42 @@ public class Scheduler{
             env.set(GRB.IntParam.LogToConsole, 1);
             GRBModel model = new GRBModel(env);
 
-            Student[] students = studentDAO.getAll();
-            Course[] courses = courseDAO.getAll();
-            Professor[] professors = professorDAO.getAll();
-            Semester[] semesters = semesterDAO.getAll();
+            //Student[] students = studentDAO.getAll();
+            ArrayList<Student> studs = studRepository.findAll();
+            Student[] students = new Student[studs.size()];
+            students = studs.toArray(students);
 
-            GRBVar[][][] yijk = new GRBVar[students.length][courses.length][semesters.length];
+            // ----------------------------------------------------------------------------------------
+            //Course[] courses = courseDAO.getAll();
+            // !!!!!!!!!! We deal with Offerings that's a given course at a given semester!!!!!!
+            // so students are assigned to Offerings, not Courses;
+            // Therefore, semesters are not used because we assign students within one semester only
+            // ----------------------------------------------------------------------------------------
+
+            ArrayList<Offering> offers = offeringRepository.findAll();
+            Offering[] offerings = new Offering[offers.size()];
+            offerings = offers.toArray(offerings);
+
+            //Professor[] professors = professorDAO.getAll();
+            ArrayList<Professor> profs = profRepository.findAll();
+            Professor[] professors = new Professor[profs.size()];
+            professors = profs.toArray(professors);
+
+            ArrayList<Ta> taList = taRepository.findAll();
+            Ta[] tas = new Ta[taList.size()];
+            tas = taList.toArray(tas);
+
+            //Semester[] semesters = semesterDAO.getAll();
+
+            GRBVar[][][][] yijk = new GRBVar[students.length][offerings.length][professors.length][tas.length];
             // initialize variables here
             for (int i = 0; i < students.length; i++) {
-                for (int j = 0; j < courses.length; j++) {
-                    for (int k = 0; k < semesters.length; k++) {
-                        GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
-                        yijk[i][j][k] = grbVar;
+                for (int j = 0; j < offerings.length; j++) {
+                    for (int k = 0; k < professors.length; k++) {
+                        for (int z = 0; z < tas.length; z++) {
+                            GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
+                            yijk[i][j][k][z] = grbVar;
+                        }
                     }
                 }
             }
