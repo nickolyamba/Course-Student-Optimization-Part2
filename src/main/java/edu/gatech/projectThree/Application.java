@@ -66,7 +66,7 @@ public class Application {
             // save a couple of customers
             //ArrayList<Course> courses = courseRepository.findAll();
             ArrayList<Semester> semesters = semesterRepository.findAll();
-            ArrayList<User> users;// = userRepository.findAll();
+            ArrayList<User> users; //= userRepository.findAll();
 
             //offeringRepository.save(new Offering("Jack", "Bauer"));
 
