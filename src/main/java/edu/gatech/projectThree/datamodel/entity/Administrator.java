@@ -11,7 +11,7 @@ import javax.persistence.Table;
  */
 @Entity
 @DiscriminatorValue("4")
-@Table(name="TA")
+@Table(name="Administrator")
 public class Administrator extends User {
 
     public Administrator(){}
