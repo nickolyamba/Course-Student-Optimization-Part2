@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Edit your course preferences</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <h1>Edit your course preferences</h1>
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="list-group">
+                        <li th:each="student:${students}" th:text="${student}"></li>
+                    </ul>
+                    <ul class="list-group">
+                        <li th:each="course:${allCourses}" th:text="${'CS' + course.getCourse_num() + ' - ' + course.getCourse_name()}" class="list-group-item"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
