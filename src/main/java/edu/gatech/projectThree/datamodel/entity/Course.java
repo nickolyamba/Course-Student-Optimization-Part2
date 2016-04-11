@@ -1,6 +1,5 @@
 package edu.gatech.projectThree.datamodel.entity;
 
-import edu.gatech.projectThree.constants.CourseType;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -26,12 +25,10 @@ public class Course implements Serializable {
 	private boolean spring_term;
 
 	private boolean summer_term;
-
-	@Column(nullable = true)
-    private CourseType type;
     
     // Recursive aggregation
-	@ManyToMany(cascade=CascadeType.ALL)
+
+	@ManyToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "PreCourse",
 			joinColumns =
 			@JoinColumn(name = "course", referencedColumnName = "ID"),
@@ -56,14 +53,6 @@ public class Course implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public CourseType getType() {
-        return type;
-    }
-
-    public void setType(CourseType type) {
-        this.type = type;
     }
 
     /**
@@ -156,12 +145,10 @@ public class Course implements Serializable {
     public String toString() {
         return "Course{" +
                 "course_id=" + id +
-                "course_name=" + course_name +
-                "course_num=" + course_num +
-                "prereq=" + prereqs +
-                "coereq=" + prereqs +
-                ", offering=" + offerings +
-                ", type=" + type +
+				", course_name='" + course_name + '\'' +
+				", course_num='" + course_num + '\'' +
+                //"prereq=" + prereqs.toString() +
+                //", offering=" + offerings +
                 '}';
     }
 }

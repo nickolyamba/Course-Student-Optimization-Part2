@@ -12,4 +12,6 @@ public interface DataAccessObject<T> {
     public void delete(T obj);
 
     public T get(long index);
+
+    public T[] getAll();
 }
