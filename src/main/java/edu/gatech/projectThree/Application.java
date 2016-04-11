@@ -1,5 +1,6 @@
 package edu.gatech.projectThree;
 
+import edu.gatech.projectThree.datamodel.entity.Course;
 import edu.gatech.projectThree.datamodel.entity.Semester;
 import edu.gatech.projectThree.datamodel.entity.User;
 import edu.gatech.projectThree.repository.CourseRepository;
@@ -67,6 +68,7 @@ public class Application {
             //ArrayList<Course> courses = courseRepository.findAll();
             ArrayList<Semester> semesters = semesterRepository.findAll();
             ArrayList<User> users = userRepository.findAll();
+            ArrayList<Course> courses = courseRepository.findAll();
 
             //offeringRepository.save(new Offering("Jack", "Bauer"));
 
@@ -85,6 +87,56 @@ public class Application {
                 log.info(user.toString());
             }
             log.info("");
+
+            // fetch all users
+            log.info("Courses found with findAll():");
+            log.info("-------------------------------");
+            for (Course course : courses) {
+                log.info(course.toString());
+            }
+            log.info("");
+
+            log.info("Prereqs found with findAll():");
+            log.info("-------------------------------");
+            for (Course course : courses) {
+                if(!course.getPrereqs().isEmpty())
+                {
+                    log.info("Course id: " + String.valueOf(course.getId()));
+                    for (Course cour : course.getPrereqs())
+                    {
+                        log.info("Prereq id: " + String.valueOf(cour.getId()));
+                    }
+                }
+            }
+            log.info("");
+
+/*
+            //-----------Populate Offering --------------
+            for (Semester semester : semesters)
+            {
+                for (Course course : courses)
+                {
+                    if(semester.getSeason() == Season.FALL)
+                    {
+                        if(course.isFall_term())
+                            offeringRepository.save(new Offering(semester, course));
+                    }
+
+                    else if(semester.getSeason() == Season.SPRING)
+                    {
+                        if(course.isSpring_term())
+                            offeringRepository.save(new Offering(semester, course));
+                    }
+
+                    else if(semester.getSeason() == Season.SUMMER)
+                    {
+                        if(course.isSummer_term())
+                            offeringRepository.save(new Offering(semester, course));
+                    }
+                }
+            }
+*/
+
         };
     }
 }

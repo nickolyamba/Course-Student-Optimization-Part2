@@ -27,7 +27,8 @@ public class Course implements Serializable {
 	private boolean summer_term;
     
     // Recursive aggregation
-	@ManyToMany(cascade=CascadeType.ALL)
+
+	@ManyToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "PreCourse",
 			joinColumns =
 			@JoinColumn(name = "course", referencedColumnName = "ID"),
@@ -144,11 +145,10 @@ public class Course implements Serializable {
     public String toString() {
         return "Course{" +
                 "course_id=" + id +
-                "course_name=" + course_name +
-                "course_num=" + course_num +
-                "prereq=" + prereqs +
-                "coereq=" + prereqs +
-                ", offering=" + offerings +
+				", course_name='" + course_name + '\'' +
+				", course_num='" + course_num + '\'' +
+                //"prereq=" + prereqs.toString() +
+                //", offering=" + offerings +
                 '}';
     }
 }
