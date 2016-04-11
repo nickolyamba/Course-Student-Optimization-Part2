@@ -3,6 +3,7 @@ package edu.gatech.projectThree.repository;
 import edu.gatech.projectThree.datamodel.entity.Semester;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,4 +11,5 @@ import java.util.List;
  */
 public interface SemesterRepository extends CrudRepository<Semester, Integer>{
     List<Semester> findByYear(String year);
+    ArrayList<Semester> findAll();
 }
