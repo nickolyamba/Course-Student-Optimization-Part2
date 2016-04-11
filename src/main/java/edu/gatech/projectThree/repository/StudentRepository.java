@@ -9,6 +9,5 @@ import java.util.ArrayList;
  * Created by Kolya on 4/2/2016.
  */
 public interface StudentRepository extends CrudRepository<Student, Long> {
-
     ArrayList<Student> findAll();
 }
