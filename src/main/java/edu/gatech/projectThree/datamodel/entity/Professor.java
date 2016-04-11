@@ -10,12 +10,12 @@ import java.util.Set;
  * Created by dawu on 3/18/16.
  */
 @Entity
-@DiscriminatorValue("PROFESSOR")
+@DiscriminatorValue("2")
 @Table(name="PROFESSOR")
-public class Professor extends User{
+public class Professor extends Teacher{
 
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeacherOffering> profOfferings = new HashSet<TeacherOffering>();
+    @OneToMany(mappedBy="professor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProfessorOffering> profOfferings = new HashSet<ProfessorOffering>();
 
     public Professor(){}
 
@@ -23,37 +23,37 @@ public class Professor extends User{
         super(userName, password, first_name, last_name, userType);
     }
 
-    public Set<TeacherOffering> getProfOfferings() {
+    public Set<ProfessorOffering> getProfOfferings() {
         return profOfferings;
     }
 
-    public void setProfOfferings(Set<TeacherOffering> profOfferings) {
+    public void setProfOfferings(Set<ProfessorOffering> profOfferings) {
         this.profOfferings = profOfferings;
     }
 
-    public void addProfessorPool(TeacherOffering teacherOffering) {
+    public void addProfessorPool(ProfessorOffering teacherOffering) {
         profOfferings.add(teacherOffering);
-        teacherOffering.setUser(this);
+        teacherOffering.setProfessor(this);
     }
 
-    public void removeProfessorPool(TeacherOffering teacherOffering) {
+    public void removeProfessorPool(ProfessorOffering teacherOffering) {
         profOfferings.remove(teacherOffering);
-        teacherOffering.setUser(null);
+        teacherOffering.setProfessor(null);
     }
 
     public void addOffering(Offering offering) {
-        TeacherOffering teacherOffering = new TeacherOffering(this, offering);
+        ProfessorOffering teacherOffering = new ProfessorOffering(this, offering);
         profOfferings.add(teacherOffering);
-        teacherOffering.setUser(this);
+        teacherOffering.setProfessor(this);
     }
 
     public void removeOffering(Offering offering) {
-        for(TeacherOffering to : profOfferings)
+        for(ProfessorOffering to : profOfferings)
         {
             if (to.getOffering() == offering)
             {
                 profOfferings.remove(to);
-                to.setUser(null);
+                to.setProfessor(null);
             }
         }
     }

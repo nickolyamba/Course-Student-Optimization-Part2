@@ -10,12 +10,12 @@ import java.util.Set;
  * Created by nick on 3/18/16.
  */
 @Entity
-@DiscriminatorValue("TA")
+@DiscriminatorValue("3")
 @Table(name="TA")
-public class Ta extends User {
+public class Ta extends Teacher {
 
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeacherOffering> taOfferings = new HashSet<TeacherOffering>();
+    @OneToMany(mappedBy="ta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TaOffering> taOfferings = new HashSet<TaOffering>();
 
     public Ta(){}
 
@@ -23,37 +23,37 @@ public class Ta extends User {
         super(userName, password, first_name, last_name, userType);
     }
 
-    public Set<TeacherOffering> getTaOfferings() {
+    public Set<TaOffering> getTaOfferings() {
         return taOfferings;
     }
 
-    public void setTaOfferings(Set<TeacherOffering> taOfferings) {
+    public void setTaOfferings(Set<TaOffering> taOfferings) {
         this.taOfferings = taOfferings;
     }
 
-    public void addTaOffering(TeacherOffering teacherOffering) {
+    public void addTaOffering(TaOffering teacherOffering) {
         taOfferings.add(teacherOffering);
-        teacherOffering.setUser(this);
+        teacherOffering.setTa(this);
     }
 
-    public void removeTaOffering(TeacherOffering teacherOffering) {
+    public void removeTaOffering(TaOffering teacherOffering) {
         taOfferings.remove(teacherOffering);
-        teacherOffering.setUser(null);
+        teacherOffering.setTa(null);
     }
 
     public void addOffering(Offering offering) {
-        TeacherOffering teacherOffering = new TeacherOffering(this, offering);
+        TaOffering teacherOffering = new TaOffering(this, offering);
         taOfferings.add(teacherOffering);
-        teacherOffering.setUser(this);
+        teacherOffering.setTa(this);
     }
 
     public void removeOffering(Offering offering) {
-        for(TeacherOffering to : taOfferings)
+        for(TaOffering to : taOfferings)
         {
             if (to.getOffering() == offering)
             {
                 taOfferings.remove(to);
-                to.setUser(null);
+                to.setTa(null);
             }
         }
     }

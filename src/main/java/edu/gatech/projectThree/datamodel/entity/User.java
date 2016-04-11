@@ -2,6 +2,8 @@ package edu.gatech.projectThree.datamodel.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.gatech.projectThree.constants.UserType;
+import org.hibernate.annotations.DiscriminatorOptions;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -13,6 +15,7 @@ import java.io.Serializable;
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="userType")
+@DiscriminatorOptions(force=true)
 @Table(name="USER")
 public class User implements Serializable {
     

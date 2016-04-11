@@ -18,6 +18,8 @@ public class Semester implements Serializable {
     private int id;
 
     @Column(nullable = false)
+    //@Enumerated(EnumType.ORDINAL)
+    //@MapKeyEnumerated(EnumType.ORDINAL)
     private Season season;
 
     @Column(nullable = false)
@@ -105,6 +107,10 @@ public class Semester implements Serializable {
     public String toString() {
         return "Semester{" +
                 "semester_id=" + id +
-                ", season=" + season +'}';
+                ", season=" + season +
+                ", year=" + year +
+                ", start_date=" + start_date +
+                ", end_date=" + end_date +
+                '}';
     }
 }
