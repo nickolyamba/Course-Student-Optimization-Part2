@@ -66,7 +66,7 @@ public class Application {
             // save a couple of customers
             //ArrayList<Course> courses = courseRepository.findAll();
             ArrayList<Semester> semesters = semesterRepository.findAll();
-            ArrayList<User> users; //= userRepository.findAll();
+            ArrayList<User> users = userRepository.findAll();
 
             //offeringRepository.save(new Offering("Jack", "Bauer"));
 
@@ -77,14 +77,14 @@ public class Application {
                 log.info(semester.toString());
             }
             log.info("");
-/*
+
             // fetch all users
             log.info("Users found with findAll():");
             log.info("-------------------------------");
             for (User user : users) {
                 log.info(user.toString());
             }
-            log.info("");*/
+            log.info("");
         };
     }
 }

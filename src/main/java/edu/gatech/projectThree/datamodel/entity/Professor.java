@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by dawu on 3/18/16.
  */
 @Entity
-@DiscriminatorValue("PROFESSOR")
+@DiscriminatorValue("2")
 @Table(name="PROFESSOR")
 public class Professor extends Teacher{
 
