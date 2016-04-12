@@ -23,7 +23,8 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private long id;
-    private String user_name;
+    @Column(name="user_name")
+    private String userName;
     private String first_name;
     private String last_name;
 
@@ -34,8 +35,8 @@ public class User implements Serializable {
 
     public User(){}
 
-    public User(String user_name, String password, String first_name, String last_name, UserType userType) {
-        this.user_name = user_name;
+    public User(String userName, String password, String first_name, String last_name, UserType userType) {
+        this.userName = userName;
         this.userType = userType;
         this.password = password;
         this.first_name = first_name;
@@ -50,12 +51,12 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUsername(String userName) {
+        this.userName = userName;
     }
 
     public String getFirst_name() {
@@ -94,7 +95,7 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", user_name='" + user_name + '\'' +
+                ", userName='" + userName + '\'' +
                 ", userType=" + userType +
                 '}';
     }
