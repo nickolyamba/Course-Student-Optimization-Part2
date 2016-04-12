@@ -64,7 +64,7 @@ public class Ta extends Teacher {
                 "id=" + super.getId() +
                 ", first_name='" + super.getFirst_name() + '\'' +
                 ", last_name='" + super.getLast_name() + '\'' +
-                ", user_name='" + super.getUser_name() + '\'' +
+                ", userName='" + super.getUserName() + '\'' +
                 '}';
     }
 }
