@@ -24,16 +24,18 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
                     for (int j = 0; j < getOfferingSize(); j++) {
                         maxCourses.addTerm(1, grbVars[i][j][k][z]);
                     }
-                    String cname = "MAXCOURSES_Student="+i+"_Professor="+k+"_Ta="+z;
+                    String cname = "MAXCOURSES_Student=" + i + "_Professor=" + k + "_Ta=" + z;
                     Student student = students.get(i);
                     Set<Course> coursesTaken = student.getCoursesTaken();
                     boolean foundationalRequirement = false;
                     int count = 0;
                     for (Course course : coursesTaken) {
-                        // TODO: increment count if course is foundational
-                        if (count == 2) {
-                            foundationalRequirement = true;
-                            break;
+                        if (course.isFoundational()) {
+                            count++;
+                            if (count >= 2) {
+                                foundationalRequirement = true;
+                                break;
+                            }
                         }
                     }
                     if (foundationalRequirement) {
@@ -44,6 +46,5 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
                 }
             }
         }
-
     }
 }
