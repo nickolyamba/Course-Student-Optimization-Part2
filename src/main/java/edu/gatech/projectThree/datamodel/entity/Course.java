@@ -25,6 +25,8 @@ public class Course implements Serializable {
 	private boolean spring_term;
 
 	private boolean summer_term;
+	
+	private boolean isFoundational;
     
     // Recursive aggregation
 
@@ -53,6 +55,14 @@ public class Course implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+    
+    public boolean isFoundational() {
+		return isFoundational;
+    }
+
+    public void setFoundational(boolean foundational) {
+		isFoundational = foundational;
     }
 
     /**
