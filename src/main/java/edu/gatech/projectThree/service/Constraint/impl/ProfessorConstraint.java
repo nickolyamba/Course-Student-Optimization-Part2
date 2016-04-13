@@ -6,6 +6,7 @@ import edu.gatech.projectThree.datamodel.entity.Student;
 import edu.gatech.projectThree.datamodel.entity.Ta;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.*;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * Created by dawu on 4/12/16.
  * At least one professor per offering
  */
+@Component
 public class ProfessorConstraint extends BaseConstraint {
 
     @Override

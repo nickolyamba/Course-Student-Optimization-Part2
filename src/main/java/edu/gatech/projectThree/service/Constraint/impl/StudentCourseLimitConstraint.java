@@ -3,6 +3,7 @@ package edu.gatech.projectThree.service.Constraint.impl;
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.*;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.Set;
  * Created by dawu on 4/12/16.
  * Students can only take two courses until foundational done
  */
+@Component
 public class StudentCourseLimitConstraint extends BaseConstraint {
 
     private static final int FOUNDATIONAL_STUDENT = 1;
