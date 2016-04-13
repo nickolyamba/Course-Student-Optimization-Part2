@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by dawu on 3/18/16.
@@ -79,7 +80,6 @@ public class Scheduler{
         this.taRepository = taRepository;
     }
 
-    // TODO: Redesign constraint template to not use multi-dimensional arrays
     public double schedule() {
         double result = 0;
         try {
@@ -87,41 +87,23 @@ public class Scheduler{
             env.set(GRB.IntParam.LogToConsole, 1);
             GRBModel model = new GRBModel(env);
 
-            //Student[] students = studentDAO.getAll();
-            ArrayList<Student> studs = studRepository.findAll();
-            Student[] students = new Student[studs.size()];
-            students = studs.toArray(students);
+            List<Student> students = studRepository.findAll();
 
-            // ----------------------------------------------------------------------------------------
-            //Course[] courses = courseDAO.getAll();
-            // !!!!!!!!!! We deal with Offerings that's a given course at a given semester!!!!!!
-            // so students are assigned to Offerings, not Courses;
-            // Therefore, semesters are not used because we assign students within one semester only
-            // ----------------------------------------------------------------------------------------
+            List<Offering> offerings = offeringRepository.findAll();
 
-            ArrayList<Offering> offers = offeringRepository.findAll();
-            Offering[] offerings = new Offering[offers.size()];
-            offerings = offers.toArray(offerings);
+            List<Professor> professors = profRepository.findAll();
 
-            //Professor[] professors = professorDAO.getAll();
-            ArrayList<Professor> profs = profRepository.findAll();
-            Professor[] professors = new Professor[profs.size()];
-            professors = profs.toArray(professors);
+            List<Ta> tas = taRepository.findAll();
 
-            ArrayList<Ta> taList = taRepository.findAll();
-            Ta[] tas = new Ta[taList.size()];
-            tas = taList.toArray(tas);
 
-            //Semester[] semesters = semesterDAO.getAll();
-
-            GRBVar[][][][] yijk = new GRBVar[students.length][offerings.length][professors.length][tas.length];
-            // initialize variables here
-            for (int i = 0; i < students.length; i++) {
-                for (int j = 0; j < offerings.length; j++) {
-                    for (int k = 0; k < professors.length; k++) {
-                        for (int z = 0; z < tas.length; z++) {
+            GRBVar[][][][] grbVars = new GRBVar[students.size()][offerings.size()][professors.size()][tas.size()];
+            // initialize gurobi variables variables here
+            for (int i = 0; i < students.size(); i++) {
+                for (int j = 0; j < offerings.size(); j++) {
+                    for (int k = 0; k < professors.size(); k++) {
+                        for (int z = 0; z < tas.size(); z++) {
                             GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
-                            yijk[i][j][k][z] = grbVar;
+                            grbVars[i][j][k][z] = grbVar;
                         }
                     }
                 }
@@ -136,7 +118,7 @@ public class Scheduler{
             Collection<Constraint> constraints = context.getBeansOfType(Constraint.class).values();
 
             for (Constraint constraint : constraints) {
-                constraint.addConstraint(model, yijk, X);
+                constraint.addConstraint(model, grbVars, X, students, offerings, professors, tas);
             }
 
             model.optimize();
