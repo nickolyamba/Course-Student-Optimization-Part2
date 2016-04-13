@@ -2,6 +2,7 @@ package edu.gatech.projectThree.repository;
 
 import edu.gatech.projectThree.datamodel.entity.Student;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.ArrayList;
 
@@ -10,4 +11,5 @@ import java.util.ArrayList;
  */
 public interface StudentRepository extends CrudRepository<Student, Long> {
     ArrayList<Student> findAll();
+    Student findByUserName(String userName);
 }

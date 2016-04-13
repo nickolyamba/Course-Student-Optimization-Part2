@@ -4,6 +4,7 @@ import edu.gatech.projectThree.constants.Seniority;
 import edu.gatech.projectThree.constants.UserType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -127,6 +128,16 @@ public class Student extends User {
 
     public void setCoursesTaken(Set<Course> coursesTaken) {
         this.coursesTaken = coursesTaken;
+    }
+
+    public ArrayList<Course> getCoursesNotTaken(Iterable<Course> courseList) {
+        ArrayList<Course> coursesNotTaken = new ArrayList<Course>();
+        courseList.forEach(course -> {
+            if (!getCoursesTaken().contains(course)) {
+                coursesNotTaken.add(course);
+            }
+        });
+        return coursesNotTaken;
     }
 
     @Override
