@@ -95,18 +95,27 @@ public class Scheduler{
 
             List<Ta> tas = taRepository.findAll();
 
-
-            GRBVar[][][][] grbVars = new GRBVar[students.size()][offerings.size()][professors.size()][tas.size()];
             // initialize gurobi variables variables here
-            for (int i = 0; i < students.size(); i++) {
-                for (int j = 0; j < offerings.size(); j++) {
-                    for (int k = 0; k < professors.size(); k++) {
-                        for (int z = 0; z < tas.size(); z++) {
-                            GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
-                            grbVars[i][j][k][z] = grbVar;
-                        }
-                    }
+            GRBVar[][] studentsOfferings = new GRBVar[students.size()][offerings.size()];
+            GRBVar[][] professorsOfferings = new GRBVar[professors.size()][offerings.size()];
+            GRBVar[][] tasOfferings = new GRBVar[tas.size()][offerings.size()];
+
+            for (int j = 0; j < offerings.size(); j++) {
+                for (int i = 0; i < students.size(); i++) {
+                    GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
+                    studentsOfferings[i][j] = grbVar;
                 }
+
+                for (int i = 0; i < professors.size(); i++) {
+                    GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
+                    professorsOfferings[i][j] = grbVar;
+                }
+
+                for (int i = 0; i < tas.size(); i++) {
+                    GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
+                    tasOfferings[i][j] = grbVar;
+                }
+
             }
 
             GRBVar X = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "X");
@@ -115,10 +124,11 @@ public class Scheduler{
             obj.addTerm(1, X);
             model.setObjective(obj);
 
+            // get all constraints
             Collection<Constraint> constraints = context.getBeansOfType(Constraint.class).values();
 
             for (Constraint constraint : constraints) {
-                constraint.addConstraint(model, grbVars, X, students, offerings, professors, tas);
+                constraint.addConstraint(model, studentsOfferings, professorsOfferings, tasOfferings, X, students, offerings, professors, tas);
             }
 
             model.optimize();

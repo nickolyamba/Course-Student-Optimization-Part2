@@ -14,5 +14,5 @@ import java.util.List;
  * Created by dawu on 3/18/16.
  */
 public interface Constraint {
-    void addConstraint(GRBModel model, GRBVar[][][][] grbVars, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException;
+    void addConstraint(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException;
 }

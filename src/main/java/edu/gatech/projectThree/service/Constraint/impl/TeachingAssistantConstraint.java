@@ -14,38 +14,31 @@ import java.util.List;
  */
 @Component
 public class TeachingAssistantConstraint extends BaseConstraint {
-    private static final int N = 1;
-    private static final int M = 30;
+    private static final double N = 1;
+    private static final double M = 30;
+
+
     @Override
-    public void constrain(GRBModel model, GRBVar[][][][] grbVars, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
-        for (int i = 0; i < getStudentSize(); i++) {
-            for (int k = 0; k < getProfessorSize(); k++) {
-                for (int j = 0; j < getOfferingSize(); j++) {
-                    Course course = offerings.get(j).getCourse();
-                    GRBLinExpr taRatio = new GRBLinExpr();
-                    for (int z = 0; z < getTaSize(); z++) {
-                        taRatio.addTerm(1, grbVars[i][j][k][z]);
-                    }
-                    String cname = "TARATIO_Student=" + i + "_Offering=" + j + "_Professor" + k;
-                    int ratio = M / N; // TODO: multiply by course limit
-                    model.addConstr(taRatio, GRB.GREATER_EQUAL, ratio,cname);
-                }
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+        // N teaching assistants for every M student capacity
+        for (int j = 0; j < offerings.size(); j++) {
+            GRBLinExpr taRatio = new GRBLinExpr();
+            for (int i = 0; i < tas.size(); i++) {
+                taRatio.addTerm(1, tasOfferings[i][j]);
             }
+            double ratio = (offerings.get(j).getCapacity()) * (N / M);
+            String cname = "TARATIO_Offering=" + j;
+            model.addConstr(taRatio, GRB.GREATER_EQUAL, ratio, cname);
         }
 
-        // Each TA can only be assigned to a single course
-        for (int i = 0; i < getStudentSize(); i++) {
-            for (int k = 0; k < getProfessorSize(); k++) {
-                for (int j = 0; j < getOfferingSize(); j++) {
-                    GRBLinExpr taRatio = new GRBLinExpr();
-                    for (int z = 0; z < getTaSize(); z++) {
-                        taRatio.addTerm(1, grbVars[i][j][k][z]);
-                    }
-                    String cname = "TARATIO_Student=" + i + "_Offering=" + j + "_Professor" + k;
-                    model.addConstr(taRatio, GRB.EQUAL, 1, cname);
-                }
+        // Each TA can only be assigned once
+        for (int i = 0; i < tas.size(); i++) {
+            GRBLinExpr taAssignment = new GRBLinExpr();
+            for (int j = 0; j < tas.size(); j++) {
+                taAssignment.addTerm(1, tasOfferings[i][j]);
             }
+            String cname = "TAASSIGNMENT_TA=" + i;
+            model.addConstr(taAssignment, GRB.LESS_EQUAL, 1, cname);
         }
-
     }
 }

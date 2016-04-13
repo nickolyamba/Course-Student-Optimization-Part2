@@ -17,36 +17,33 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
 
     private static final int FOUNDATIONAL_STUDENT = 1;
 
+
     @Override
-    public void constrain(GRBModel model, GRBVar[][][][] grbVars, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
-        for (int i = 0; i < getStudentSize(); i++) {
-            for (int k = 0; k < getProfessorSize(); k++) {
-                for (int z = 0; z < getTaSize(); z++) {
-                    GRBLinExpr maxCourses = new GRBLinExpr();
-                    for (int j = 0; j < getOfferingSize(); j++) {
-                        maxCourses.addTerm(1, grbVars[i][j][k][z]);
-                    }
-                    String cname = "MAXCOURSES_Student=" + i + "_Professor=" + k + "_Ta=" + z;
-                    Student student = students.get(i);
-                    Set<Course> coursesTaken = student.getCoursesTaken();
-                    boolean foundationalRequirement = false;
-                    int count = 0;
-                    for (Course course : coursesTaken) {
-                        if (course.isFoundational()) {
-                            count++;
-                            if (count >= 2) {
-                                foundationalRequirement = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (foundationalRequirement) {
-                        model.addConstr(maxCourses, GRB.LESS_EQUAL, 2, cname);
-                    } else {
-                        model.addConstr(maxCourses, GRB.LESS_EQUAL, 3, cname);
-                    }
-                }
-            }
-        }
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+       for (int i = 0; i < students.size(); i++) {
+           GRBLinExpr maxCourses = new GRBLinExpr();
+           for (int j = 0; j < offerings.size(); j++) {
+               maxCourses.addTerm(1, studentsOfferings[i][j]);
+           }
+           String cname = "MAXCOURSES_Student=" + i;
+           Student student = students.get(i);
+           Set<Course> coursesTaken = student.getCoursesTaken();
+           boolean foundationalRequirement = false;
+           int count = 0;
+           for (Course course : coursesTaken) {
+               if (course.isFoundational()) {
+                   count++;
+                   if (count >= 2) {
+                       foundationalRequirement = true;
+                       break;
+                   }
+               }
+           }
+           if (foundationalRequirement) {
+               model.addConstr(maxCourses, GRB.LESS_EQUAL, 2, cname);
+           } else {
+               model.addConstr(maxCourses, GRB.LESS_EQUAL, 3, cname);
+           }
+       }
     }
 }
