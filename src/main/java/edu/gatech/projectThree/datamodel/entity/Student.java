@@ -95,6 +95,24 @@ public class Student extends User {
         this.preferences = preferences;
     }
 
+    public Set<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<Request> requests) {
+        this.requests = requests;
+    }
+
+    public void addRequest(Request request) {
+        requests.add(request);
+        request.setStudent(this);
+    }
+
+    public void removeRequest(Request request) {
+        requests.remove(request);
+        request.setStudent(null);
+    }
+
     public void addCourseTaken(Course course){
         coursesTaken.add(course);
     }
