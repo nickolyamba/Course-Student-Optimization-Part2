@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Created by dawu on 4/5/16.
+ * Total students taking course must be less than X
  */
 @Component
 public class StudentLimitConstraint extends BaseConstraint {
