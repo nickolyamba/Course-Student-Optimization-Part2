@@ -26,14 +26,12 @@ public class Course implements Serializable {
 	private boolean spring_term;
 
 	private boolean summer_term;
-
+	
 	private boolean isFoundational;
-
-	@Column(nullable = true)
-    private CourseType type;
     
     // Recursive aggregation
-	@ManyToMany(cascade=CascadeType.ALL)
+
+	@ManyToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "PreCourse",
 			joinColumns =
 			@JoinColumn(name = "course", referencedColumnName = "ID"),
@@ -59,13 +57,13 @@ public class Course implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
-    public CourseType getType() {
-        return type;
+    
+    public boolean isFoundational() {
+		return isFoundational;
     }
 
-    public void setType(CourseType type) {
-        this.type = type;
+    public void setFoundational(boolean foundational) {
+		isFoundational = foundational;
     }
 
     /**
@@ -106,14 +104,6 @@ public class Course implements Serializable {
 
 	public boolean isSpring_term() {
 		return spring_term;
-	}
-
-	public boolean isFoundational() {
-		return isFoundational;
-	}
-
-	public void setFoundational(boolean foundational) {
-		isFoundational = foundational;
 	}
 
 	public void setSpring_term(boolean spring_term) {
@@ -166,12 +156,10 @@ public class Course implements Serializable {
     public String toString() {
         return "Course{" +
                 "course_id=" + id +
-                "course_name=" + course_name +
-                "course_num=" + course_num +
-                "prereq=" + prereqs +
-                "coereq=" + prereqs +
-                ", offering=" + offerings +
-                ", type=" + type +
+				", course_name='" + course_name + '\'' +
+				", course_num='" + course_num + '\'' +
+                //"prereq=" + prereqs.toString() +
+                //", offering=" + offerings +
                 '}';
     }
 }

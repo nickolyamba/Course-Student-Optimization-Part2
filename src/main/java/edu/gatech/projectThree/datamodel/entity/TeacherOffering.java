@@ -9,7 +9,8 @@ import java.io.Serializable;
  * Created by nick on 3/18/16.
  */
 
-@Entity
+//@Entity
+//@MappedSuperclass
 public class TeacherOffering implements Serializable {
 
     @Id
@@ -18,7 +19,7 @@ public class TeacherOffering implements Serializable {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="USER_ID", nullable = false)
-    private User user;
+    private User teacher;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="OFFERING_ID", nullable = false)
@@ -33,9 +34,9 @@ public class TeacherOffering implements Serializable {
     }
 
 	// constructor
-	public TeacherOffering(User user, Offering offering) {
-		this.user = user;
-		this.userType = user.getUserType();
+	public TeacherOffering(User teacher, Offering offering) {
+		this.teacher = teacher;
+		this.userType = teacher.getUserType();
 		this.offering = offering;
 		isAssigned = false; // by default Student is not assigned to a course, until 
 		                    // Compute Engine produces solution that have a Student 
@@ -45,15 +46,15 @@ public class TeacherOffering implements Serializable {
 	/**
 	 * @return the student
 	 */
-	public User getUser() {
-		return user;
+	public User getTa() {
+		return teacher;
 	}
 
 	/**
-	 * @param user the student to set
+	 * @param prof the student to set
 	 */
-	public void setUser(User user) {
-		this.user = user;
+	public void setProf(User prof) {
+		this.teacher = prof;
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class TeacherOffering implements Serializable {
         return "TeacherOffering{" +
                 "id=" + id +
                 ", userType='" + userType.name() + '\'' +
-                ", user='" + user.toString() + '\'' +
+                ", teacher='" + teacher.toString() + '\'' +
                 ", offering='" + offering.toString() + '\'' +
                 ", isAssigned='" + isAssigned + '\'' +
                 '}';

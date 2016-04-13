@@ -14,6 +14,8 @@ public class Offering implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     
+    private int capacity;
+    
     // https://en.wikibooks.org/wiki/Java_Persistence/OneToMany
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="SEMESTER_ID", nullable = false)
@@ -27,7 +29,10 @@ public class Offering implements Serializable {
     private Set<Preference> preferences = new HashSet<Preference>();
 
     @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TeacherOffering> teacherPool = new HashSet<TeacherOffering>();
+    private Set<ProfessorOffering> profPool = new HashSet<ProfessorOffering>();
+
+    @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TaOffering> taPool = new HashSet<TaOffering>();
 
     @OneToMany(mappedBy="offering", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Demand> demands = new HashSet<Demand>();
@@ -45,6 +50,14 @@ public class Offering implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+    
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     public Semester getSemester() {
@@ -67,7 +80,8 @@ public class Offering implements Serializable {
         if (!course.getOfferings().contains(this))
             course.getOfferings().add(this);
     }
-    
+
+    //---------------------------------- Student -----------------------------------------------//
     public void addStudent(Student student, int priority){
         Preference preference = new Preference(student, this, priority);
         preferences.add(preference);
@@ -107,41 +121,79 @@ public class Offering implements Serializable {
         this.preferences = preferences;
     }
 
-    public Set<TeacherOffering> getTeacherPool() {
-        return teacherPool;
+    //---------------------------------- Professor -----------------------------------------------//
+    public Set<ProfessorOffering> getProfPool() {
+        return profPool;
     }
 
-    public void setTeacherPool(Set<TeacherOffering> teacherPool) {
-        this.teacherPool = teacherPool;
+    public void setProfPool(Set<ProfessorOffering> profPool) {
+        this.profPool = profPool;
     }
 
-    public void addTecherOffering(TeacherOffering teacherOffering) {
-        teacherPool.add(teacherOffering);
+    public void addProfOffering(ProfessorOffering teacherOffering) {
+        profPool.add(teacherOffering);
         teacherOffering.setOffering(this);
     }
 
-    public void removeTeacherOffering(TeacherOffering teacherOffering) {
-        teacherPool.remove(teacherOffering);
+    public void removeProfessorOffering(ProfessorOffering teacherOffering) {
+        profPool.remove(teacherOffering);
         teacherOffering.setOffering(null);
     }
 
-    public void addTecher(User user) {
-        TeacherOffering teacherOffering = new TeacherOffering(user, this);
-        teacherPool.add(teacherOffering);
+    public void addProf(Professor teacher) {
+        ProfessorOffering teacherOffering = new ProfessorOffering(teacher, this);
+        profPool.add(teacherOffering);
         teacherOffering.setOffering(this);
     }
 
-    public void removeTecher(User user) {
-        for(TeacherOffering to : teacherPool)
+    public void removeProf(Professor teacher) {
+        for(ProfessorOffering to : profPool)
         {
-            if (to.getUser() == user)
+            if (to.getTa() == teacher)
             {
-                teacherPool.remove(to);
+                profPool.remove(to);
                 to.setOffering(null);
             }
         }
     }
 
+    //--------------------------------------- Ta -----------------------------------------//
+    public Set<TaOffering> getTaPool() {
+        return taPool;
+    }
+
+    public void setTaPool(Set<TaOffering> taPool) {
+        this.taPool = taPool;
+    }
+
+    public void addTaOffering(TaOffering teacherOffering) {
+        taPool.add(teacherOffering);
+        teacherOffering.setOffering(this);
+    }
+
+    public void removeTaOffering(TaOffering teacherOffering) {
+        taPool.remove(teacherOffering);
+        teacherOffering.setOffering(null);
+    }
+
+    public void addTa(Ta teacher) {
+        TaOffering teacherOffering = new TaOffering(teacher, this);
+        taPool.add(teacherOffering);
+        teacherOffering.setOffering(this);
+    }
+
+    public void removeTa(Teacher teacher) {
+        for(TaOffering to : taPool)
+        {
+            if (to.getTa() == teacher)
+            {
+                taPool.remove(to);
+                to.setOffering(null);
+            }
+        }
+    }
+
+    //--------------------------------------- Demand -----------------------------------------//
     public Set<Demand> getDemands() {
         return demands;
     }
