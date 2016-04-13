@@ -27,6 +27,8 @@ public class Course implements Serializable {
 
 	private boolean summer_term;
 
+	private boolean isFoundational;
+
 	@Column(nullable = true)
     private CourseType type;
     
@@ -104,6 +106,14 @@ public class Course implements Serializable {
 
 	public boolean isSpring_term() {
 		return spring_term;
+	}
+
+	public boolean isFoundational() {
+		return isFoundational;
+	}
+
+	public void setFoundational(boolean foundational) {
+		isFoundational = foundational;
 	}
 
 	public void setSpring_term(boolean spring_term) {
