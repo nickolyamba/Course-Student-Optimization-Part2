@@ -37,6 +37,10 @@ public class Student extends User {
             inverseJoinColumns=@JoinColumn(name="COURSE_ID", referencedColumnName="ID"))
     private Set<Course> coursesTaken = new HashSet<Course>();
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="SPEC_ID")
+    Specialization specialization;
+
     public Student(){}
 
     public Student(String userName, String password, String first_name, String last_name, UserType userType) {
