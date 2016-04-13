@@ -14,6 +14,8 @@ public class Offering implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     
+    private int capacity;
+    
     // https://en.wikibooks.org/wiki/Java_Persistence/OneToMany
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="SEMESTER_ID", nullable = false)
@@ -48,6 +50,14 @@ public class Offering implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+    
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     public Semester getSemester() {
