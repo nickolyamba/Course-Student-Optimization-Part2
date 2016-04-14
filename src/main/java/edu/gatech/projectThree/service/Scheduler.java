@@ -1,10 +1,6 @@
 package edu.gatech.projectThree.service;
 
-import edu.gatech.projectThree.datamodel.dao.impl.*;
-import edu.gatech.projectThree.datamodel.entity.Offering;
-import edu.gatech.projectThree.datamodel.entity.Professor;
-import edu.gatech.projectThree.datamodel.entity.Student;
-import edu.gatech.projectThree.datamodel.entity.Ta;
+import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.repository.OfferingRepository;
 import edu.gatech.projectThree.repository.ProfessorRepository;
 import edu.gatech.projectThree.repository.StudentRepository;
@@ -13,38 +9,18 @@ import edu.gatech.projectThree.service.Constraint.Constraint;
 import gurobi.*;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dawu on 3/18/16.
  */
 @Service("scheduler")
 public class Scheduler{
-
-    @Autowired
-    @Qualifier("studentDAO")
-    StudentDAO studentDAO;
-
-    @Autowired
-    @Qualifier("courseDAO")
-    CourseDAO courseDAO;
-
-    @Autowired
-    @Qualifier("professorDAO")
-    ProfessorDAO professorDAO;
-    
-    @Autowired
-    @Qualifier("offeringDAO")
-    OfferingDAO offeringDAO;
-
-    @Autowired
-    @Qualifier("semesterDAO")
-    SemesterDAO semesterDAO;
 
     private StudentRepository studRepository;
     private OfferingRepository offeringRepository;
@@ -99,6 +75,9 @@ public class Scheduler{
             GRBVar[][] professorsOfferings = new GRBVar[professors.size()][offerings.size()];
             GRBVar[][] tasOfferings = new GRBVar[tas.size()][offerings.size()];
 
+            // Objective var
+            GRBVar X = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "X");
+
             // Name to identify Gurobi variables for optimization analysis
             String gvar_name = "";
 
@@ -123,12 +102,23 @@ public class Scheduler{
                 }
             }
 
-            // Objective function
-            GRBVar X = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "X");
             model.update();
+
+            // set objective
             GRBLinExpr obj = new GRBLinExpr();
-            obj.addTerm(1, X);
-            model.setObjective(obj);
+            int priority = 0;
+            Set<Preference> preferences;
+
+            for(int i = 0; i < students.size(); i++) {
+                preferences = students.get(i).getPreferences();
+                for(int j = 0; j < offerings.size(); j++) {
+
+                    priority = 5;
+                    obj.addTerm(priority, studentsOfferings[i][j]);
+                }
+            }
+
+            model.setObjective(obj, GRB.MINIMIZE);
 
             // get all constraints
             Collection<Constraint> constraints = context.getBeansOfType(Constraint.class).values();

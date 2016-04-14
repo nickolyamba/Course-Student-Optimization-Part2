@@ -41,7 +41,7 @@ public class Semester implements Serializable {
         this.id = semester_id;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
@@ -57,7 +57,7 @@ public class Semester implements Serializable {
         this.season = season;
     }
 
-    private String getYear() {
+    public String getYear() {
         return year;
     }
 
