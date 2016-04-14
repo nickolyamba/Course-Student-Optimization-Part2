@@ -139,6 +139,11 @@ public class Scheduler{
 
             model.optimize();
             result = model.get(GRB.DoubleAttr.ObjVal);
+
+            // Dispose of model and environment
+            model.dispose();
+            env.dispose();
+
         } catch (GRBException e) {
             e.printStackTrace();
         }
