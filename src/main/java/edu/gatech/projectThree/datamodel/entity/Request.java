@@ -14,13 +14,13 @@ public class Request{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
-    private int id;
+    private long id;
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="STUDENT_ID", nullable = false)
     private Student student;
 
-    @OneToMany(mappedBy="student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="request", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Preference> preferences = new HashSet<Preference>();
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -32,7 +32,7 @@ public class Request{
         this.student = student;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
