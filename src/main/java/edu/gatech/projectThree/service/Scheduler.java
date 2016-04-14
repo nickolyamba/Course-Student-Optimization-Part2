@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -100,24 +99,31 @@ public class Scheduler{
             GRBVar[][] professorsOfferings = new GRBVar[professors.size()][offerings.size()];
             GRBVar[][] tasOfferings = new GRBVar[tas.size()][offerings.size()];
 
+            // Name to identify Gurobi variables for optimization analysis
+            String gvar_name = "";
+
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < students.size(); i++) {
-                    GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
-                    studentsOfferings[i][j] = grbVar;
+                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
+                                "ST_" + String.valueOf(i+1);  // student
+
+                    studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
 
                 for (int i = 0; i < professors.size(); i++) {
-                    GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
-                    professorsOfferings[i][j] = grbVar;
+                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
+                                "PR_" + String.valueOf(i+1);  // professor
+                    professorsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
 
                 for (int i = 0; i < tas.size(); i++) {
-                    GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
-                    tasOfferings[i][j] = grbVar;
+                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
+                                "TA_" + String.valueOf(i+1);  // ta
+                    tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
-
             }
 
+            // Objective function
             GRBVar X = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "X");
             model.update();
             GRBLinExpr obj = new GRBLinExpr();
