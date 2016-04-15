@@ -19,12 +19,14 @@ import java.util.List;
 public class ProfessorConstraint extends BaseConstraint {
 
     private static final int MINIMUM_PROFESSORS = 1;
-    private static final int MAXIMUM_OFFERINGS_TAUGHT = 1;
+    private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
         // At least one professor per offering
         for (int j = 0; j < offerings.size(); j++) {
+            if(offerings.get(j).getPreferences().isEmpty())
+                continue;// if no demand for course
             GRBLinExpr minProfessor = new GRBLinExpr();
             for (int i = 0; i < professors.size(); i++) {
                 minProfessor.addTerm(1, professorsOfferings[i][j]);

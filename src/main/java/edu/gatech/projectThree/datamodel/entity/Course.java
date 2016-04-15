@@ -1,6 +1,5 @@
 package edu.gatech.projectThree.datamodel.entity;
 
-import edu.gatech.projectThree.constants.CourseType;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;

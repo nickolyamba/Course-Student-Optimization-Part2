@@ -2,11 +2,9 @@ package edu.gatech.projectThree;
 
 import edu.gatech.projectThree.datamodel.entity.Course;
 import edu.gatech.projectThree.datamodel.entity.Semester;
+import edu.gatech.projectThree.datamodel.entity.Student;
 import edu.gatech.projectThree.datamodel.entity.User;
-import edu.gatech.projectThree.repository.CourseRepository;
-import edu.gatech.projectThree.repository.OfferingRepository;
-import edu.gatech.projectThree.repository.SemesterRepository;
-import edu.gatech.projectThree.repository.UserRepository;
+import edu.gatech.projectThree.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by dawu on 3/18/16.
@@ -34,6 +34,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    private StudentRepository studRepository;
     private OfferingRepository offeringRepository;
     private CourseRepository courseRepository;
     private SemesterRepository semesterRepository;
@@ -42,6 +43,11 @@ public class Application {
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Autowired
+    public void setStudentRepository(StudentRepository studRepository) {
+        this.studRepository = studRepository;
     }
 
     @Autowired
@@ -60,6 +66,7 @@ public class Application {
     }
 
     //https://spring.io/guides/gs/accessing-data-jpa/
+    @Transactional
     @Bean
     public CommandLineRunner demo() {
 
@@ -69,8 +76,17 @@ public class Application {
             ArrayList<Semester> semesters = semesterRepository.findAll();
             ArrayList<User> users = userRepository.findAll();
             ArrayList<Course> courses = courseRepository.findAll();
+            List<Student> students = studRepository.findAll();
 
             //offeringRepository.save(new Offering("Jack", "Bauer"));
+
+            LOGGER.info("Studs found with findAll():");
+            LOGGER.info("-------------------------------");
+            for (Student student : students) {
+                LOGGER.info(student.toString());
+            }
+            LOGGER.info("");
+
 
             // fetch all semesters
             log.info("Semesters found with findAll():");
@@ -96,6 +112,7 @@ public class Application {
             }
             log.info("");
 
+
             log.info("Prereqs found with findAll():");
             log.info("-------------------------------");
             for (Course course : courses) {
@@ -109,6 +126,7 @@ public class Application {
                 }
             }
             log.info("");
+
 
 /*
             //-----------Populate Offering --------------

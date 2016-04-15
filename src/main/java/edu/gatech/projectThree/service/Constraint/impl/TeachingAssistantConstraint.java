@@ -16,10 +16,11 @@ import java.util.List;
 public class TeachingAssistantConstraint extends BaseConstraint {
     private static final double N = 1;
     private static final double M = 30;
+    private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
 
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
         // N teaching assistants for every M student capacity
         for (int j = 0; j < offerings.size(); j++) {
             GRBLinExpr taRatio = new GRBLinExpr();
@@ -38,7 +39,7 @@ public class TeachingAssistantConstraint extends BaseConstraint {
                 taAssignment.addTerm(1, tasOfferings[i][j]);
             }
             String cname = "TAASSIGNMENT_TA=" + i;
-            model.addConstr(taAssignment, GRB.LESS_EQUAL, 1, cname);
+            model.addConstr(taAssignment, GRB.LESS_EQUAL, MAXIMUM_OFFERINGS_TAUGHT, cname);
         }
     }
 }

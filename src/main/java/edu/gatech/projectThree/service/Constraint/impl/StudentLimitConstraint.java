@@ -19,7 +19,7 @@ public class StudentLimitConstraint extends BaseConstraint {
 
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
         for (int j = 0; j < offerings.size(); j++) {
             GRBLinExpr studentLimit = new GRBLinExpr();
             for (int i = 0; i < students.size(); i++) {
