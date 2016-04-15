@@ -10,7 +10,7 @@ $(document).ready(function() {
       group: 'awesome',
       draggable: 'li',
       onSort: function(e) {
-        semSort.options.group.put = $('#' + id + " > *").length < 2 ? true : false;
+        semSort.options.group.put = $('#' + id + " > *").length < 5 ? true : false;
       }
 
     });
