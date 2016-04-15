@@ -20,7 +20,7 @@ public class Request{
     @JoinColumn(name="STUDENT_ID", nullable = false)
     private Student student;
 
-    @OneToMany(mappedBy="student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="request", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Preference> preferences = new HashSet<Preference>();
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -1,6 +1,5 @@
 package edu.gatech.projectThree;
 
-import edu.gatech.projectThree.datamodel.entity.Course;
 import edu.gatech.projectThree.datamodel.entity.Semester;
 import edu.gatech.projectThree.datamodel.entity.Student;
 import edu.gatech.projectThree.datamodel.entity.User;
@@ -75,7 +74,7 @@ public class Application {
             //ArrayList<Course> courses = courseRepository.findAll();
             ArrayList<Semester> semesters = semesterRepository.findAll();
             ArrayList<User> users = userRepository.findAll();
-            ArrayList<Course> courses = courseRepository.findAll();
+            //ArrayList<Course> courses = courseRepository.findAll();
             List<Student> students = studRepository.findAll();
 
             //offeringRepository.save(new Offering("Jack", "Bauer"));
@@ -104,6 +103,7 @@ public class Application {
             }
             log.info("");
 
+        /*
             // fetch all users
             log.info("Courses found with findAll():");
             log.info("-------------------------------");
@@ -126,7 +126,7 @@ public class Application {
                 }
             }
             log.info("");
-
+        */
 
 /*
             //-----------Populate Offering --------------
