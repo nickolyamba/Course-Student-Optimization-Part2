@@ -49,6 +49,13 @@ public class Preference implements Serializable {
 		                    // assigned to the Course. Set upon results of Gurobi computation
 	}
 
+	public Preference(Student student, Offering offering, int priority, Request request) {
+		this.student = student;
+		this.offering = offering;
+		this.priority = priority;
+		this.request = request;
+	}
+
 	public Student getStudent() {
 		return student;
 	}

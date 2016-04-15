@@ -1,12 +1,7 @@
 package edu.gatech.projectThree.controller;
 
-import edu.gatech.projectThree.datamodel.entity.Course;
-import edu.gatech.projectThree.datamodel.entity.Semester;
-import edu.gatech.projectThree.repository.CourseRepository;
-import edu.gatech.projectThree.datamodel.entity.Student;
-import edu.gatech.projectThree.repository.SemesterRepository;
-import edu.gatech.projectThree.repository.StudentRepository;
-import edu.gatech.projectThree.repository.UserRepository;
+import edu.gatech.projectThree.datamodel.entity.*;
+import edu.gatech.projectThree.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +9,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Created by pjreed on 4/7/16.
@@ -28,6 +25,9 @@ public class CoursePreferencesController {
     private CourseRepository courseRepository;
     private StudentRepository studRepository;
     private SemesterRepository semesterRepository;
+    private OfferingRepository offeringRepository;
+    private RequestRepository requestRepository;
+    private PreferenceRepository preferenceRepository;
 
     @Autowired
     public void setCourseRepository(CourseRepository courseRepository) {
@@ -42,6 +42,15 @@ public class CoursePreferencesController {
     @Autowired
     public void setSemesterRepository(SemesterRepository semesterRepository) { this.semesterRepository = semesterRepository; }
 
+    @Autowired
+    public void setOfferingRepository(OfferingRepository offeringRepository) { this.offeringRepository = offeringRepository; }
+
+    @Autowired
+    public void setRequestRepository(RequestRepository requestRepository) { this.requestRepository = requestRepository; }
+
+    @Autowired
+    public void setPreferenceRepository(PreferenceRepository preferenceRepository) { this.preferenceRepository = preferenceRepository; }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CoursePreferencesController.class);
 
     @RequestMapping(value = "/course_preferences/edit", method = RequestMethod.GET)
@@ -49,8 +58,7 @@ public class CoursePreferencesController {
 
         UserDetails currentUser = (UserDetails) authentication.getPrincipal();
         Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
-        ArrayList<Semester> semesters = semesterRepository.findAll();
-
+        ArrayList<Semester> semesters = semesterRepository.findFirstByOrderById();
 
         model.addAttribute(
                 "coursesNotTaken",
@@ -58,5 +66,27 @@ public class CoursePreferencesController {
         );
         model.addAttribute("semesters", semesters);
         return "course_preferences/edit";
+    }
+
+    @RequestMapping(value = "/course_preferences/edit", method = RequestMethod.POST)
+    @ResponseBody
+    public String editCoursePreferencesPost(Model model, Authentication authentication, @RequestBody Map<String, ArrayList<String>> json) {
+        UserDetails currentUser = (UserDetails) authentication.getPrincipal();
+        Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
+
+        Request request = new Request(currentStudent);
+        requestRepository.save(request);
+
+        Semester semester = semesterRepository.findOne(Integer.parseInt(json.get("semester").get(0)));
+
+        final int[] index = {0};
+        json.get("courses").forEach(courseId -> {
+            Course course = courseRepository.findOne(Integer.parseInt(courseId));
+            Offering offering = offeringRepository.findBySemesterAndCourse(semester, course).get(0);
+            Preference preference = new Preference(currentStudent, offering, index[0] + 1, request);
+            preferenceRepository.save(preference);
+            index[0]++;
+        });
+        return "awesome sauce";
     }
 }

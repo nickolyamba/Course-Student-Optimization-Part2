@@ -1,6 +1,8 @@
 package edu.gatech.projectThree.repository;
 
+import edu.gatech.projectThree.datamodel.entity.Course;
 import edu.gatech.projectThree.datamodel.entity.Offering;
+import edu.gatech.projectThree.datamodel.entity.Semester;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.ArrayList;
@@ -10,4 +12,5 @@ import java.util.ArrayList;
  */
 public interface OfferingRepository extends CrudRepository<Offering, Long> {
     ArrayList<Offering> findAll();
+    ArrayList<Offering> findBySemesterAndCourse(Semester semester, Course course);
 }
