@@ -21,8 +21,12 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
        for (int i = 0; i < students.size(); i++) {
+           if(students.get(i).getPreferences().isEmpty())//if no preferences by student
+               continue;//
            GRBLinExpr maxCourses = new GRBLinExpr();
            for (int j = 0; j < offerings.size(); j++) {
+               if(offerings.get(j).getPreferences().isEmpty()) //if none signed up for course
+                   continue;//
                maxCourses.addTerm(1, studentsOfferings[i][j]);
            }
            String cname = "MAXCOURSES_Student=" + i;
@@ -40,9 +44,9 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
                }
            }
            if (foundationalRequirement) {
-               model.addConstr(maxCourses, GRB.LESS_EQUAL, 2, cname);
+               model.addConstr(maxCourses, GRB.EQUAL, 2, cname); // if LESS_EQUAL, then it always assign 0, to minimize obj
            } else {
-               model.addConstr(maxCourses, GRB.LESS_EQUAL, 3, cname);
+               model.addConstr(maxCourses, GRB.EQUAL, 3, cname);
            }
        }
     }
