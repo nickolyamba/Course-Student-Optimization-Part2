@@ -1,14 +1,8 @@
 package edu.gatech.projectThree.service;
 
 import edu.gatech.projectThree.Application;
-import edu.gatech.projectThree.datamodel.entity.Offering;
-import edu.gatech.projectThree.datamodel.entity.Professor;
-import edu.gatech.projectThree.datamodel.entity.Student;
-import edu.gatech.projectThree.datamodel.entity.Ta;
-import edu.gatech.projectThree.repository.OfferingRepository;
-import edu.gatech.projectThree.repository.ProfessorRepository;
-import edu.gatech.projectThree.repository.StudentRepository;
-import edu.gatech.projectThree.repository.TaRepository;
+import edu.gatech.projectThree.datamodel.entity.*;
+import edu.gatech.projectThree.repository.*;
 import edu.gatech.projectThree.service.Constraint.Constraint;
 import gurobi.*;
 import org.slf4j.Logger;
@@ -33,6 +27,8 @@ public class Scheduler{
     private OfferingRepository offeringRepository;
     private ProfessorRepository profRepository;
     private TaRepository taRepository;
+    private PreferenceRepository prefRepository;
+    private CurrentSemesterRepository currentSemesterRepository;
 
     @Autowired
     private ApplicationContext context;
@@ -62,6 +58,16 @@ public class Scheduler{
         this.taRepository = taRepository;
     }
 
+    @Autowired
+    public void setPrefRepository(PreferenceRepository prefRepository) {
+        this.prefRepository = prefRepository;
+    }
+
+    @Autowired
+    public void setCurrentSemesterRepository(CurrentSemesterRepository currentSemesterRepository) {
+        this.currentSemesterRepository = currentSemesterRepository;
+    }
+
     @Transactional
     public double schedule() {
         double result = 0;
@@ -70,9 +76,24 @@ public class Scheduler{
             env.set(GRB.IntParam.LogToConsole, 1);
             GRBModel model = new GRBModel(env);
 
-            List<Student> students = studRepository.findAll();
+            CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
 
-            List<Offering> offerings = offeringRepository.findAll();
+            List<Offering> offerings = offeringRepository.findBySemester(currSemester.getSemester());
+
+            List<Preference> preferences = prefRepository.findByOfferingIn(offerings);
+
+            List<Student> students = studRepository.findDistinctByPreferencesIn(preferences);
+
+            LOGGER.info("Studs found with findByPreferenceIn():");
+            LOGGER.info("-------------------------------");
+            for (Student student : students) {
+                LOGGER.info("stud["+String.valueOf(student.getId())+"] preferences:");
+                for (Preference preference : student.getPreferences())
+                    LOGGER.info("priority = "+ String.valueOf(preference.getPriority())+
+                            "  offering=" + String.valueOf(preference.getOffering().getId()));
+                LOGGER.info("\n");
+            }
+            LOGGER.info("");
 
             List<Professor> professors = profRepository.findAll();
 
@@ -91,21 +112,21 @@ public class Scheduler{
 
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < students.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
-                                "ST_" + String.valueOf(i+1);  // student
+                    gvar_name = "OF_" + String.valueOf(j) + // offering
+                                "ST_" + String.valueOf(i);  // student
 
                     studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
 
                 for (int i = 0; i < professors.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
-                                "PR_" + String.valueOf(i+1);  // professor
+                    gvar_name = "OF_" + String.valueOf(j) + // offering
+                                "PR_" + String.valueOf(i);  // professor
                     professorsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
 
                 for (int i = 0; i < tas.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
-                                "TA_" + String.valueOf(i+1);  // ta
+                    gvar_name = "OF_" + String.valueOf(j) + // offering
+                                "TA_" + String.valueOf(i);  // ta
                     tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
@@ -125,17 +146,20 @@ public class Scheduler{
 
             model.optimize();
 
-            double[][] stud_offer = model.get(GRB.DoubleAttr.X, studentsOfferings);// not sure if it's correct source
+            double[][] stud_offer = model.get(GRB.DoubleAttr.X, studentsOfferings);
             double[][] prof_offer = model.get(GRB.DoubleAttr.X, professorsOfferings);
             double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
 
             LOGGER.info("Students assigned:");
             LOGGER.info("-------------------------------");
-            for (int j = 0; j < offerings.size(); j++) {
-                for (int i = 0; i < students.size(); i++) {
+            for (int i = 0; i < students.size(); i++) {
+                for (int j = 0; j < offerings.size(); j++) {
                     if(stud_offer[i][j] > 0)
-                        LOGGER.info("off_stud["+ String.valueOf(i) +"]"+"["+ String.valueOf(j) + "]=" + String.valueOf(stud_offer[i][j]));
+                        LOGGER.info("stud_offer["+ String.valueOf(students.get(i).getId()) +"]"+
+                                    "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
+                                    String.valueOf(stud_offer[i][j]));
                 }
+                LOGGER.info("\n");
             }
             LOGGER.info("");
 

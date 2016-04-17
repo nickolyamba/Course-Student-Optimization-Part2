@@ -30,7 +30,7 @@ public class StudentPriorityObjective extends BaseConstraint {
 
         for(int i = 0; i < students.size(); i++) {
             preferences = students.get(i).getPreferences();
-            if(preferences.isEmpty()) //// if student have no preferernces
+  /*          if(preferences.isEmpty()) //// if student have no preferernces
                 continue;
 
             // fetch all pref
@@ -40,7 +40,7 @@ public class StudentPriorityObjective extends BaseConstraint {
                 LOGGER.info(preference.toString());
             }
             LOGGER.info("");
-
+*/
             // Get Set of offering IDs in Student's Preference set
             offeringIDs = new HashSet<Long>();
             for(Preference preference : preferences)
