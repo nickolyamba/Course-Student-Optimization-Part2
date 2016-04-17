@@ -12,5 +12,5 @@ import java.util.ArrayList;
  */
 public interface OfferingRepository extends CrudRepository<Offering, Long> {
     ArrayList<Offering> findAll();
-    ArrayList<Offering> findBySemesterAndCourse(Semester semester, Course course);
+    Offering findBySemesterAndCourse(Semester semester, Course course);
 }

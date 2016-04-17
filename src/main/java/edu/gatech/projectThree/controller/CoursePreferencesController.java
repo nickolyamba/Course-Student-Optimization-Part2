@@ -82,7 +82,7 @@ public class CoursePreferencesController {
         final int[] index = {0};
         json.get("courses").forEach(courseId -> {
             Course course = courseRepository.findOne(Integer.parseInt(courseId));
-            Offering offering = offeringRepository.findBySemesterAndCourse(semester, course).get(0);
+            Offering offering = offeringRepository.findBySemesterAndCourse(semester, course);
             Preference preference = new Preference(currentStudent, offering, index[0] + 1, request);
             preferenceRepository.save(preference);
             index[0]++;
