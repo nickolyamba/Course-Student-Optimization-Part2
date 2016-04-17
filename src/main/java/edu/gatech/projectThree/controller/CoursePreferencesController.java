@@ -87,6 +87,16 @@ public class CoursePreferencesController {
             preferenceRepository.save(preference);
             index[0]++;
         });
-        return "awesome sauce";
+        return request.toString();
+    }
+
+    @RequestMapping(value = "/course_preferences", method = RequestMethod.GET)
+    public String indexCoursePreferenced(Model model, Authentication authentication) {
+        UserDetails currentUser = (UserDetails) authentication.getPrincipal();
+        Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
+
+        ArrayList<Request> requests = requestRepository.findByStudent(currentStudent);
+        model.addAttribute("requests", requests);
+        return "course_preferences/index";
     }
 }
