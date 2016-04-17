@@ -97,7 +97,8 @@ public class Student extends User {
     }
 
     public void setPreferences(Set<Preference> preferences) {
-        this.preferences = preferences;
+        for(Preference preference : preferences)
+            this.addPreference(preference);
     }
 
     public Set<Request> getRequests() {
@@ -105,7 +106,8 @@ public class Student extends User {
     }
 
     public void setRequests(Set<Request> requests) {
-        this.requests = requests;
+        for(Request request : requests)
+            this.addRequest(request);
     }
 
     public void addRequest(Request request) {

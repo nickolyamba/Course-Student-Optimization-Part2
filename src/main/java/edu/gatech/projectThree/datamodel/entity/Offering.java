@@ -118,7 +118,8 @@ public class Offering implements Serializable {
     }
 
     public void setPreferences(Set<Preference> preferences) {
-        this.preferences = preferences;
+        for(Preference preference : preferences)
+            this.addPreference(preference);
     }
 
     //---------------------------------- Professor -----------------------------------------------//
@@ -127,7 +128,8 @@ public class Offering implements Serializable {
     }
 
     public void setProfPool(Set<ProfessorOffering> profPool) {
-        this.profPool = profPool;
+        for(ProfessorOffering professorOffering : profPool)
+            this.addProfOffering(professorOffering);
     }
 
     public void addProfOffering(ProfessorOffering teacherOffering) {
@@ -163,7 +165,8 @@ public class Offering implements Serializable {
     }
 
     public void setTaPool(Set<TaOffering> taPool) {
-        this.taPool = taPool;
+        for(TaOffering taOffering : taPool)
+            this.addTaOffering(taOffering);
     }
 
     public void addTaOffering(TaOffering teacherOffering) {
@@ -199,7 +202,8 @@ public class Offering implements Serializable {
     }
 
     public void setDemands(Set<Demand> demands) {
-        this.demands = demands;
+        for(Demand demand : demands)
+            this.addDemand(demand);
     }
 
     public void addDemand(Demand demand) {

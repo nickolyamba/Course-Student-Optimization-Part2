@@ -19,7 +19,7 @@ public class Preference implements Serializable {
     @Column
 	private String recommend;
 
-    @Transient
+    @Column(columnDefinition = "boolean default false", nullable = false)
     private boolean isAssigned;
     
     @ManyToOne(fetch=FetchType.LAZY)
@@ -31,8 +31,12 @@ public class Preference implements Serializable {
     private Offering offering;
 
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="REQUEST_ID", nullable = false)
+    @JoinColumn(name="REQUEST_ID") //set to nullable to allow flexibility
     private Request request;
+
+	@ManyToOne(fetch= FetchType.LAZY)
+	@JoinColumn(name="OPTIMIZED_ID")
+	private OptimizedTime optimizedTime;
     
     public Preference() {
         
@@ -110,6 +114,14 @@ public class Preference implements Serializable {
 
     public void setRequest(Request request) {
         this.request = request;
+    }
+
+    public OptimizedTime getOptimizedTime() {
+        return optimizedTime;
+    }
+
+    public void setOptimizedTime(OptimizedTime optimizedTime) {
+        this.optimizedTime = optimizedTime;
     }
 
     @Override
