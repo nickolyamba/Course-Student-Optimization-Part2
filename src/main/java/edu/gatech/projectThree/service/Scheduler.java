@@ -1,6 +1,6 @@
 package edu.gatech.projectThree.service;
 
-import edu.gatech.projectThree.datamodel.dao.impl.*;
+import edu.gatech.projectThree.Application;
 import edu.gatech.projectThree.datamodel.entity.Offering;
 import edu.gatech.projectThree.datamodel.entity.Professor;
 import edu.gatech.projectThree.datamodel.entity.Student;
@@ -11,40 +11,23 @@ import edu.gatech.projectThree.repository.StudentRepository;
 import edu.gatech.projectThree.repository.TaRepository;
 import edu.gatech.projectThree.service.Constraint.Constraint;
 import gurobi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by dawu on 3/18/16.
  */
 @Service("scheduler")
 public class Scheduler{
-
-    @Autowired
-    @Qualifier("studentDAO")
-    StudentDAO studentDAO;
-
-    @Autowired
-    @Qualifier("courseDAO")
-    CourseDAO courseDAO;
-
-    @Autowired
-    @Qualifier("professorDAO")
-    ProfessorDAO professorDAO;
-    
-    @Autowired
-    @Qualifier("offeringDAO")
-    OfferingDAO offeringDAO;
-
-    @Autowired
-    @Qualifier("semesterDAO")
-    SemesterDAO semesterDAO;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     private StudentRepository studRepository;
     private OfferingRepository offeringRepository;
@@ -79,7 +62,7 @@ public class Scheduler{
         this.taRepository = taRepository;
     }
 
-    // TODO: Redesign constraint template to not use multi-dimensional arrays
+    @Transactional
     public double schedule() {
         double result = 0;
         try {
@@ -87,60 +70,79 @@ public class Scheduler{
             env.set(GRB.IntParam.LogToConsole, 1);
             GRBModel model = new GRBModel(env);
 
-            //Student[] students = studentDAO.getAll();
-            ArrayList<Student> studs = studRepository.findAll();
-            Student[] students = new Student[studs.size()];
-            students = studs.toArray(students);
+            List<Student> students = studRepository.findAll();
 
-            // ----------------------------------------------------------------------------------------
-            //Course[] courses = courseDAO.getAll();
-            // !!!!!!!!!! We deal with Offerings that's a given course at a given semester!!!!!!
-            // so students are assigned to Offerings, not Courses;
-            // Therefore, semesters are not used because we assign students within one semester only
-            // ----------------------------------------------------------------------------------------
+            List<Offering> offerings = offeringRepository.findAll();
 
-            ArrayList<Offering> offers = offeringRepository.findAll();
-            Offering[] offerings = new Offering[offers.size()];
-            offerings = offers.toArray(offerings);
+            List<Professor> professors = profRepository.findAll();
 
-            //Professor[] professors = professorDAO.getAll();
-            ArrayList<Professor> profs = profRepository.findAll();
-            Professor[] professors = new Professor[profs.size()];
-            professors = profs.toArray(professors);
+            List<Ta> tas = taRepository.findAll();
 
-            ArrayList<Ta> taList = taRepository.findAll();
-            Ta[] tas = new Ta[taList.size()];
-            tas = taList.toArray(tas);
+            // initialize gurobi variables variables here
+            GRBVar[][] studentsOfferings = new GRBVar[students.size()][offerings.size()];
+            GRBVar[][] professorsOfferings = new GRBVar[professors.size()][offerings.size()];
+            GRBVar[][] tasOfferings = new GRBVar[tas.size()][offerings.size()];
 
-            //Semester[] semesters = semesterDAO.getAll();
+            // Create objective expression
+            GRBLinExpr obj = new GRBLinExpr();
 
-            GRBVar[][][][] yijk = new GRBVar[students.length][offerings.length][professors.length][tas.length];
-            // initialize variables here
-            for (int i = 0; i < students.length; i++) {
-                for (int j = 0; j < offerings.length; j++) {
-                    for (int k = 0; k < professors.length; k++) {
-                        for (int z = 0; z < tas.length; z++) {
-                            GRBVar grbVar = model.addVar(0, 1, 0.0, GRB.BINARY, "");
-                            yijk[i][j][k][z] = grbVar;
-                        }
-                    }
+            // Name to identify Gurobi variables for optimization analysis
+            String gvar_name = "";
+
+            for (int j = 0; j < offerings.size(); j++) {
+                for (int i = 0; i < students.size(); i++) {
+                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
+                                "ST_" + String.valueOf(i+1);  // student
+
+                    studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+                }
+
+                for (int i = 0; i < professors.size(); i++) {
+                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
+                                "PR_" + String.valueOf(i+1);  // professor
+                    professorsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+                }
+
+                for (int i = 0; i < tas.size(); i++) {
+                    gvar_name = "OF_" + String.valueOf(j+1) + // offering
+                                "TA_" + String.valueOf(i+1);  // ta
+                    tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
 
-            GRBVar X = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "X");
             model.update();
-            GRBLinExpr obj = new GRBLinExpr();
-            obj.addTerm(1, X);
-            model.setObjective(obj);
 
+            model.setObjective(obj, GRB.MINIMIZE);
+
+            // get all constraints
             Collection<Constraint> constraints = context.getBeansOfType(Constraint.class).values();
 
             for (Constraint constraint : constraints) {
-                constraint.addConstraint(model, yijk, X);
+                constraint.addConstraint(model, studentsOfferings, professorsOfferings, tasOfferings, obj, students, offerings, professors, tas);
             }
 
+            model.update();// for obj
+
             model.optimize();
-            result = model.get(GRB.DoubleAttr.ObjVal);
+
+            double[][] stud_offer = model.get(GRB.DoubleAttr.X, studentsOfferings);// not sure if it's correct source
+            double[][] prof_offer = model.get(GRB.DoubleAttr.X, professorsOfferings);
+            double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
+
+            LOGGER.info("Students assigned:");
+            LOGGER.info("-------------------------------");
+            for (int j = 0; j < offerings.size(); j++) {
+                for (int i = 0; i < students.size(); i++) {
+                    if(stud_offer[i][j] > 0)
+                        LOGGER.info("off_stud["+ String.valueOf(i) +"]"+"["+ String.valueOf(j) + "]=" + String.valueOf(stud_offer[i][j]));
+                }
+            }
+            LOGGER.info("");
+
+            // Dispose of model and environment
+            model.dispose();
+            env.dispose();
+
         } catch (GRBException e) {
             e.printStackTrace();
         }

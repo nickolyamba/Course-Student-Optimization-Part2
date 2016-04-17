@@ -41,7 +41,7 @@ public class Semester implements Serializable {
         this.id = semester_id;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
