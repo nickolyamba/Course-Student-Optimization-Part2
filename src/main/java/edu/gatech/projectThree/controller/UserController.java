@@ -25,6 +25,10 @@ public class UserController {
     @Autowired
     Scheduler scheduler;
 
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
     @RequestMapping(value = "/", method = GET)
     public String index(ModelMap model) {
         return "index";
@@ -34,6 +38,18 @@ public class UserController {
     public @ResponseBody User getUser() {
         User user = new User("dwu45", "password", "David", "Wu", UserType.STUDENT);
         LOGGER.info("user={}", user);
+        scheduler.schedule();
+        return user;
+    }
+
+    // !!!Testing Gurobi engine!!!
+    @RequestMapping(value = "/user/optimize", produces = "application/json")
+    public @ResponseBody User optimize() {
+        User user = new User("dwu45", "password", "David", "Wu", UserType.STUDENT);
+        LOGGER.info("user={}", user);
+
+        scheduler.schedule();
+
         return user;
     }
 
@@ -41,5 +57,7 @@ public class UserController {
     public String login(ModelMap model) {
         return "login";
     }
+
+
 }
 
