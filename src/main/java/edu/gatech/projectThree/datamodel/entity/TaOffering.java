@@ -21,9 +21,7 @@ public class TaOffering {
 	@JoinColumn(name="OFFERING_ID", nullable = false)
 	private Offering offering;
 
-	//private UserType userType;
-
-	@Transient
+	@Column(columnDefinition = "boolean default false", nullable = false)
 	private boolean isAssigned;
 
 	public TaOffering(){

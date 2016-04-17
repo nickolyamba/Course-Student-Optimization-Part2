@@ -20,7 +20,7 @@ public class PrintOffering implements Serializable {
 
     public PrintOffering(){}
     public PrintOffering(Offering offering){this.offering = offering;}
-    
+
     public Offering getOffering() {
         return offering;
     }

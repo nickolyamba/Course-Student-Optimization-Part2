@@ -19,7 +19,7 @@ public class Preference implements Serializable {
     @Column
 	private String recommend;
 
-    @Transient
+    @Column(columnDefinition = "boolean default false", nullable = false)
     private boolean isAssigned;
     
     @ManyToOne(fetch=FetchType.LAZY)
