@@ -1,8 +1,5 @@
 package edu.gatech.projectThree;
 
-import edu.gatech.projectThree.datamodel.entity.Semester;
-import edu.gatech.projectThree.datamodel.entity.Student;
-import edu.gatech.projectThree.datamodel.entity.User;
 import edu.gatech.projectThree.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by dawu on 3/18/16.
@@ -71,7 +65,7 @@ public class Application {
 
         return (args) -> {
             // save a couple of customers
-            //ArrayList<Course> courses = courseRepository.findAll();
+           /* //ArrayList<Course> courses = courseRepository.findAll();
             ArrayList<Semester> semesters = semesterRepository.findAll();
             ArrayList<User> users = userRepository.findAll();
             //ArrayList<Course> courses = courseRepository.findAll();

@@ -35,7 +35,7 @@ public class TeachingAssistantConstraint extends BaseConstraint {
         // Each TA can only be assigned once
         for (int i = 0; i < tas.size(); i++) {
             GRBLinExpr taAssignment = new GRBLinExpr();
-            for (int j = 0; j < tas.size(); j++) {
+            for (int j = 0; j < offerings.size(); j++) {
                 taAssignment.addTerm(1, tasOfferings[i][j]);
             }
             String cname = "TAASSIGNMENT_TA=" + i;

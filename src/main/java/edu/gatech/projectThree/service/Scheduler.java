@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -29,6 +30,8 @@ public class Scheduler{
     private TaRepository taRepository;
     private PreferenceRepository prefRepository;
     private CurrentSemesterRepository currentSemesterRepository;
+    private ProfessorOfferingRepository profOfferingRepository;
+    private TaOfferingRepository taOfferingRepository;
 
     @Autowired
     private ApplicationContext context;
@@ -68,6 +71,16 @@ public class Scheduler{
         this.currentSemesterRepository = currentSemesterRepository;
     }
 
+    @Autowired
+    public void setProfessorOffering(ProfessorOfferingRepository profOfferingRepository) {
+        this.profOfferingRepository = profOfferingRepository;
+    }
+
+    @Autowired
+    public void setTaOffering(TaOfferingRepository taOfferingRepository) {
+        this.taOfferingRepository = taOfferingRepository;
+    }
+
     @Transactional
     public double schedule() {
         double result = 0;
@@ -76,13 +89,34 @@ public class Scheduler{
             env.set(GRB.IntParam.LogToConsole, 1);
             GRBModel model = new GRBModel(env);
 
+            // get current semester
             CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
-
             List<Offering> offerings = offeringRepository.findBySemester(currSemester.getSemester());
 
-            List<Preference> preferences = prefRepository.findByOfferingIn(offerings);
+            // remove offerings that has no preferences
+            for (Iterator<Offering> it = offerings.iterator(); it.hasNext();)
+            {
+                Offering offering = it.next();
+                if(offering.getPreferences().isEmpty())
+                    it.remove();
+            }
 
+            // get association classes corresponding to Offerings
+            List<Preference> preferences = prefRepository.findByOfferingIn(offerings);
+            List<ProfessorOffering> profOfferings = profOfferingRepository.findByOfferingIn(offerings);
+            List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
+
+            // get Studs, Profs, and Tas
             List<Student> students = studRepository.findDistinctByPreferencesIn(preferences);
+            List<Professor> professors = profRepository.findDistinctByProfOfferingsIn(profOfferings);
+            List<Ta> tas = taRepository.findDistinctByTaOfferingsIn(taOfferings);
+
+            LOGGER.info("Offerings requested:");
+            LOGGER.info("-------------------------------");
+            for (Offering offering : offerings) {
+                LOGGER.info(String.valueOf(offering.getId()));
+            }
+            LOGGER.info("");
 
             LOGGER.info("Studs found with findByPreferenceIn():");
             LOGGER.info("-------------------------------");
@@ -95,9 +129,19 @@ public class Scheduler{
             }
             LOGGER.info("");
 
-            List<Professor> professors = profRepository.findAll();
+            LOGGER.info("TAs requested:");
+            LOGGER.info("-------------------------------");
+            for (Ta ta : tas) {
+                LOGGER.info(String.valueOf(ta.getId()));
+            }
+            LOGGER.info("");
 
-            List<Ta> tas = taRepository.findAll();
+            LOGGER.info("Profs requested:");
+            LOGGER.info("-------------------------------");
+            for (Professor prof : professors) {
+                LOGGER.info(String.valueOf(prof.getId()));
+            }
+            LOGGER.info("");
 
             // initialize gurobi variables variables here
             GRBVar[][] studentsOfferings = new GRBVar[students.size()][offerings.size()];
@@ -154,7 +198,7 @@ public class Scheduler{
             LOGGER.info("-------------------------------");
             for (int i = 0; i < students.size(); i++) {
                 for (int j = 0; j < offerings.size(); j++) {
-                    if(stud_offer[i][j] > 0)
+                    //if(stud_offer[i][j] > 0)
                         LOGGER.info("stud_offer["+ String.valueOf(students.get(i).getId()) +"]"+
                                     "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
                                     String.valueOf(stud_offer[i][j]));
