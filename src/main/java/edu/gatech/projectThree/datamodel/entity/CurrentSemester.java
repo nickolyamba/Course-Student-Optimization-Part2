@@ -17,7 +17,6 @@ public class CurrentSemester implements Serializable {
     @Transient
     private int curSemId;
 
-    @Id
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="SEMESTER_ID", nullable = false)
     private Semester semester;

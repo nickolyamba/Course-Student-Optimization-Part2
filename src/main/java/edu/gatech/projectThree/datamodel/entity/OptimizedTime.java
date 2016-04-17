@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by nikolay on 4/14/2016.
@@ -19,10 +21,12 @@ public class OptimizedTime implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    @Id
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="SEMESTER_ID", nullable = false)
     private Semester semester;
+
+    @OneToMany(mappedBy="optimizedTime", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Preference> preferences = new HashSet<Preference>();
 
     public OptimizedTime(){}
 
@@ -65,6 +69,25 @@ public class OptimizedTime implements Serializable {
 
     public void setSemester(Semester semester) {
         this.semester = semester;
+    }
+
+    public void addPreference(Preference preference) {
+        preferences.add(preference);
+        preference.setOptimizedTime(this);
+    }
+
+    public void removePreference(Preference preference) {
+        preferences.remove(preference);
+        preference.setOptimizedTime(null);
+    }
+
+    public Set<Preference> getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(Set<Preference> preferences) {
+        for(Preference preference : preferences)
+            this.addPreference(preference);
     }
 
     @Override
