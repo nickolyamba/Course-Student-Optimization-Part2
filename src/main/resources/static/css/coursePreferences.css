@@ -1,0 +1,8 @@
+ul.list-group {
+    min-height: 124px;
+}
+
+#notTaken {
+    height: 400px;
+    overflow-y: scroll;
+}
