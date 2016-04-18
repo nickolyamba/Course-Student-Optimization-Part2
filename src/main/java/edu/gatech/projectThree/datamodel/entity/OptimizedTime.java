@@ -34,7 +34,7 @@ public class OptimizedTime implements Serializable {
         this.semester = semester;
     }
 
-    // won't be used most likely. Created just in case, there's a need
+    // won't be used most likely. Created just in case there's a need
     public OptimizedTime(Semester semester, Date timestamp) {
         this.semester = semester;
         this.timestamp = timestamp;

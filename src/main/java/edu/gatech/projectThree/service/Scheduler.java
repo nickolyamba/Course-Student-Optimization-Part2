@@ -32,6 +32,8 @@ public class Scheduler{
     private CurrentSemesterRepository currentSemesterRepository;
     private ProfessorOfferingRepository profOfferingRepository;
     private TaOfferingRepository taOfferingRepository;
+    private OptimizedTimeRepository optimizedTimeRepository;
+    private RequestRepository requestRepository;
 
     @Autowired
     private ApplicationContext context;
@@ -42,7 +44,7 @@ public class Scheduler{
     }
 
     @Autowired
-    public void setStudentRepository(StudentRepository studRepository) {
+    public void setStudRepository(StudentRepository studRepository) {
         this.studRepository = studRepository;
     }
 
@@ -72,13 +74,23 @@ public class Scheduler{
     }
 
     @Autowired
-    public void setProfessorOffering(ProfessorOfferingRepository profOfferingRepository) {
+    public void setProfOfferingRepository(ProfessorOfferingRepository profOfferingRepository) {
         this.profOfferingRepository = profOfferingRepository;
     }
 
     @Autowired
-    public void setTaOffering(TaOfferingRepository taOfferingRepository) {
+    public void setTaOfferingRepository(TaOfferingRepository taOfferingRepository) {
         this.taOfferingRepository = taOfferingRepository;
+    }
+
+    @Autowired
+    public void setOptimizedTimeRepository(OptimizedTimeRepository optimizedTimeRepository) {
+        this.optimizedTimeRepository = optimizedTimeRepository;
+    }
+
+    @Autowired
+    public void setRequestRepository(RequestRepository requestRepository) {
+        this.requestRepository = requestRepository;
     }
 
     @Transactional
@@ -101,8 +113,25 @@ public class Scheduler{
                     it.remove();
             }
 
+            List<Request> requests = requestRepository.findLastReuestsByStudent();
+
+            LOGGER.info("Last Requests requested:");
+            LOGGER.info("-------------------------------");
+            for (Request request : requests) {
+                LOGGER.info(request.toString());
+            }
+            LOGGER.info("");
+
             // get association classes corresponding to Offerings
-            List<Preference> preferences = prefRepository.findByOfferingIn(offerings);
+            List<Preference> preferences = prefRepository.findByOfferingInAndRequestIn(offerings, requests);
+
+            LOGGER.info("Preferences requested:");
+            LOGGER.info("-------------------------------");
+            for (Preference preference : preferences) {
+                LOGGER.info(preference.toString());
+            }
+            LOGGER.info("");
+
             List<ProfessorOffering> profOfferings = profOfferingRepository.findByOfferingIn(offerings);
             List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
 
@@ -269,7 +298,6 @@ public class Scheduler{
 
     @Transactional
     private void updatePreferences(List<Preference> preferences, List<Student> students, List<Offering> offerings, double [][] stud_offer){
-
         //Preference pref = new Preference(studeets.get(i));
         //LOGGER.info("Updating Preferences:");
         //LOGGER.info("-------------------------------");
@@ -291,15 +319,15 @@ public class Scheduler{
                            preference.getOffering().getId() == offering_id)
                         {
                             // SpringBoot magic in action - updates DB automatically
-                            //preference.setAssigned(true);
+                            preference.setAssigned(true);
+                            OptimizedTime timestamp = new OptimizedTime(offerings.get(j).getSemester());
                             //preference.setRecommend("You've being assigned");
+                            //preference.setOptimizedTime(optimizedTimeRepository.save(timestamp));
                             LOGGER.info(preference.toString());
                         }//if
                     }//for
                 }//if
             }//for j
         }//for i
-
     }//updatePreferences()
-
 }// class

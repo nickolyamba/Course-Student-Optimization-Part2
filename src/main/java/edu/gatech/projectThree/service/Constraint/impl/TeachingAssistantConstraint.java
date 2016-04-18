@@ -15,12 +15,12 @@ import java.util.Set;
  */
 @Component
 public class TeachingAssistantConstraint extends BaseConstraint {
-    private static final double N = 1;
-    private static final double M = 150;
-    private static final double  maxStudsPerTa = 5;
-    private static final double  minStudsPerTa = 1;
-    private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
 
+    private static final double  maxStudsPerTa = 50;  // adjust when needed
+    private static final double  minStudsPerTa = 0;   // adjust when needed
+    private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
+    //private static final double N = 1;
+    //private static final double M = 150;
 
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
