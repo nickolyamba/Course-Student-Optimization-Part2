@@ -194,6 +194,32 @@ public class Scheduler{
             double[][] prof_offer = model.get(GRB.DoubleAttr.X, professorsOfferings);
             double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
 
+            LOGGER.info("Profs assigned:");
+            LOGGER.info("-------------------------------");
+            for (int i = 0; i < professors.size(); i++) {
+                for (int j = 0; j < offerings.size(); j++) {
+                    //if(stud_offer[i][j] > 0)
+                    LOGGER.info("prof_offer["+ String.valueOf(professors.get(i).getId()) +"]"+
+                            "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
+                            String.valueOf(prof_offer[i][j]));
+                }
+                LOGGER.info("\n");
+            }
+            LOGGER.info("");
+
+            LOGGER.info("TAs assigned:");
+            LOGGER.info("-------------------------------");
+            for (int i = 0; i < tas.size(); i++) {
+                for (int j = 0; j < offerings.size(); j++) {
+                    //if(stud_offer[i][j] > 0)
+                    LOGGER.info("ta_offer["+ String.valueOf(tas.get(i).getId()) +"]"+
+                            "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
+                            String.valueOf(ta_offer[i][j]));
+                }
+                LOGGER.info("\n");
+            }
+            LOGGER.info("");
+
             LOGGER.info("Students assigned:");
             LOGGER.info("-------------------------------");
             for (int i = 0; i < students.size(); i++) {
@@ -206,6 +232,9 @@ public class Scheduler{
                 LOGGER.info("\n");
             }
             LOGGER.info("");
+
+
+
 
             // Dispose of model and environment
             model.dispose();
