@@ -167,6 +167,14 @@ public class Scheduler{
                     studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
+
+            for (int j = 0; j < offerings.size(); j++) {
+                for (int i = 0; i < tas.size(); i++) {
+                    gvar_name = "OF_" + String.valueOf(j) + // offering
+                            "_TA_" + String.valueOf(i);  // ta
+                    tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+                }
+            }
 /*
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < professors.size(); i++) {
@@ -175,18 +183,8 @@ public class Scheduler{
                     professorsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
-
-            for (int j = 0; j < offerings.size(); j++) {
-                for (int i = 0; i < tas.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(j) + // offering
-                                "_TA_" + String.valueOf(i);  // ta
-                    tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
-                }
-            }
 */
             model.update();
-
-            model.setObjective(obj, GRB.MINIMIZE);
 
             // get all constraints
             Collection<Constraint> constraints = context.getBeansOfType(Constraint.class).values();
@@ -195,22 +193,26 @@ public class Scheduler{
                 constraint.addConstraint(model, studentsOfferings, professorsOfferings, tasOfferings, obj, students, offerings, professors, tas);
             }
 
+            model.update();
+            model.setObjective(obj, GRB.MINIMIZE);
 
             model.update();// for obj
             model.write("constraints.lp"); // constraints
             model.optimize();
 
+            // model.computeIIS();
+            // model.write("infeasible.ilp");
+
             model.update();
             model.write("solution.sol"); // solution
 
-
             double[][] stud_offer = model.get(GRB.DoubleAttr.X, studentsOfferings);
             //double[][] prof_offer = model.get(GRB.DoubleAttr.X, professorsOfferings);
-            //double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
+            double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
+            double objectiveValue = model.get(GRB.DoubleAttr.ObjVal);
 
             //Preference pref = new Preference(studeets.get(i));
             updatePreferences(preferences, students, offerings, stud_offer);
-
 
             /*
             LOGGER.info("Profs assigned:");
@@ -226,6 +228,7 @@ public class Scheduler{
             }
             LOGGER.info("");
 
+            */
 
             LOGGER.info("TAs assigned:");
             LOGGER.info("-------------------------------");
@@ -239,8 +242,6 @@ public class Scheduler{
                 LOGGER.info("\n");
             }
             LOGGER.info("");
-
-            */
 
             LOGGER.info("Students assigned:");
             LOGGER.info("-------------------------------");
@@ -270,16 +271,17 @@ public class Scheduler{
     private void updatePreferences(List<Preference> preferences, List<Student> students, List<Offering> offerings, double [][] stud_offer){
 
         //Preference pref = new Preference(studeets.get(i));
-        LOGGER.info("Updating Preferences:");
-        LOGGER.info("-------------------------------");
+        //LOGGER.info("Updating Preferences:");
+        //LOGGER.info("-------------------------------");
         for (int i = 0; i < students.size(); i++) {
             for (int j = 0; j < offerings.size(); j++) {
                 if(stud_offer[i][j] > 0)
                 {
+                    /*
                     LOGGER.info("stud_offer["+ String.valueOf(students.get(i).getId()) +"]"+
                             "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
                             String.valueOf(stud_offer[i][j]));
-
+                    */
                     long student_id = students.get(i).getId();
                     long offering_id = offerings.get(j).getId();
 
@@ -289,8 +291,8 @@ public class Scheduler{
                            preference.getOffering().getId() == offering_id)
                         {
                             // SpringBoot magic in action - updates DB automatically
-                            preference.setAssigned(true);
-                            preference.setRecommend("You've being assigned");
+                            //preference.setAssigned(true);
+                            //preference.setRecommend("You've being assigned");
                             LOGGER.info(preference.toString());
                         }//if
                     }//for
