@@ -23,6 +23,8 @@ public class ProfessorConstraint extends BaseConstraint {
 
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+
+        /*
         // At least one professor per offering
         for (int j = 0; j < offerings.size(); j++) {
             if(offerings.get(j).getPreferences().isEmpty())
@@ -44,5 +46,7 @@ public class ProfessorConstraint extends BaseConstraint {
             String cname = "MAXOFFERINGSTAUGHT_Professor=" + i;
             model.addConstr(maxOfferingsTaught, GRB.LESS_EQUAL, MAXIMUM_OFFERINGS_TAUGHT, cname);
         }
+
+        */
     }
 }

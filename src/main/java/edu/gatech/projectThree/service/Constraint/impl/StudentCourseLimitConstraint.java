@@ -21,12 +21,12 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
        for (int i = 0; i < students.size(); i++) {
-           //if(students.get(i).getPreferences().isEmpty())//if no preferences by student
-           //    continue;//
+           if(students.get(i).getPreferences().isEmpty())//if no preferences by student
+               continue;//
            GRBLinExpr maxCourses = new GRBLinExpr();
            for (int j = 0; j < offerings.size(); j++) {
                if(offerings.get(j).getPreferences().isEmpty()) //if none signed up for course
-                   continue;//
+                   continue;
                maxCourses.addTerm(1, studentsOfferings[i][j]);
            }
            String cname = "MAXCOURSES_Student=" + i;

@@ -13,4 +13,5 @@ import java.util.Collection;
 public interface PreferenceRepository extends CrudRepository<Preference, Long> {
     ArrayList<Preference> findAll();
     ArrayList<Preference> findByOfferingIn(Collection<Offering> offerings);
+    Preference save(Preference preference);
 }

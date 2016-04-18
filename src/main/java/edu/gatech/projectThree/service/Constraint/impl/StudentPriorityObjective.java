@@ -30,7 +30,7 @@ public class StudentPriorityObjective extends BaseConstraint {
 
         for(int i = 0; i < students.size(); i++) {
             preferences = students.get(i).getPreferences();
-  /*          if(preferences.isEmpty()) //// if student have no preferernces
+/*            if(preferences.isEmpty()) //// if student have no preferernces
                 continue;
 
             // fetch all pref
