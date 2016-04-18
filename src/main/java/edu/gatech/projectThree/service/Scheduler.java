@@ -91,7 +91,7 @@ public class Scheduler{
 
             // get current semester
             CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
-            List<Offering> offerings = offeringRepository.findBySemester(currSemester.getSemester());
+            List<Offering> offerings = offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
 
             // remove offerings that has no preferences
             for (Iterator<Offering> it = offerings.iterator(); it.hasNext();)
@@ -107,9 +107,9 @@ public class Scheduler{
             List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
 
             // get Studs, Profs, and Tas
-            List<Student> students = studRepository.findDistinctByPreferencesIn(preferences);
-            List<Professor> professors = profRepository.findDistinctByProfOfferingsIn(profOfferings);
-            List<Ta> tas = taRepository.findDistinctByTaOfferingsIn(taOfferings);
+            List<Student> students = studRepository.findDistinctByPreferencesInOrderByIdAsc(preferences);
+            List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
+            List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
 
             LOGGER.info("Offerings requested:");
             LOGGER.info("-------------------------------");
@@ -118,7 +118,7 @@ public class Scheduler{
             }
             LOGGER.info("");
 
-            LOGGER.info("Studs found with findByPreferenceIn():");
+            LOGGER.info("Studs and Preferences:");
             LOGGER.info("-------------------------------");
             for (Student student : students) {
                 LOGGER.info("stud["+String.valueOf(student.getId())+"] preferences:");

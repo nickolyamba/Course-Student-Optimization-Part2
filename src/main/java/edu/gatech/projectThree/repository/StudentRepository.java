@@ -15,5 +15,5 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
     Student findByUserName(String userName);
 
     //@Query("SELECT DISTINCT * FROM Customer c")
-    ArrayList<Student> findDistinctByPreferencesIn(Collection<Preference> preferences);
+    ArrayList<Student> findDistinctByPreferencesInOrderByIdAsc(Collection<Preference> preferences);
 }
