@@ -58,9 +58,11 @@ public class CoursePreferencesController {
         Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
         Semester semester = currentSemesterRepository.findTopByOrderBySemesterIdDesc().getSemester();
 
+        Set<Offering> allCurrentOfferings = semester.getOfferings();
+
         model.addAttribute(
-                "coursesNotTaken",
-                currentStudent.getCoursesNotTaken(courseRepository.findAll())
+                "offeringsNotTaken",
+                currentStudent.getCoursesNotTakenAsOfferings(allCurrentOfferings)
         );
         model.addAttribute("semester", semester);
         return "course_preferences/edit";
@@ -75,12 +77,9 @@ public class CoursePreferencesController {
         Request request = new Request(currentStudent);
         requestRepository.save(request);
 
-        Semester semester = currentSemesterRepository.findTopByOrderBySemesterIdDesc().getSemester();
-
         final int[] index = {0};
-        json.get("courses").forEach(courseId -> {
-            Course course = courseRepository.findOne(Integer.parseInt(courseId));
-            Offering offering = offeringRepository.findBySemesterAndCourse(semester, course);
+        json.get("offerings").forEach(courseId -> {
+            Offering offering = offeringRepository.findOne(Long.valueOf(courseId));
             Preference preference = new Preference(currentStudent, offering, index[0] + 1, request);
             preferenceRepository.save(preference);
             index[0]++;

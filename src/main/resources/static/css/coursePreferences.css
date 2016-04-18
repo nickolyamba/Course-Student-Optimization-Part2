@@ -6,3 +6,8 @@ ul.list-group {
     height: 400px;
     overflow-y: scroll;
 }
+
+#notTaken > .list-group-item {
+    cursor: move;
+}
+
