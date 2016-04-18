@@ -22,10 +22,10 @@ import java.util.Set;
 public class CoursePreferencesController {
     private CourseRepository courseRepository;
     private StudentRepository studRepository;
-    private SemesterRepository semesterRepository;
     private OfferingRepository offeringRepository;
     private RequestRepository requestRepository;
     private PreferenceRepository preferenceRepository;
+    private CurrentSemesterRepository currentSemesterRepository;
 
     @Autowired
     public void setCourseRepository(CourseRepository courseRepository) {
@@ -38,9 +38,6 @@ public class CoursePreferencesController {
     }
 
     @Autowired
-    public void setSemesterRepository(SemesterRepository semesterRepository) { this.semesterRepository = semesterRepository; }
-
-    @Autowired
     public void setOfferingRepository(OfferingRepository offeringRepository) { this.offeringRepository = offeringRepository; }
 
     @Autowired
@@ -49,6 +46,9 @@ public class CoursePreferencesController {
     @Autowired
     public void setPreferenceRepository(PreferenceRepository preferenceRepository) { this.preferenceRepository = preferenceRepository; }
 
+    @Autowired
+    public void setCurrentSemesterRepository(CurrentSemesterRepository currentSemesterRepository) { this.currentSemesterRepository = currentSemesterRepository; }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CoursePreferencesController.class);
 
     @RequestMapping(value = "/course_preferences/edit", method = RequestMethod.GET)
@@ -56,13 +56,13 @@ public class CoursePreferencesController {
 
         UserDetails currentUser = (UserDetails) authentication.getPrincipal();
         Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
-        ArrayList<Semester> semesters = semesterRepository.findFirstByOrderById();
+        Semester semester = currentSemesterRepository.findTopByOrderBySemesterIdDesc().getSemester();
 
         model.addAttribute(
                 "coursesNotTaken",
                 currentStudent.getCoursesNotTaken(courseRepository.findAll())
         );
-        model.addAttribute("semesters", semesters);
+        model.addAttribute("semester", semester);
         return "course_preferences/edit";
     }
 
@@ -75,7 +75,7 @@ public class CoursePreferencesController {
         Request request = new Request(currentStudent);
         requestRepository.save(request);
 
-        Semester semester = semesterRepository.findOne(Integer.parseInt(json.get("semester").get(0)));
+        Semester semester = currentSemesterRepository.findTopByOrderBySemesterIdDesc().getSemester();
 
         final int[] index = {0};
         json.get("courses").forEach(courseId -> {
