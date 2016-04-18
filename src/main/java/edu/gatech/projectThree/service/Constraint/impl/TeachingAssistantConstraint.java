@@ -17,8 +17,8 @@ import java.util.Set;
 public class TeachingAssistantConstraint extends BaseConstraint {
     private static final double N = 1;
     private static final double M = 150;
-    private static final double  maxStudsPerTa = 50;
-    private static final double  minStudsPerTa = 25;
+    private static final double  maxStudsPerTa = 5;
+    private static final double  minStudsPerTa = 1;
     private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
 
 
@@ -44,7 +44,8 @@ public class TeachingAssistantConstraint extends BaseConstraint {
         }//for j
 */
         /********************************************************************************
-         // Constraint: 30*TA <= Studs <= 50*TA
+         // Constraint: min*TA <= Studs <= max*TA
+         // Number of TA per assigned Students is from min to max
          // Sum_(i): max*TA(i) <= Sum_(i): Stud(i) ; 1D: (offering j = const)
          *********************************************************************************/
         GRBLinExpr taMaxSumConstr;
@@ -78,9 +79,9 @@ public class TeachingAssistantConstraint extends BaseConstraint {
                 }
             }//for i ,studs
 
-            String cMsxName = "TaMaxRatio_Offering=" + j; String cMinName = "TaMaxRatio_Offering=" + j;
+            String cMsxName = "TaMaxRatio_Offering=" + j; String cMinName = "TaMinRatio_Offering=" + j;
             model.addConstr(studSumConstr, GRB.LESS_EQUAL, taMaxSumConstr, cMsxName);
-            //model.addConstr(studSumConstr, GRB.LESS_EQUAL, taMinSumConstr, cMinName);
+            model.addConstr(studSumConstr, GRB.GREATER_EQUAL, taMinSumConstr, cMinName);
         }//for offerings
 
 
