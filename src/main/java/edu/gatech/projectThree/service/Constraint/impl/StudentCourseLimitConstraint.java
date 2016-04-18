@@ -44,9 +44,9 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
                }
            }
            if (foundationalRequirement) {
-               model.addConstr(maxCourses, GRB.EQUAL, 2, cname);
-           } else {
                model.addConstr(maxCourses, GRB.EQUAL, 3, cname);
+           } else {
+               model.addConstr(maxCourses, GRB.EQUAL, 2, cname);
            }
        }
     }
