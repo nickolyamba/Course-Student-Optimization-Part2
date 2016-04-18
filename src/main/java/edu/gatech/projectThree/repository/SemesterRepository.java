@@ -13,4 +13,6 @@ public interface SemesterRepository extends CrudRepository<Semester, Integer>{
     List<Semester> findByYear(String year);
     ArrayList<Semester> findAll();
     ArrayList<Semester> findFirstByOrderById();
+
+    Semester findById(Integer id);
 }

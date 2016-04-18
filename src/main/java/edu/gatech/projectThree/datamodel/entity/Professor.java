@@ -59,6 +59,11 @@ public class Professor extends Teacher{
     }
 
     @Override
+    public int hashCode() {
+        return profOfferings.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "Professor{" +
                 "id=" + super.getId() +
