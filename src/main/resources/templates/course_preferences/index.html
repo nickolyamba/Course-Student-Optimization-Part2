@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>View your course preferences</title>
+        <link rel="stylesheet" th:href="@{/css/coursePreferences.css}" href="../../css/coursePreferences.css" />
+        <script th:src="@{/js/course_preferences/index.js}"></script>
+    </head>
+    <body>
+        <div layout:fragment="content" class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h2>Your course requests</h2>
+                    <div class="list-group">
+                        <a th:each="courseRequest:${requests}" class="list-group-item" href="#" th:attr="data-request-id=${courseRequest.getId()}">
+                            <span th:text="${courseRequest.getCreated()}"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-9" data-course-preferences>
+                    <h2>Your course preferences</h2>
+                    <table></table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

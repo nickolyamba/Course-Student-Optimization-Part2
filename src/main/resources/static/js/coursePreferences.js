@@ -32,15 +32,14 @@ $(document).ready(function() {
         data.courses.push(courseAttributes.courseId);
       });
     });
-    console.log(data);
     $.ajax({
       url: "/course_preferences/edit",
       type: "post",
       dataType: "json",
       contentType: "application/json",
-      data: JSON.stringify(data),
-    }).done(function(data) {
-      console.log(data)
+      data: JSON.stringify(data)
+    }).complete(function(data) {
+      window.location.assign(window.location.href.replace('/edit', ''));
     })
   });
 });

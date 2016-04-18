@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>View your course preferences</title>
+        <link rel="stylesheet" th:href="@{/css/coursePreferences.css}" href="../../css/coursePreferences.css" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>Course</td>
+                        <td>Your Priority</td>
+                        <td>Recommended</td>
+                        <td>Assigned</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="preference:${preferences}">
+                        <td th:text="${'CS' + preference.getOffering().getCourse().getCourse_num() + ' - ' + preference.getOffering().getCourse().getCourse_name()}"></td>
+                        <td th:text="${preference.getPriority()}"></td>
+                        <td th:text="${preference.getRecommend()}"></td>
+                        <td th:text="${preference.isAssigned()}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

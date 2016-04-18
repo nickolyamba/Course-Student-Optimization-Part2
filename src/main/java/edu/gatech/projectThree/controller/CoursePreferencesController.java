@@ -9,13 +9,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by pjreed on 4/7/16.
@@ -82,11 +80,30 @@ public class CoursePreferencesController {
         final int[] index = {0};
         json.get("courses").forEach(courseId -> {
             Course course = courseRepository.findOne(Integer.parseInt(courseId));
-            Offering offering = offeringRepository.findBySemesterAndCourse(semester, course).get(0);
+            Offering offering = offeringRepository.findBySemesterAndCourse(semester, course);
             Preference preference = new Preference(currentStudent, offering, index[0] + 1, request);
             preferenceRepository.save(preference);
             index[0]++;
         });
-        return "awesome sauce";
+        return request.toString();
+    }
+
+    @RequestMapping(value = "/course_preferences", method = RequestMethod.GET)
+    public String indexCoursePreferenced(Model model, Authentication authentication) {
+        UserDetails currentUser = (UserDetails) authentication.getPrincipal();
+        Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
+
+        ArrayList<Request> requests = requestRepository.findByStudent(currentStudent);
+        model.addAttribute("requests", requests);
+        return "course_preferences/index";
+    }
+
+    @RequestMapping(value = "/course_preferences/{requestId}", method = RequestMethod.GET)
+    public String coursePreferencesByRequest(@PathVariable String requestId, Model model) {
+        Request request = requestRepository.findOne(Long.valueOf(requestId));
+        Set<Preference> prefs = request.getPreferences();
+
+        model.addAttribute("preferences", prefs);
+        return "course_preferences/request";
     }
 }
