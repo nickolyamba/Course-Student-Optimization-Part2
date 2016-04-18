@@ -12,5 +12,6 @@ import java.util.Collection;
  */
 public interface ProfessorRepository extends CrudRepository<Professor, Long> {
     ArrayList<Professor> findAll();
+    ArrayList<Professor> findAllByOrderByIdAsc();
     ArrayList<Professor> findDistinctByProfOfferingsInOrderByIdAsc(Collection<ProfessorOffering> profOffering);
 }

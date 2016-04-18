@@ -12,5 +12,6 @@ import java.util.Collection;
  */
 public interface TaRepository extends CrudRepository<Ta, Long> {
     ArrayList<Ta> findAll();
+    ArrayList<Ta> findAllByOrderByIdAsc();
     ArrayList<Ta> findDistinctByTaOfferingsInOrderByIdAsc(Collection<TaOffering> profOffering);
 }

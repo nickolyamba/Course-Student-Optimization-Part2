@@ -11,6 +11,7 @@ import java.util.Collection;
  */
 public interface OfferingRepository extends CrudRepository<Offering, Long> {
     ArrayList<Offering> findAll();
+    ArrayList<Offering> findAllByOrderByIdAsc();
     ArrayList<Offering> findBySemesterAndCourse(Semester semester, Course course);
     ArrayList<Offering> findBySemesterOrderByIdAsc(Semester semester);
     ArrayList<Offering> findDistinctByPreferencesIn(Collection<Preference> preferences);

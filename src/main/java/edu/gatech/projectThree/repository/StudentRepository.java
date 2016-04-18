@@ -12,6 +12,7 @@ import java.util.Collection;
  */
 public interface StudentRepository extends CrudRepository<Student, Long> {
     ArrayList<Student> findAll();
+    ArrayList<Student> findAllByOrderByIdAsc();
     Student findByUserName(String userName);
 
     //@Query("SELECT DISTINCT * FROM Customer c")

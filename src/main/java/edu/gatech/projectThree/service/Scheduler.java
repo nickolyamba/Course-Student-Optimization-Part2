@@ -111,6 +111,11 @@ public class Scheduler{
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
 
+            //offerings = offeringRepository.findAllByOrderByIdAsc();
+            students = studRepository.findAllByOrderByIdAsc();
+            professors = profRepository.findAllByOrderByIdAsc();
+            tas = taRepository.findAllByOrderByIdAsc();
+
             LOGGER.info("Offerings requested:");
             LOGGER.info("-------------------------------");
             for (Offering offering : offerings) {
@@ -198,7 +203,7 @@ public class Scheduler{
             LOGGER.info("-------------------------------");
             for (int i = 0; i < professors.size(); i++) {
                 for (int j = 0; j < offerings.size(); j++) {
-                    //if(stud_offer[i][j] > 0)
+                    //if(prof_offer[i][j] > 0)
                     LOGGER.info("prof_offer["+ String.valueOf(professors.get(i).getId()) +"]"+
                             "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
                             String.valueOf(prof_offer[i][j]));
@@ -211,7 +216,7 @@ public class Scheduler{
             LOGGER.info("-------------------------------");
             for (int i = 0; i < tas.size(); i++) {
                 for (int j = 0; j < offerings.size(); j++) {
-                    //if(stud_offer[i][j] > 0)
+                    //if(ta_offer[i][j] > 0)
                     LOGGER.info("ta_offer["+ String.valueOf(tas.get(i).getId()) +"]"+
                             "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
                             String.valueOf(ta_offer[i][j]));
@@ -224,7 +229,7 @@ public class Scheduler{
             LOGGER.info("-------------------------------");
             for (int i = 0; i < students.size(); i++) {
                 for (int j = 0; j < offerings.size(); j++) {
-                    //if(stud_offer[i][j] > 0)
+                    if(stud_offer[i][j] > 0)
                         LOGGER.info("stud_offer["+ String.valueOf(students.get(i).getId()) +"]"+
                                     "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
                                     String.valueOf(stud_offer[i][j]));
@@ -232,8 +237,6 @@ public class Scheduler{
                 LOGGER.info("\n");
             }
             LOGGER.info("");
-
-
 
 
             // Dispose of model and environment
