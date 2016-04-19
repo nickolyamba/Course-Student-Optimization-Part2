@@ -16,7 +16,9 @@ import java.util.Set;
 public class StudentLimitConstraint extends BaseConstraint {
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
+                          GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
+                          List<Professor> professors, List<Ta> tas, List<Preference> preferenceList) throws GRBException {
         for (int j = 0; j < offerings.size(); j++) {
             GRBLinExpr studentLimit = new GRBLinExpr();
             for (int i = 0; i < students.size(); i++) {
@@ -29,7 +31,7 @@ public class StudentLimitConstraint extends BaseConstraint {
                 }
 
             }
-            String cname = "STUDENTLIMIT_Offering=" + j;
+            String cname = "STUDENTLIMIT_Offering=" + offerings.get(j).getId();
             model.addConstr(studentLimit, GRB.LESS_EQUAL, offerings.get(j).getCapacity(), cname);
         }
     }

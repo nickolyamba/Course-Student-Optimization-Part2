@@ -19,7 +19,9 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
 
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
+                          GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
+                          List<Professor> professors, List<Ta> tas, List<Preference> preferenceList) throws GRBException {
        for (int i = 0; i < students.size(); i++) {
            GRBLinExpr maxCourses = new GRBLinExpr();
            for (int j = 0; j < offerings.size(); j++) {
@@ -47,7 +49,7 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
                }
            }
 
-           String cname = "MAXCOURSES_Student=" + i;
+           String cname = "MAXCOURSES_Student=" + students.get(i).getId();
            if (foundationalRequirement) {
                model.addConstr(maxCourses, GRB.EQUAL, // in case # preferences < 3
                        Math.min(3, student.getPreferences().size()), cname);

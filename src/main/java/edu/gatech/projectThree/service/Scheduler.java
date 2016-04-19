@@ -34,6 +34,7 @@ public class Scheduler{
     private TaOfferingRepository taOfferingRepository;
     private OptimizedTimeRepository optimizedTimeRepository;
     private RequestRepository requestRepository;
+    private GlobalState state;
 
     @Autowired
     private ApplicationContext context;
@@ -93,6 +94,11 @@ public class Scheduler{
         this.requestRepository = requestRepository;
     }
 
+    @Autowired
+    public void setState(GlobalState state) {
+        this.state = state;
+    }
+
     @Transactional
     public double schedule() {
         double result = 0;
@@ -124,10 +130,11 @@ public class Scheduler{
 
             // get association classes corresponding to Offerings
             List<Preference> preferences = prefRepository.findByOfferingInAndRequestIn(offerings, requests);
+            List<Preference> preferenceList = state.getPreferences();
 
-            LOGGER.info("Preferences requested:");
+            LOGGER.info("!!!Preferences!!! requested:");
             LOGGER.info("-------------------------------");
-            for (Preference preference : preferences) {
+            for (Preference preference : preferenceList) {
                 LOGGER.info(preference.toString());
             }
             LOGGER.info("");
@@ -136,7 +143,7 @@ public class Scheduler{
             List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
 
             // get Studs, Profs, and Tas
-            List<Student> students = studRepository.findDistinctByPreferencesInOrderByIdAsc(preferences);
+            List<Student> students = studRepository.findDistinctByPreferencesInAndRequestsInOrderByIdAsc(preferences, requests);
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
 /*
@@ -190,8 +197,9 @@ public class Scheduler{
 
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < students.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(j) + // offering
-                            "_ST_" + String.valueOf(i);  // student
+
+                    gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
+                               "_ST_" + String.valueOf(students.get(i).getId());  // student
 
                     studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
@@ -199,16 +207,16 @@ public class Scheduler{
 
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < tas.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(j) + // offering
-                            "_TA_" + String.valueOf(i);  // ta
+                    gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
+                            "_TA_" + String.valueOf(tas.get(i).getId());   // ta
                     tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
 /*
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < professors.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(j) + // offering
-                            "_PR_" + String.valueOf(i);  // professor
+                    gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
+                            "_PR_" + String.valueOf(professors.get(i).getId());   // professor
                     professorsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
@@ -219,7 +227,8 @@ public class Scheduler{
             Collection<Constraint> constraints = context.getBeansOfType(Constraint.class).values();
 
             for (Constraint constraint : constraints) {
-                constraint.addConstraint(model, studentsOfferings, professorsOfferings, tasOfferings, obj, students, offerings, professors, tas);
+                constraint.addConstraint(model, studentsOfferings, professorsOfferings, tasOfferings,
+                                            obj, students, offerings, professors, tas, preferences);
             }
 
             model.update();
@@ -240,8 +249,8 @@ public class Scheduler{
             double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
             double objectiveValue = model.get(GRB.DoubleAttr.ObjVal);
 
-            //Preference pref = new Preference(studeets.get(i));
-            updatePreferences(preferences, students, offerings, stud_offer);
+            // save results to the database
+            updatePreferences(preferences, students, offerings, stud_offer, currSemester);
 
             /*
             LOGGER.info("Profs assigned:");
@@ -297,13 +306,17 @@ public class Scheduler{
     }
 
     @Transactional
-    private void updatePreferences(List<Preference> preferences, List<Student> students, List<Offering> offerings, double [][] stud_offer){
+    private void updatePreferences(List<Preference> preferences, List<Student> students,
+                                   List<Offering> offerings, double [][] stud_offer, CurrentSemester currSem){
         //Preference pref = new Preference(studeets.get(i));
         //LOGGER.info("Updating Preferences:");
         //LOGGER.info("-------------------------------");
+
+        //OptimizedTime timestamp = new OptimizedTime(currSem.getSemester());
+        //optimizedTimeRepository.save(timestamp);
         for (int i = 0; i < students.size(); i++) {
             for (int j = 0; j < offerings.size(); j++) {
-                if(stud_offer[i][j] > 0)
+                //if(stud_offer[i][j] > 0)
                 {
                     /*
                     LOGGER.info("stud_offer["+ String.valueOf(students.get(i).getId()) +"]"+
@@ -313,17 +326,27 @@ public class Scheduler{
                     long student_id = students.get(i).getId();
                     long offering_id = offerings.get(j).getId();
 
+                    // find corresponding to student and offering preference
                     for(Preference preference : preferences)
                     {
                         if(preference.getStudent().getId() == student_id &&
                            preference.getOffering().getId() == offering_id)
                         {
-                            // SpringBoot magic in action - updates DB automatically
-                            preference.setAssigned(true);
-                            OptimizedTime timestamp = new OptimizedTime(offerings.get(j).getSemester());
-                            //preference.setRecommend("You've being assigned");
-                            //preference.setOptimizedTime(optimizedTimeRepository.save(timestamp));
                             LOGGER.info(preference.toString());
+                            if(stud_offer[i][j] > 0)
+                            {
+                                //preference.setAssigned(true);
+                                //preference.setRecommend("You've being assigned");
+                                //preference.setOptimizedTime(timestamp);
+                            }
+
+                            else
+                            {
+                                //preference.setAssigned(false);
+                                //preference.setRecommend("Didn't get in class");
+                                //preference.setOptimizedTime(timestamp);
+                            }
+
                         }//if
                     }//for
                 }//if

@@ -38,7 +38,6 @@ public class UserController {
     public @ResponseBody User getUser() {
         User user = new User("dwu45", "password", "David", "Wu", UserType.STUDENT);
         LOGGER.info("user={}", user);
-        scheduler.schedule();
         return user;
     }
 

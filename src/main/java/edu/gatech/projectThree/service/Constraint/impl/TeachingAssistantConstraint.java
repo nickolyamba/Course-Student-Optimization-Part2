@@ -23,7 +23,9 @@ public class TeachingAssistantConstraint extends BaseConstraint {
     //private static final double M = 150;
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
+                          GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
+                          List<Professor> professors, List<Ta> tas, List<Preference> preferenceList) throws GRBException {
 /*
         // N teaching assistants for every M student capacity
         for (int j = 0; j < offerings.size(); j++) {
@@ -79,7 +81,8 @@ public class TeachingAssistantConstraint extends BaseConstraint {
                 }
             }//for i ,studs
 
-            String cMsxName = "TaMaxRatio_Offering=" + j; String cMinName = "TaMinRatio_Offering=" + j;
+            String cMsxName = "TaMaxRatio_Offering=" + offerings.get(j).getId();
+            String cMinName = "TaMinRatio_Offering=" + offerings.get(j).getId();
             model.addConstr(studSumConstr, GRB.LESS_EQUAL, taMaxSumConstr, cMsxName);
             model.addConstr(studSumConstr, GRB.GREATER_EQUAL, taMinSumConstr, cMinName);
         }//for offerings
@@ -91,7 +94,7 @@ public class TeachingAssistantConstraint extends BaseConstraint {
             for (int j = 0; j < offerings.size(); j++) {
                 taAssignment.addTerm(1, tasOfferings[i][j]);
             }
-            String cname = "TAASSIGNMENT_TA=" + i;
+            String cname = "TAASSIGNMENT_TA=" + tas.get(i).getId();
             model.addConstr(taAssignment, GRB.LESS_EQUAL, MAXIMUM_OFFERINGS_TAUGHT, cname);
         }//for
 

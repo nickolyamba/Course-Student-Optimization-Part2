@@ -26,6 +26,7 @@ public class CoursePreferencesController {
     private OfferingRepository offeringRepository;
     private RequestRepository requestRepository;
     private PreferenceRepository preferenceRepository;
+    private GlobalState state;
 
     @Autowired
     public void setCourseRepository(CourseRepository courseRepository) {
@@ -48,6 +49,11 @@ public class CoursePreferencesController {
 
     @Autowired
     public void setPreferenceRepository(PreferenceRepository preferenceRepository) { this.preferenceRepository = preferenceRepository; }
+
+    @Autowired
+    public void setState(GlobalState state) {
+        this.state = state;
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoursePreferencesController.class);
 
@@ -83,8 +89,12 @@ public class CoursePreferencesController {
             Offering offering = offeringRepository.findBySemesterAndCourse(semester, course);
             Preference preference = new Preference(currentStudent, offering, index[0] + 1, request);
             preferenceRepository.save(preference);
+            //state.getPreferences().add(preference); --- experiment with Global State - works well
             index[0]++;
         });
+
+
+
         return request.toString();
     }
 

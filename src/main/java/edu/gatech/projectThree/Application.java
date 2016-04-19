@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -18,10 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -64,64 +59,6 @@ public class Application {
     public CommandLineRunner demo() {
 
         return (args) -> {
-            // save a couple of customers
-           /* //ArrayList<Course> courses = courseRepository.findAll();
-            ArrayList<Semester> semesters = semesterRepository.findAll();
-            ArrayList<User> users = userRepository.findAll();
-            //ArrayList<Course> courses = courseRepository.findAll();
-            List<Student> students = studRepository.findAll();
-
-            //offeringRepository.save(new Offering("Jack", "Bauer"));
-
-            LOGGER.info("Studs found with findAll():");
-            LOGGER.info("-------------------------------");
-            for (Student student : students) {
-                LOGGER.info(student.toString());
-            }
-            LOGGER.info("");
-
-
-            // fetch all semesters
-            log.info("Semesters found with findAll():");
-            log.info("-------------------------------");
-            for (Semester semester : semesters) {
-                log.info(semester.toString());
-            }
-            log.info("");
-
-            // fetch all users
-            log.info("Users found with findAll():");
-            log.info("-------------------------------");
-            for (User user : users) {
-                log.info(user.toString());
-            }
-            log.info("");
-
-        /*
-            // fetch all users
-            log.info("Courses found with findAll():");
-            log.info("-------------------------------");
-            for (Course course : courses) {
-                log.info(course.toString());
-            }
-            log.info("");
-
-
-            log.info("Prereqs found with findAll():");
-            log.info("-------------------------------");
-            for (Course course : courses) {
-                if(!course.getPrereqs().isEmpty())
-                {
-                    log.info("Course id: " + String.valueOf(course.getId()));
-                    for (Course cour : course.getPrereqs())
-                    {
-                        log.info("Prereq id: " + String.valueOf(cour.getId()));
-                    }
-                }
-            }
-            log.info("");
-        */
-
 /*
             //-----------Populate Offering --------------
             for (Semester semester : semesters)
