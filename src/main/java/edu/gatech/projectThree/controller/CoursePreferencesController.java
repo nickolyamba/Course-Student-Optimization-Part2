@@ -2,6 +2,7 @@ package edu.gatech.projectThree.controller;
 
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.repository.*;
+import edu.gatech.projectThree.service.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by pjreed on 4/7/16.
@@ -27,6 +26,13 @@ public class CoursePreferencesController {
     private RequestRepository requestRepository;
     private PreferenceRepository preferenceRepository;
     private GlobalState state;
+    private Scheduler scheduler;
+    private CurrentSemesterRepository currentSemesterRepository;
+
+    @Autowired
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
 
     @Autowired
     public void setCourseRepository(CourseRepository courseRepository) {
@@ -51,6 +57,11 @@ public class CoursePreferencesController {
     public void setPreferenceRepository(PreferenceRepository preferenceRepository) { this.preferenceRepository = preferenceRepository; }
 
     @Autowired
+    public void setCurrentSemesterRepository(CurrentSemesterRepository currentSemesterRepository) {
+        this.currentSemesterRepository = currentSemesterRepository;
+    }
+
+    @Autowired
     public void setState(GlobalState state) {
         this.state = state;
     }
@@ -62,13 +73,22 @@ public class CoursePreferencesController {
 
         UserDetails currentUser = (UserDetails) authentication.getPrincipal();
         Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
-        ArrayList<Semester> semesters = semesterRepository.findFirstByOrderById();
+
+        CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
+        List<Offering> offerings =  offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
+        //ArrayList<Semester> semesters = semesterRepository.findFirstByOrderById();
+        List<Course> coursesNotTaken = currentStudent.getCoursesNotTaken(courseRepository.findAll());
+
+        //remove not taken that are not in offerings for the current semester
+        /*notTaken.stream()
+                .flatMap(v -> offerings.stream()
+                                .filter(c -> c.getCourse().getId() == v.getId()));*/
 
         model.addAttribute(
                 "coursesNotTaken",
-                currentStudent.getCoursesNotTaken(courseRepository.findAll())
+                coursesNotTaken //currentStudent.getCoursesNotTaken(courseRepository.findAll())
         );
-        model.addAttribute("semesters", semesters);
+        model.addAttribute("semesters", currSemester.getSemester());
         return "course_preferences/edit";
     }
 
@@ -82,6 +102,8 @@ public class CoursePreferencesController {
         requestRepository.save(request);
 
         Semester semester = semesterRepository.findOne(Integer.parseInt(json.get("semester").get(0)));
+        LOGGER.info("Semester requested:");
+        LOGGER.info(semester.toString());
 
         final int[] index = {0};
         json.get("courses").forEach(courseId -> {
@@ -93,8 +115,7 @@ public class CoursePreferencesController {
             index[0]++;
         });
 
-
-
+        //scheduler.schedule(); // we can populate the lists we need right from here if we choose so
         return request.toString();
     }
 

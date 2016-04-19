@@ -6,7 +6,6 @@ import gurobi.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by dawu on 4/5/16.
@@ -23,16 +22,20 @@ public class StudentLimitConstraint extends BaseConstraint {
             GRBLinExpr studentLimit = new GRBLinExpr();
             for (int i = 0; i < students.size(); i++) {
                 //check if stud has Preference for this course
-                Set<Preference> preferences = students.get(i).getPreferences();
-                for(Preference preference : preferences)
+                //Set<Preference> preferences = students.get(i).getPreferences();
+                for(Preference preference : preferenceList)
                 {
-                    if(preference.getOffering().getId() == offerings.get(j).getId())
+                    if (preference.getStudent().getId() == students.get(i).getId() &&
+                            preference.getOffering().getId() == offerings.get(j).getId())
+                    {
                         studentLimit.addTerm(1, studentsOfferings[i][j]);
-                }
+                    }
 
+                }
+                String cname = "STUDENTLIMIT_Offering=" + offerings.get(j).getId();
+                model.addConstr(studentLimit, GRB.LESS_EQUAL, offerings.get(j).getCapacity(), cname);
             }
-            String cname = "STUDENTLIMIT_Offering=" + offerings.get(j).getId();
-            model.addConstr(studentLimit, GRB.LESS_EQUAL, offerings.get(j).getCapacity(), cname);
         }
     }
 }
+

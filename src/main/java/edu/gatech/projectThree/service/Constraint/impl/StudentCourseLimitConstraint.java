@@ -25,11 +25,13 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
        for (int i = 0; i < students.size(); i++) {
            GRBLinExpr maxCourses = new GRBLinExpr();
            for (int j = 0; j < offerings.size(); j++) {
+
                //check if stud has Preference for this course
-               Set<Preference> preferences = offerings.get(j).getPreferences();
-               for(Preference preference : preferences)
+               //Set<Preference> preferences = offerings.get(j).getPreferences();
+               for(Preference preference : preferenceList)
                {
-                   if(preference.getStudent().getId() == students.get(i).getId())
+                   if(preference.getStudent().getId() == students.get(i).getId() &&
+                           preference.getOffering().getId() == offerings.get(j).getId())
                        maxCourses.addTerm(1, studentsOfferings[i][j]);
                }
            }

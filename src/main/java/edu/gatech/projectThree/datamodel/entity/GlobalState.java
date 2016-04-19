@@ -1,5 +1,8 @@
 package edu.gatech.projectThree.datamodel.entity;
 
+import edu.gatech.projectThree.repository.CurrentSemesterRepository;
+import edu.gatech.projectThree.repository.OfferingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,6 +15,12 @@ import java.util.List;
 @Component
 public class GlobalState {
 
+    // these two used often, so makes sense to store them in global state?
+    private CurrentSemesterRepository currentSemesterRepository;
+    private OfferingRepository offeringRepository;
+
+    private CurrentSemester currentSemester;
+    private List<Offering> offerings = new ArrayList<>();
     private List<Preference> preferences = new ArrayList<>();
     private List<ProfessorOffering> profOfferings = new ArrayList<>();
     private List<TaOffering> taOfferings = new ArrayList<>();
@@ -20,7 +29,8 @@ public class GlobalState {
     private List<Professor> professors = new ArrayList<>();
     private List<Ta> tas = new ArrayList<>();
 
-    GlobalState(){}
+    GlobalState(){
+    }
 
     public List<Preference> getPreferences() {
         return preferences;
@@ -68,5 +78,31 @@ public class GlobalState {
 
     public void setTas(List<Ta> tas) {
         this.tas = tas;
+    }
+
+    public void setCurrentSemester(CurrentSemester currentSemester) {
+        this.currentSemester = currentSemester;
+    }
+
+    public void setOfferings(List<Offering> offerings) {
+        this.offerings = offerings;
+    }
+
+    public List<Offering> getOfferings() {
+        return offerings;
+    }
+
+    public CurrentSemester getCurrentSemester() {
+        return currentSemester;
+    }
+
+    @Autowired
+    public void setOfferingRepository(OfferingRepository offeringRepository) {
+        this.offeringRepository = offeringRepository;
+    }
+
+    @Autowired
+    public void setCurrentSemesterRepository(CurrentSemesterRepository currentSemesterRepository) {
+        this.currentSemesterRepository = currentSemesterRepository;
     }
 }

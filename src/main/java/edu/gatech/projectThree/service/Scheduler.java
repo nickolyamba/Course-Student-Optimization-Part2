@@ -130,11 +130,11 @@ public class Scheduler{
 
             // get association classes corresponding to Offerings
             List<Preference> preferences = prefRepository.findByOfferingInAndRequestIn(offerings, requests);
-            List<Preference> preferenceList = state.getPreferences();
+            //List<Preference> preferenceList = state.getPreferences();
 
             LOGGER.info("!!!Preferences!!! requested:");
             LOGGER.info("-------------------------------");
-            for (Preference preference : preferenceList) {
+            for (Preference preference : preferences) {
                 LOGGER.info(preference.toString());
             }
             LOGGER.info("");
@@ -188,13 +188,24 @@ public class Scheduler{
             GRBVar[][] studentsOfferings = new GRBVar[students.size()][offerings.size()];
             GRBVar[][] professorsOfferings = new GRBVar[professors.size()][offerings.size()];
             GRBVar[][] tasOfferings = new GRBVar[tas.size()][offerings.size()];
-
+            //GRBVar[] prefG = new GRBVar[preferences.size()];
             // Create objective expression
             GRBLinExpr obj = new GRBLinExpr();
 
             // Name to identify Gurobi variables for optimization analysis
             String gvar_name = "";
 
+/*
+            for (Preference preference : preferences) {
+
+                int i = (int)preference.getStudent().getId();
+                int j = (int)preference.getOffering().getId();
+                gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
+                        "_ST_" + String.valueOf(students.get(i).getId());  // student
+
+                studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+            }
+*/
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < students.size(); i++) {
 
@@ -308,12 +319,9 @@ public class Scheduler{
     @Transactional
     private void updatePreferences(List<Preference> preferences, List<Student> students,
                                    List<Offering> offerings, double [][] stud_offer, CurrentSemester currSem){
-        //Preference pref = new Preference(studeets.get(i));
-        //LOGGER.info("Updating Preferences:");
-        //LOGGER.info("-------------------------------");
 
-        //OptimizedTime timestamp = new OptimizedTime(currSem.getSemester());
-        //optimizedTimeRepository.save(timestamp);
+        OptimizedTime timestamp = new OptimizedTime(currSem.getSemester());
+        optimizedTimeRepository.save(timestamp);
         for (int i = 0; i < students.size(); i++) {
             for (int j = 0; j < offerings.size(); j++) {
                 //if(stud_offer[i][j] > 0)
@@ -335,16 +343,16 @@ public class Scheduler{
                             LOGGER.info(preference.toString());
                             if(stud_offer[i][j] > 0)
                             {
-                                //preference.setAssigned(true);
-                                //preference.setRecommend("You've being assigned");
-                                //preference.setOptimizedTime(timestamp);
+                                preference.setAssigned(true);
+                                preference.setRecommend("You've being assigned");
+                                preference.setOptimizedTime(timestamp);
                             }
 
                             else
                             {
-                                //preference.setAssigned(false);
-                                //preference.setRecommend("Didn't get in class");
-                                //preference.setOptimizedTime(timestamp);
+                                preference.setAssigned(false);
+                                preference.setRecommend("Didn't get in class");
+                                preference.setOptimizedTime(timestamp);
                             }
 
                         }//if

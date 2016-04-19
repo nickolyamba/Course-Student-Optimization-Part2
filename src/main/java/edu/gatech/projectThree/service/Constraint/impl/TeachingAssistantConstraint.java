@@ -19,32 +19,12 @@ public class TeachingAssistantConstraint extends BaseConstraint {
     private static final double  maxStudsPerTa = 50;  // adjust when needed
     private static final double  minStudsPerTa = 0;   // adjust when needed
     private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
-    //private static final double N = 1;
-    //private static final double M = 150;
 
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
                           GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
                           List<Professor> professors, List<Ta> tas, List<Preference> preferenceList) throws GRBException {
-/*
-        // N teaching assistants for every M student capacity
-        for (int j = 0; j < offerings.size(); j++) {
-            GRBLinExpr taRatio = new GRBLinExpr();
-            for (int i = 0; i < tas.size(); i++) {
-                Set<TaOffering> taOfferings = tas.get(i).getTaOfferings();
-                for(TaOffering taOffering : taOfferings)
-                {
-                    if(taOffering.getOffering().getId() == offerings.get(j).getId())
-                        taRatio.addTerm(1, tasOfferings[i][j]);
-                }
 
-            }//for i
-
-            double ratio = (offerings.get(j).getCapacity()) * (N / M);
-            String cname = "TARATIO_Offering=" + j;
-            model.addConstr(taRatio, GRB.GREATER_EQUAL, ratio, cname);
-        }//for j
-*/
         /********************************************************************************
          // Constraint: min*TA <= Studs <= max*TA
          // Number of TA per assigned Students is from min to max
@@ -73,11 +53,14 @@ public class TeachingAssistantConstraint extends BaseConstraint {
             studSumConstr = new GRBLinExpr();
             for (int i = 0; i < students.size(); i++) {
                 //check if stud has Preference for this course
-                Set<Preference> preferences = students.get(i).getPreferences();
-                for(Preference preference : preferences)
+                //Set<Preference> preferences = students.get(i).getPreferences();
+                for(Preference preference : preferenceList)
                 {
-                    if(preference.getOffering().getId() == offerings.get(j).getId())
+                    if (preference.getStudent().getId() == students.get(i).getId() &&
+                            preference.getOffering().getId() == offerings.get(j).getId())
+                    {
                         studSumConstr.addTerm(1, studentsOfferings[i][j]);
+                    }
                 }
             }//for i ,studs
 
@@ -97,6 +80,5 @@ public class TeachingAssistantConstraint extends BaseConstraint {
             String cname = "TAASSIGNMENT_TA=" + tas.get(i).getId();
             model.addConstr(taAssignment, GRB.LESS_EQUAL, MAXIMUM_OFFERINGS_TAUGHT, cname);
         }//for
-
     }
 }
