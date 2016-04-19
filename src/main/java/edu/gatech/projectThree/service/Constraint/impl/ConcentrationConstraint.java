@@ -15,10 +15,6 @@ import java.util.List;
  */
 @Component
 public class ConcentrationConstraint extends BaseConstraint {
-    @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBVar X, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
-
-    }
 
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
@@ -27,6 +23,11 @@ public class ConcentrationConstraint extends BaseConstraint {
             for (int j = 0; j < offerings.size(); j++) {
                 Student student = students.get(i);
                 Course course = offerings.get(j).getCourse();
+
+                Specialization specialization = student.getSpecialization();
+                if (specialization.getCourses().contains(course)) {
+                    // Do something with constraint here
+                }
             }
         }
     }
