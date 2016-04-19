@@ -4,22 +4,24 @@ import edu.gatech.projectThree.repository.CurrentSemesterRepository;
 import edu.gatech.projectThree.repository.OfferingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Kolya on 4/18/2016.
  */
-
 @Component
 public class GlobalState {
 
-    // these two used often, so makes sense to store them in global state?
+    // these two used often, so makes sense to store them in the global state
     private CurrentSemesterRepository currentSemesterRepository;
     private OfferingRepository offeringRepository;
 
-    private CurrentSemester currentSemester;
+    private CurrentSemester currentSemObject;
+    private Semester currentSemester;
     private List<Offering> offerings = new ArrayList<>();
     private List<Preference> preferences = new ArrayList<>();
     private List<ProfessorOffering> profOfferings = new ArrayList<>();
@@ -80,10 +82,6 @@ public class GlobalState {
         this.tas = tas;
     }
 
-    public void setCurrentSemester(CurrentSemester currentSemester) {
-        this.currentSemester = currentSemester;
-    }
-
     public void setOfferings(List<Offering> offerings) {
         this.offerings = offerings;
     }
@@ -92,8 +90,21 @@ public class GlobalState {
         return offerings;
     }
 
-    public CurrentSemester getCurrentSemester() {
+    public Semester getCurrentSemester() {
         return currentSemester;
+    }
+
+    public void setCurrentSemester(Semester currentSemester) {
+        this.currentSemester = currentSemester;
+    }
+
+    public CurrentSemester getCurrentSemObject() {
+        return currentSemObject;
+    }
+
+    public void setCurrentSemObject(CurrentSemester currentSemObject) {
+        this.currentSemObject = currentSemObject;
+        this.currentSemester = currentSemObject.getSemester();
     }
 
     @Autowired
@@ -104,5 +115,16 @@ public class GlobalState {
     @Autowired
     public void setCurrentSemesterRepository(CurrentSemesterRepository currentSemesterRepository) {
         this.currentSemesterRepository = currentSemesterRepository;
+    }
+
+
+    //http://stackoverflow.com/questions/30454643
+    @PostConstruct
+    @Transactional
+    private void initState(){
+        // can't access Prefernces or semester.getYear() due to LAZY fetch in other beans...
+        currentSemObject = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
+        currentSemester = currentSemObject.getSemester();
+        //offerings =  offeringRepository.findBySemesterOrderByIdAsc(currentSemester);
     }
 }

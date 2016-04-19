@@ -12,7 +12,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by pjreed on 4/7/16.
@@ -76,18 +80,21 @@ public class CoursePreferencesController {
 
         CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
         List<Offering> offerings =  offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
-        //ArrayList<Semester> semesters = semesterRepository.findFirstByOrderById();
         List<Course> coursesNotTaken = currentStudent.getCoursesNotTaken(courseRepository.findAll());
 
+        //http://stackoverflow.com/questions/30012295/java-8-lambda-filter-by-lists
         //remove not taken that are not in offerings for the current semester
-        /*notTaken.stream()
-                .flatMap(v -> offerings.stream()
-                                .filter(c -> c.getCourse().getId() == v.getId()));*/
+        // get set of available courses
+        Set<Course> availableCourses = offerings.stream()
+                .map(Offering::getCourse)
+                .collect(Collectors.toSet());
 
-        model.addAttribute(
-                "coursesNotTaken",
-                coursesNotTaken //currentStudent.getCoursesNotTaken(courseRepository.findAll())
-        );
+        // stream the list and use the set to filter courses
+        coursesNotTaken = coursesNotTaken.stream()
+                .filter(e -> availableCourses.contains(e))
+                .collect(Collectors.toList());
+
+        model.addAttribute("coursesNotTaken", coursesNotTaken);
         model.addAttribute("semesters", currSemester.getSemester());
         return "course_preferences/edit";
     }
@@ -115,7 +122,7 @@ public class CoursePreferencesController {
             index[0]++;
         });
 
-        //scheduler.schedule(); // we can populate the lists we need right from here if we choose so
+        scheduler.schedule(); // we can populate the lists we need right from here if we choose so
         return request.toString();
     }
 

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,6 +101,7 @@ public class Scheduler{
     }
 
     @Transactional
+    @Async
     public double schedule() {
         double result = 0;
         try {
@@ -108,13 +110,16 @@ public class Scheduler{
             GRBModel model = new GRBModel(env);
 
             // get current semester
-            CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
+            // CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
+            CurrentSemester currSemester = state.getCurrentSemObject();
+            //can't fetch from state - returns lazyException. when accessing Preferences in a offering object
             List<Offering> offerings = offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
 
             // remove offerings that has no preferences
             for (Iterator<Offering> it = offerings.iterator(); it.hasNext();)
             {
-                Offering offering = it.next();
+
+                Offering offering = (Offering)it.next();
                 if(offering.getPreferences().isEmpty())
                     it.remove();
             }
@@ -130,7 +135,6 @@ public class Scheduler{
 
             // get association classes corresponding to Offerings
             List<Preference> preferences = prefRepository.findByOfferingInAndRequestIn(offerings, requests);
-            //List<Preference> preferenceList = state.getPreferences();
 
             LOGGER.info("!!!Preferences!!! requested:");
             LOGGER.info("-------------------------------");
@@ -146,12 +150,7 @@ public class Scheduler{
             List<Student> students = studRepository.findDistinctByPreferencesInAndRequestsInOrderByIdAsc(preferences, requests);
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
-/*
-            offerings = offeringRepository.findAllByOrderByIdAsc();
-            students = studRepository.findAllByOrderByIdAsc();
-            professors = profRepository.findAllByOrderByIdAsc();
-            tas = taRepository.findAllByOrderByIdAsc();
-*/
+
             LOGGER.info("Offerings requested:");
             LOGGER.info("-------------------------------");
             for (Offering offering : offerings) {
