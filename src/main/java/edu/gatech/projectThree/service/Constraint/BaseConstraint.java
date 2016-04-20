@@ -4,6 +4,7 @@ import edu.gatech.projectThree.datamodel.entity.*;
 import gurobi.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dawu on 3/18/16.
@@ -18,13 +19,13 @@ public abstract class BaseConstraint implements Constraint {
 
     // template pattern add any universal constraint logic here
     @Override
-    public void addConstraint(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas, List<Preference> preferences) throws GRBException {
+    public void addConstraint(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas, Set<Preference> preferences) throws GRBException {
         constrain(model, studentsOfferings, professorsOfferings, tasOfferings, obj, students, offerings, professors, tas, preferences);
     }
 
     // each constraint can override here and add to model
     public abstract void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
                                    GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
-                                   List<Professor> professors, List<Ta> tas, List<Preference> preferences) throws GRBException;
+                                   List<Professor> professors, List<Ta> tas, Set<Preference> preferences) throws GRBException;
 
 }

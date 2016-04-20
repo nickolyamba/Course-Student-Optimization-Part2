@@ -6,6 +6,7 @@ import gurobi.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dawu on 4/5/16.
@@ -17,7 +18,8 @@ public class StudentLimitConstraint extends BaseConstraint {
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
                           GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
-                          List<Professor> professors, List<Ta> tas, List<Preference> preferenceList) throws GRBException {
+                          List<Professor> professors, List<Ta> tas, Set<Preference> preferenceList) throws GRBException {
+
         for (int j = 0; j < offerings.size(); j++) {
             GRBLinExpr studentLimit = new GRBLinExpr();
             for (int i = 0; i < students.size(); i++) {
@@ -31,11 +33,23 @@ public class StudentLimitConstraint extends BaseConstraint {
                         studentLimit.addTerm(1, studentsOfferings[i][j]);
                     }
 
-                }
-                String cname = "STUDENTLIMIT_Offering=" + offerings.get(j).getId();
-                model.addConstr(studentLimit, GRB.LESS_EQUAL, offerings.get(j).getCapacity(), cname);
-            }
-        }
+                }//for Preferences
+            }//for students
+            String cname = "STUDENTLIMIT_Offering=" + offerings.get(j).getId();
+            model.addConstr(studentLimit, GRB.LESS_EQUAL, offerings.get(j).getCapacity(), cname);
+        }//for offerings
+
+/*
+        int k = 0;
+        for (Iterator<Preference> it = preferenceList.iterator(); it.hasNext();)
+        {
+            Preference preference = it.next();
+            gvar_name = "PREF_"+ preference.getId();// student
+
+            prefG[k] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+            LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "]");
+            k++;
+        }*/
     }
 }
 

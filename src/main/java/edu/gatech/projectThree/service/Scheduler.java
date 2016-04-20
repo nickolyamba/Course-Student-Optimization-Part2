@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dawu on 3/18/16.
@@ -126,23 +127,8 @@ public class Scheduler{
 
             List<Request> requests = requestRepository.findLastReuestsByStudent();
 
-            LOGGER.info("Last Requests requested:");
-            LOGGER.info("-------------------------------");
-            for (Request request : requests) {
-                LOGGER.info(request.toString());
-            }
-            LOGGER.info("");
-
             // get association classes corresponding to Offerings
-            List<Preference> preferences = prefRepository.findByOfferingInAndRequestIn(offerings, requests);
-
-            LOGGER.info("!!!Preferences!!! requested:");
-            LOGGER.info("-------------------------------");
-            for (Preference preference : preferences) {
-                LOGGER.info(preference.toString());
-            }
-            LOGGER.info("");
-
+            Set<Preference> preferences = prefRepository.findByOfferingInAndRequestIn(offerings, requests);
             List<ProfessorOffering> profOfferings = profOfferingRepository.findByOfferingIn(offerings);
             List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
 
@@ -151,69 +137,59 @@ public class Scheduler{
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
 
-            LOGGER.info("Offerings requested:");
-            LOGGER.info("-------------------------------");
-            for (Offering offering : offerings) {
-                LOGGER.info(String.valueOf(offering.getId()));
-            }
-            LOGGER.info("");
-
-            LOGGER.info("Studs and Preferences:");
-            LOGGER.info("-------------------------------");
-            for (Student student : students) {
-                LOGGER.info("stud["+String.valueOf(student.getId())+"] preferences:");
-                for (Preference preference : student.getPreferences())
-                    LOGGER.info("priority = "+ String.valueOf(preference.getPriority())+
-                            "  offering=" + String.valueOf(preference.getOffering().getId()));
-                LOGGER.info("\n");
-            }
-            LOGGER.info("");
-
-            LOGGER.info("TAs requested:");
-            LOGGER.info("-------------------------------");
-            for (Ta ta : tas) {
-                LOGGER.info(String.valueOf(ta.getId()));
-            }
-            LOGGER.info("");
-
-            LOGGER.info("Profs requested:");
-            LOGGER.info("-------------------------------");
-            for (Professor prof : professors) {
-                LOGGER.info(String.valueOf(prof.getId()));
-            }
-            LOGGER.info("");
+            showLogs(requests, preferences, students, offerings, professors, tas);
 
             // initialize gurobi variables variables here
             GRBVar[][] studentsOfferings = new GRBVar[students.size()][offerings.size()];
             GRBVar[][] professorsOfferings = new GRBVar[professors.size()][offerings.size()];
             GRBVar[][] tasOfferings = new GRBVar[tas.size()][offerings.size()];
-            //GRBVar[] prefG = new GRBVar[preferences.size()];
+            GRBVar[] prefG = new GRBVar[preferences.size()];
+
             // Create objective expression
             GRBLinExpr obj = new GRBLinExpr();
+            String gvar_name;
 
+            int k = 0;
+            for (Iterator<Preference> it = preferences.iterator(); it.hasNext();)
+            {
+                Preference preference = it.next();
+                gvar_name = "PREF_"+ preference.getId();// student
+
+                prefG[k] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+                LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "]");
+                k++;
+            }
+
+            /*
             // Name to identify Gurobi variables for optimization analysis
             String gvar_name = "";
-
-/*
-            for (Preference preference : preferences) {
-
-                int i = (int)preference.getStudent().getId();
-                int j = (int)preference.getOffering().getId();
-                gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
-                        "_ST_" + String.valueOf(students.get(i).getId());  // student
-
-                studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
-            }
-*/
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < students.size(); i++) {
+                    //Preference pref = new Preference(students.get(i), offerings.get(j));
+                    //if(preferences.contains(pref))
+                    //boolean isContained = false;
+                    if(preferences.contains(new Preference(students.get(i), offerings.get(j))))
+                    {
+                        gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
+                                "_ST_" + String.valueOf(students.get(i).getId());  // student
 
-                    gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
-                               "_ST_" + String.valueOf(students.get(i).getId());  // student
+                        studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+                        LOGGER.info("studentsOfferings[" + String.valueOf(students.get(i).getId())
+                                + "][" + String.valueOf(offerings.get(j).getId()) +"] = " + studentsOfferings[i][j]);
+                    }
 
-                    studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
-                }
-            }
+                    else
+                    {
+                        gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
+                                "_ST_" + String.valueOf(students.get(i).getId());  // student
+
+                        studentsOfferings[i][j] = model.addVar(0, 0, 0.0, GRB.BINARY, gvar_name);
+                        LOGGER.info("else studentsOfferings[" + String.valueOf(students.get(i).getId())
+                                + "][" + String.valueOf(offerings.get(j).getId()) +"] = " + studentsOfferings[i][j]);
+                    }//if
+                }//for i
+            }//for j
+            */
 
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < tas.size(); i++) {
@@ -222,7 +198,7 @@ public class Scheduler{
                     tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
-/*
+
             for (int j = 0; j < offerings.size(); j++) {
                 for (int i = 0; i < professors.size(); i++) {
                     gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
@@ -230,7 +206,7 @@ public class Scheduler{
                     professorsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 }
             }
-*/
+
             model.update();
 
             // get all constraints
@@ -259,8 +235,8 @@ public class Scheduler{
             double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
             double objectiveValue = model.get(GRB.DoubleAttr.ObjVal);
 
-            // save results to the database
-            updatePreferences(preferences, students, offerings, stud_offer, currSemester);
+            // save results in the database
+            //updatePreferences(preferences, students, offerings, stud_offer, currSemester);
 
             /*
             LOGGER.info("Profs assigned:");
@@ -360,4 +336,68 @@ public class Scheduler{
             }//for j
         }//for i
     }//updatePreferences()
+
+    private void showLogs(List<Request> requests, Set<Preference> preferences, List<Student> students,
+                          List<Offering> offerings, List<Professor> professors, List<Ta> tas){
+        LOGGER.info("Offerings requested:");
+        LOGGER.info("-------------------------------");
+        for (Offering offering : offerings) {
+            LOGGER.info(String.valueOf(offering.getId()));
+        }
+        LOGGER.info("");
+
+        LOGGER.info("Last Requests requested:");
+        LOGGER.info("-------------------------------");
+        for (Request request : requests) {
+            LOGGER.info(request.toString());
+        }
+        LOGGER.info("");
+
+        LOGGER.info("!!!Preferences!!! requested:");
+        LOGGER.info("-------------------------------");
+        for (Preference preference : preferences) {
+            LOGGER.info(preference.toString());
+        }
+        LOGGER.info("");
+
+        LOGGER.info("Studs and Preferences:");
+        LOGGER.info("-------------------------------");
+        for (Student student : students) {
+            LOGGER.info("stud["+String.valueOf(student.getId())+"] preferences:");
+            /*for (Preference preference : student.getPreferences())
+                LOGGER.info("priority = "+ String.valueOf(preference.getPriority())+
+                        "  offering=" + String.valueOf(preference.getOffering().getId()));
+            */LOGGER.info("\n");
+        }
+        LOGGER.info("");
+
+
+        LOGGER.info("TAs requested:");
+        LOGGER.info("-------------------------------");
+        for (Ta ta : tas) {
+            LOGGER.info(String.valueOf(ta.getId()));
+        }
+        LOGGER.info("");
+
+        LOGGER.info("Profs requested:");
+        LOGGER.info("-------------------------------");
+        for (Professor prof : professors) {
+            LOGGER.info(String.valueOf(prof.getId()));
+        }
+        LOGGER.info("");
+    }//showLogs()
+
+
+    /* Better way to schedule, but requires refactoring of all constraints
+            for (Preference preference : preferences) {
+
+                int i = (int)preference.getStudent().getId();
+                int j = (int)preference.getOffering().getId();
+                gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
+                        "_ST_" + String.valueOf(students.get(i).getId());  // student
+
+                studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+            }
+    */
+
 }// class

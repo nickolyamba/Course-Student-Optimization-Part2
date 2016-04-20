@@ -2,10 +2,14 @@ package edu.gatech.projectThree.service.Constraint.impl;
 
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
-import gurobi.*;
+import gurobi.GRBException;
+import gurobi.GRBLinExpr;
+import gurobi.GRBModel;
+import gurobi.GRBVar;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dawu on 4/12/16.
@@ -21,7 +25,7 @@ public class ProfessorConstraint extends BaseConstraint {
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
                           GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
-                          List<Professor> professors, List<Ta> tas, List<Preference> preferences) throws GRBException {
+                          List<Professor> professors, List<Ta> tas, Set<Preference> preferences) throws GRBException {
 
         /*
         // At least one professor per offering

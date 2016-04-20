@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dawu on 4/12/16.
@@ -24,7 +25,7 @@ public class StudentPriorityObjective extends BaseConstraint {
 
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj,
-                          List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas, List<Preference> preferenceList) throws GRBException {
+                          List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas, Set<Preference> preferenceList) throws GRBException {
 
         int priority;
         for(int i = 0; i < students.size(); i++) {
@@ -32,8 +33,6 @@ public class StudentPriorityObjective extends BaseConstraint {
                 //check each preference if it contains (i, j) pair
                 for(Preference preference : preferenceList)
                 {
-                    //if(preference.getOptimizedTime() != null)
-                    //    continue;
                     if (preference.getStudent().getId() == students.get(i).getId() &&
                             preference.getOffering().getId() == offerings.get(j).getId())
                     {

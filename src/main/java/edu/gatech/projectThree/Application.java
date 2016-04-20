@@ -1,6 +1,7 @@
 package edu.gatech.projectThree;
 
 import edu.gatech.projectThree.repository.*;
+import edu.gatech.projectThree.service.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class Application {
     private CourseRepository courseRepository;
     private SemesterRepository semesterRepository;
     private UserRepository userRepository;
+    private Scheduler scheduler;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -53,11 +55,16 @@ public class Application {
         this.semesterRepository = semesterRepository;
     }
 
+    @Autowired
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
     //https://spring.io/guides/gs/accessing-data-jpa/
     @Transactional
     @Bean
     public CommandLineRunner demo() {
-
+        //scheduler.schedule(); // for testing
         return (args) -> {
 /*
             //-----------Populate Offering --------------

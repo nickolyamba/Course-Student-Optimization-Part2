@@ -23,9 +23,9 @@ public class TeachingAssistantConstraint extends BaseConstraint {
     @Override
     public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
                           GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
-                          List<Professor> professors, List<Ta> tas, List<Preference> preferenceList) throws GRBException {
+                          List<Professor> professors, List<Ta> tas, Set<Preference> preferenceList) throws GRBException {
 
-        /********************************************************************************
+         /********************************************************************************
          // Constraint: min*TA <= Studs <= max*TA
          // Number of TA per assigned Students is from min to max
          // Sum_(i): max*TA(i) <= Sum_(i): Stud(i) ; 1D: (offering j = const)
