@@ -2,13 +2,12 @@ package edu.gatech.projectThree.service.Constraint.impl;
 
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBModel;
-import gurobi.GRBVar;
+import gurobi.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by dawu on 4/19/16.
@@ -23,10 +22,13 @@ public class ConcentrationConstraint extends BaseConstraint {
             for (int j = 0; j < offerings.size(); j++) {
                 Student student = students.get(i);
                 Course course = offerings.get(j).getCourse();
+                concentration.addTerm(1, studentsOfferings[i][j]);
 
                 Specialization specialization = student.getSpecialization();
-                if (specialization.getCourses().contains(course)) {
-                    // Do something with constraint here
+                Set<Course> preferredCourses = student.getPreferences().stream().map(Preference::getOffering).map(Offering::getCourse).collect(Collectors.toSet());
+                if (specialization.getCourses().contains(course) && preferredCourses.contains(course)) {
+                    String cname = "CONCENTRATION_Student=" + i + "_Offering=" + j;
+                    model.addConstr(concentration, GRB.EQUAL, 1, cname);
                 }
             }
         }
