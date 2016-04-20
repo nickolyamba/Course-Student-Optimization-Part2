@@ -1,6 +1,7 @@
 package edu.gatech.projectThree.repository;
 
 import edu.gatech.projectThree.datamodel.entity.Preference;
+import edu.gatech.projectThree.datamodel.entity.Request;
 import edu.gatech.projectThree.datamodel.entity.Student;
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,4 +18,6 @@ public interface StudentRepository extends CrudRepository<Student, Long> {
 
     //@Query("SELECT DISTINCT * FROM Customer c")
     ArrayList<Student> findDistinctByPreferencesInOrderByIdAsc(Collection<Preference> preferences);
+    ArrayList<Student> findDistinctByPreferencesInAndRequestsInOrderByIdAsc(Collection<Preference> preferences,
+                                                                              Collection<Request> requests);
 }

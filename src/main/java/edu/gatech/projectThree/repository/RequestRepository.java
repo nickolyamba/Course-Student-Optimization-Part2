@@ -17,6 +17,7 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
     ArrayList<Request> findAll();
 
     ArrayList<Request> findByStudent(Student student);
+
     @Query(value = "SELECT RQ.id, RQ.created, RQ.student_id\n" +
             "FROM REQUEST RQ\n" +
             "INNER JOIN \n" +
@@ -25,5 +26,5 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
             "    FROM request\n" +
             "    GROUP BY student_id\n" +
             ") tb on RQ.created = tb.MaxDate", nativeQuery = true)
-    ArrayList<Request> findLastReuestsByStudent();
+    ArrayList<Request> findLastReqestsByStudent();
 }

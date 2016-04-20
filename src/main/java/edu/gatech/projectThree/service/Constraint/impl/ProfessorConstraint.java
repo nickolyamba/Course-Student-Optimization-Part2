@@ -1,13 +1,11 @@
 package edu.gatech.projectThree.service.Constraint.impl;
 
-import edu.gatech.projectThree.datamodel.entity.Offering;
-import edu.gatech.projectThree.datamodel.entity.Professor;
-import edu.gatech.projectThree.datamodel.entity.Student;
-import edu.gatech.projectThree.datamodel.entity.Ta;
+import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -18,35 +16,98 @@ import java.util.List;
 @Component
 public class ProfessorConstraint extends BaseConstraint {
 
-    private static final int MINIMUM_PROFESSORS = 1;
+    private static final int MAX_PROFESSORS = 2;
     private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
+    private static final int MAX_PROF_RATIO = 1000000;
 
+    /********************************************************************************
+     // Constraint: offering = const: PROF1 + PROF2 + PROF3... <= MAXIMUM_OFFERINGS_TAUGHT
+     // Each course can include at least MINIMUM_PROFESSORS
+     *********************************************************************************/
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] profG, GRBVar[] tasOfferings,
+                          List<Student> students, List<Offering> offerings,
+                          List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings,
+                          List<ProfessorOffering> profOfferings, List<Preference> preferences) throws GRBException {
 
-        /*
-        // At least one professor per offering
-        for (int j = 0; j < offerings.size(); j++) {
-            if(offerings.get(j).getPreferences().isEmpty())
-                continue;// if no demand for course
+        for(Offering offering : offerings)
+        {
             GRBLinExpr minProfessor = new GRBLinExpr();
-            for (int i = 0; i < professors.size(); i++) {
-                minProfessor.addTerm(1, professorsOfferings[i][j]);
+            int k = 0;
+            for (ProfessorOffering profOffering : profOfferings)
+            {
+                if(profOffering.getOffering() == offering)
+                {
+                    minProfessor.addTerm(1, profG[k]);
+                }
+                k++;
             }
-            String cname = "MINPROFESSOR_Offering=" + j;
-            model.addConstr(minProfessor, GRB.GREATER_EQUAL, MINIMUM_PROFESSORS, cname);
+            String cname = "MINPROF_OFFER=" + offering.getId();
+            model.addConstr(minProfessor, GRB.LESS_EQUAL, MAX_PROFESSORS, cname);
         }
 
-        // Professor can only each one offering
-        for (int i = 0; i < professors.size(); i++) {
+
+        /********************************************************************************
+         // Constraint: prof = const: OFF1 + OFF2 + OFF3... <= MAXIMUM_OFFERINGS_TAUGHT
+         // Each Prof MAXIMUM_OFFERINGS_TAUGHT
+         *********************************************************************************/
+        int k;
+        for(Professor professor : professors)
+        {
             GRBLinExpr maxOfferingsTaught = new GRBLinExpr();
-            for (int j = 0; j < offerings.size(); j++) {
-                maxOfferingsTaught.addTerm(1, professorsOfferings[i][j]);
+            k = 0;
+            for(ProfessorOffering profOffering : profOfferings)
+            {
+                if(profOffering.getProfessor() == professor)
+                    maxOfferingsTaught.addTerm(1, profG[k]);
+                k++;
             }
-            String cname = "MAXOFFERINGSTAUGHT_Professor=" + i;
+            String cname = "MAXTAUGHT_PROF=" + professor.getId();
             model.addConstr(maxOfferingsTaught, GRB.LESS_EQUAL, MAXIMUM_OFFERINGS_TAUGHT, cname);
-        }
+        }//for
 
-        */
+
+        /********************************************************************************
+         // Constraint: Sum  Professor * MAX_PROF_RATIO >= Sum Studs => Sum Professor
+         // Number of Studs more tham number of Profs in a offering (if no stud, no prof)
+         *********************************************************************************/
+        GRBLinExpr profMinSumConstr;
+        GRBLinExpr profMaxSumConstr;
+        GRBLinExpr studSumConstr;
+
+        for(Offering offering : offerings)
+        {
+            profMinSumConstr = new GRBLinExpr();
+            profMaxSumConstr = new GRBLinExpr();
+            // if ProfOffering contains offering
+            k = 0;
+            for (ProfessorOffering profOffering : profOfferings)
+            {
+                if(profOffering.getOffering() == offering)
+                {
+                    profMinSumConstr.addTerm(1, profG[k]);
+                    profMaxSumConstr.addTerm(MAX_PROF_RATIO, profG[k]);
+                }
+                k++;
+            }
+
+            //Stud1 + Stud2 + Stud3
+            k = 0;
+            studSumConstr = new GRBLinExpr();
+            for (Iterator<Preference> it = preferences.iterator(); it.hasNext();)
+            {
+                Preference preference = it.next();
+
+                if(preference.getOffering() == offering)
+                    studSumConstr.addTerm(1, prefG[k]);
+                k++;
+            }//for studs
+
+            String cMinName = "ST_MIN_PROF_Offering=" + offering.getId();
+            String cMaxName = "ST_MAX_PROF_Offering=" + offering.getId();
+            model.addConstr(studSumConstr, GRB.GREATER_EQUAL, profMinSumConstr, cMinName);
+            model.addConstr(studSumConstr, GRB.LESS_EQUAL, profMaxSumConstr, cMaxName);
+        }//for offerings
+
     }
 }

@@ -8,9 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by dawu on 4/12/16.
@@ -22,38 +21,28 @@ public class StudentPriorityObjective extends BaseConstraint {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
-        int priority = 0;
-        long offeringID = 0;
-        Set<Long> offeringIDs;
-        Set<Preference> preferences;
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
+                          List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas,
+                          List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferenceList)
+                          throws GRBException {
 
-        for(int i = 0; i < students.size(); i++) {
-            preferences = students.get(i).getPreferences();
+        int priority;
+        int k = 0;
+        // Create objective expression
+        GRBLinExpr obj = new GRBLinExpr();
+        for (Iterator<Preference> it = preferenceList.iterator(); it.hasNext();)
+        {
+            Preference preference = it.next();
 
-            // Get Set of offering IDs in Student's Preference set
-            offeringIDs = new HashSet<Long>();
-            for(Preference preference : preferences)
-                offeringIDs.add(preference.getOffering().getId());
+            priority = preference.getPriority();
+            obj.addTerm(priority, prefG[k]);
 
-            for(int j = 0; j < offerings.size(); j++) {
-                // Get current offeringID
-                offeringID = offerings.get(j).getId();
-                // If this offering in the set of student's preferences, addTerm
-                if(offeringIDs.contains(offeringID)) //omit if offering is not in preferences
-                {
-                    for (Preference preference : preferences)
-                    {
-                        // find preference that contains the given offering
-                        if(preference.getOffering().getId() == offeringID)
-                        {
-                            priority = preference.getPriority();
-                            obj.addTerm(priority, studentsOfferings[i][j]);
-                        }
-                    }//for
-                }//if
-            }//for j
-        }// for i
+            //LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "] added");
+            k++;
+        }
 
-    }
-}
+        model.setObjective(obj, GRB.MINIMIZE);
+        model.update(); ///// ----------> remove in production
+
+    }//constrain()
+}//class

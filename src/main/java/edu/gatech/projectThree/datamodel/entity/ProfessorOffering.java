@@ -32,7 +32,7 @@ public class ProfessorOffering {
         this.professor = professor;
         //this.userType = professor.getUserType();
         this.offering = offering;
-        isAssigned = false; // by default Student is not assigned to a course, until
+        isAssigned = false; // by default Prof is not assigned to a course, until
         // Compute Engine produces solution that have a Student
         // assigned to the Course. Set upon results of Gurobi computation
     }
@@ -40,7 +40,7 @@ public class ProfessorOffering {
     /**
      * @return the student
      */
-    public Professor getTa() {
+    public Professor getProfessor() {
         return professor;
     }
 

@@ -60,6 +60,11 @@ public class Preference implements Serializable {
 		this.request = request;
 	}
 
+	public Preference(Student student, Offering offering) {
+		this.student = student;
+		this.offering = offering;
+	}
+
 	public Student getStudent() {
 		return student;
 	}
@@ -124,7 +129,25 @@ public class Preference implements Serializable {
         this.optimizedTime = optimizedTime;
     }
 
-    @Override
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Preference)) return false;
+
+		Preference that = (Preference) o;
+
+		if (!(student.getId() == that.student.getId())) return false;
+		return offering.getId() == that.offering.getId();
+	}
+
+	@Override
+	public int hashCode() {
+		int result = student.hashCode();
+		result = 31 * result + offering.hashCode();
+		return result;
+	}
+
+	@Override
     public String toString() {
         return "Preference{" +
                 "id=" + id +

@@ -5,6 +5,7 @@ import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -19,42 +20,47 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
 
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
-       for (int i = 0; i < students.size(); i++) {
-           GRBLinExpr maxCourses = new GRBLinExpr();
-           for (int j = 0; j < offerings.size(); j++) {
-               //check if stud has Preference for this course
-               Set<Preference> preferences = offerings.get(j).getPreferences();
-               for(Preference preference : preferences)
-               {
-                   if(preference.getStudent().getId() == students.get(i).getId())
-                       maxCourses.addTerm(1, studentsOfferings[i][j]);
-               }
-           }
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
+                          List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas,
+                          List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferenceList)
+                          throws GRBException {
 
-           // Find if foundational courses are taken
-           Student student = students.get(i);
-           Set<Course> coursesTaken = student.getCoursesTaken();
-           boolean foundationalRequirement = false;
-           int count = 0;
-           for (Course course : coursesTaken) {
-               if (course.isFoundational()) {
-                   count++;
-                   if (count >= 2) {
-                       foundationalRequirement = true;
-                       break;
-                   }
-               }
-           }
+        for(Student student : students)
+        {
+            GRBLinExpr maxCourses = new GRBLinExpr();
+            int k = 0;
+            for (Iterator<Preference> it = preferenceList.iterator(); it.hasNext();)
+            {
+                Preference preference = it.next();
+                if(preference.getStudent() == student)
+                    maxCourses.addTerm(1, prefG[k]);
 
-           String cname = "MAXCOURSES_Student=" + i;
-           if (foundationalRequirement) {
-               model.addConstr(maxCourses, GRB.EQUAL, // in case # preferences < 3
-                       Math.min(3, student.getPreferences().size()), cname);
-           } else {
-               model.addConstr(maxCourses, GRB.EQUAL, // in case # preferences < 2
-                       Math.min(2, student.getPreferences().size()), cname);
-           }
-       }
+                k++;
+            }//for
+
+            // Find if foundational courses are taken
+            //Student student = preference.getStudent();
+            Set<Course> coursesTaken = student.getCoursesTaken();
+            boolean foundationalRequirement = false;
+            int count = 0;
+            for (Course course : coursesTaken) {
+                if (course.isFoundational()) {
+                    count++;
+                    if (count >= 2) {
+                        foundationalRequirement = true;
+                        break;
+                    }
+                }
+            }
+
+            String cname = "MAXCOURSES_Student=" + student.getId();
+            if (foundationalRequirement) {
+                model.addConstr(maxCourses, GRB.EQUAL, // in case # preferences < 3
+                        Math.min(3, student.getPreferences().size()), cname);
+            } else {
+                model.addConstr(maxCourses, GRB.EQUAL, // in case # preferences < 2
+                        Math.min(2, student.getPreferences().size()), cname);
+            }
+        }//for stud
     }
 }
