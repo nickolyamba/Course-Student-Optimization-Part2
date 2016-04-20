@@ -142,6 +142,14 @@ public class Student extends User {
         return coursesNotTaken;
     }
 
+    public Specialization getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(Specialization specialization) {
+        this.specialization = specialization;
+    }
+
     public ArrayList<Offering> getCoursesNotTakenAsOfferings(Iterable<Offering> offeringList) {
         ArrayList<Offering> coursesNotTaken = new ArrayList<Offering>();
         offeringList.forEach(offering -> {
