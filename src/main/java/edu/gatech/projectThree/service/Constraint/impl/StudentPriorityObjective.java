@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by dawu on 4/12/16.
@@ -24,7 +23,8 @@ public class StudentPriorityObjective extends BaseConstraint {
     @Override
     public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
                           List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas,
-                          List<TaOffering> taOfferings, Set<Preference> preferenceList) throws GRBException {
+                          List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferenceList)
+                          throws GRBException {
 
         int priority;
         int k = 0;

@@ -14,7 +14,7 @@ import java.util.HashSet;
  */
 public interface PreferenceRepository extends CrudRepository<Preference, Long> {
     ArrayList<Preference> findAll();
-    //ArrayList<Preference> findByOfferingInAndRequestIn(Collection<Offering> offerings, Collection<Request> requests);
+    ArrayList<Preference> findByOfferingInAndRequestInOrderByIdAsc(Collection<Offering> offerings, Collection<Request> requests);
     HashSet<Preference> findByOfferingInAndRequestIn(Collection<Offering> offerings, Collection<Request> requests);
     Preference save(Preference preference);
 }

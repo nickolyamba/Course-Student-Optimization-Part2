@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -24,7 +23,7 @@ public class StudentLimitConstraint extends BaseConstraint {
     public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings,
                           GRBVar[] tasOfferings, List<Student> students, List<Offering> offerings,
                           List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings,
-                          Set<Preference> preferenceList) throws GRBException {
+                          List<ProfessorOffering> profOfferings, List<Preference> preferenceList) throws GRBException {
 
         for(Offering offering : offerings)
         {

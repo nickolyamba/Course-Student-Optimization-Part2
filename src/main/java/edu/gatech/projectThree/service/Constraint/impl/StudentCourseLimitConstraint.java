@@ -20,8 +20,10 @@ public class StudentCourseLimitConstraint extends BaseConstraint {
 
 
     @Override
-    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings, List<Student> students, List<Offering> offerings,
-                          List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings, Set<Preference> preferenceList) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
+                          List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas,
+                          List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferenceList)
+                          throws GRBException {
 
         for(Student student : students)
         {

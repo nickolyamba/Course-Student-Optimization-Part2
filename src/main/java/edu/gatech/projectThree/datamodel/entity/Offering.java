@@ -151,7 +151,7 @@ public class Offering implements Serializable {
     public void removeProf(Professor teacher) {
         for(ProfessorOffering to : profPool)
         {
-            if (to.getTa() == teacher)
+            if (to.getProfessor() == teacher)
             {
                 profPool.remove(to);
                 to.setOffering(null);
