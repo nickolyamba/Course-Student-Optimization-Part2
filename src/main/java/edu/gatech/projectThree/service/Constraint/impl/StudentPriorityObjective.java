@@ -3,14 +3,12 @@ package edu.gatech.projectThree.service.Constraint.impl;
 import edu.gatech.projectThree.Application;
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBModel;
-import gurobi.GRBVar;
+import gurobi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,30 +22,27 @@ public class StudentPriorityObjective extends BaseConstraint {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj,
-                          List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas, Set<Preference> preferenceList) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
+                          List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas,
+                          List<TaOffering> taOfferings, Set<Preference> preferenceList) throws GRBException {
 
         int priority;
-        for(int i = 0; i < students.size(); i++) {
-            for(int j = 0; j < offerings.size(); j++) {
-                //check each preference if it contains (i, j) pair
-                for(Preference preference : preferenceList)
-                {
-                    if (preference.getStudent().getId() == students.get(i).getId() &&
-                            preference.getOffering().getId() == offerings.get(j).getId())
-                    {
+        int k = 0;
+        // Create objective expression
+        GRBLinExpr obj = new GRBLinExpr();
+        for (Iterator<Preference> it = preferenceList.iterator(); it.hasNext();)
+        {
+            Preference preference = it.next();
 
-                        priority = preference.getPriority();
-                        obj.addTerm(priority, studentsOfferings[i][j]);
+            priority = preference.getPriority();
+            obj.addTerm(priority, prefG[k]);
 
-                        LOGGER.info("stud_offer["+ String.valueOf(students.get(i).getId()) +"]"+
-                                "["+ String.valueOf(offerings.get(j).getId()) + "]=" +
-                                String.valueOf(studentsOfferings[i][j])+ "  added");
-                    }
-                }
+            //LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "] added");
+            k++;
+        }
 
-            }//for j
-        }// for i
+        model.setObjective(obj, GRB.MINIMIZE);
+        model.update(); ///// ----------> remove in production
 
     }//constrain()
 }//class

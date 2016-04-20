@@ -1,12 +1,17 @@
 package edu.gatech.projectThree.service.Constraint.impl;
 
+import edu.gatech.projectThree.Application;
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 
 /**
  * Created by dawu on 4/5/16.
@@ -14,42 +19,31 @@ import java.util.Set;
  */
 @Component
 public class StudentLimitConstraint extends BaseConstraint {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
-                          GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
-                          List<Professor> professors, List<Ta> tas, Set<Preference> preferenceList) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings,
+                          GRBVar[] tasOfferings, List<Student> students, List<Offering> offerings,
+                          List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings,
+                          Set<Preference> preferenceList) throws GRBException {
 
-        for (int j = 0; j < offerings.size(); j++) {
-            GRBLinExpr studentLimit = new GRBLinExpr();
-            for (int i = 0; i < students.size(); i++) {
-                //check if stud has Preference for this course
-                //Set<Preference> preferences = students.get(i).getPreferences();
-                for(Preference preference : preferenceList)
-                {
-                    if (preference.getStudent().getId() == students.get(i).getId() &&
-                            preference.getOffering().getId() == offerings.get(j).getId())
-                    {
-                        studentLimit.addTerm(1, studentsOfferings[i][j]);
-                    }
-
-                }//for Preferences
-            }//for students
-            String cname = "STUDENTLIMIT_Offering=" + offerings.get(j).getId();
-            model.addConstr(studentLimit, GRB.LESS_EQUAL, offerings.get(j).getCapacity(), cname);
-        }//for offerings
-
-/*
-        int k = 0;
-        for (Iterator<Preference> it = preferenceList.iterator(); it.hasNext();)
+        for(Offering offering : offerings)
         {
-            Preference preference = it.next();
-            gvar_name = "PREF_"+ preference.getId();// student
+            int k = 0;
+            GRBLinExpr studentLimit = new GRBLinExpr();
+            for (Iterator<Preference> it = preferenceList.iterator(); it.hasNext();)
+            {
+                Preference preference = it.next();
 
-            prefG[k] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
-            LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "]");
-            k++;
-        }*/
+                if(preference.getOffering() == offering)
+                    studentLimit.addTerm(1, prefG[k]);
+                k++;
+            }
+
+            String cname = "MAXSTUDENT_Offering=" + offering.getId();
+            model.addConstr(studentLimit, GRB.LESS_EQUAL, offering.getCapacity(), cname);
+        }//for offering
+
+
     }
 }
 

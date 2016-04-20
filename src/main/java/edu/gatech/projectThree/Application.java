@@ -64,7 +64,7 @@ public class Application {
     @Transactional
     @Bean
     public CommandLineRunner demo() {
-        //scheduler.schedule(); // for testing
+        scheduler.schedule(); // for testing
         return (args) -> {
 /*
             //-----------Populate Offering --------------

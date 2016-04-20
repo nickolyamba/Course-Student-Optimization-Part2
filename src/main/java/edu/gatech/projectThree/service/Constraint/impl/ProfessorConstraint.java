@@ -3,7 +3,6 @@ package edu.gatech.projectThree.service.Constraint.impl;
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.GRBException;
-import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import org.springframework.stereotype.Component;
@@ -23,9 +22,10 @@ public class ProfessorConstraint extends BaseConstraint {
     private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
 
     @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings,
-                          GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings,
-                          List<Professor> professors, List<Ta> tas, Set<Preference> preferences) throws GRBException {
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] profG, GRBVar[] tasOfferings,
+                          List<Student> students, List<Offering> offerings,
+                          List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings,
+                          Set<Preference> preferences) throws GRBException {
 
         /*
         // At least one professor per offering

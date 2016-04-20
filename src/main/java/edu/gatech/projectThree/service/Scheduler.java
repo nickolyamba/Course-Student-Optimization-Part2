@@ -140,99 +140,64 @@ public class Scheduler{
             showLogs(requests, preferences, students, offerings, professors, tas);
 
             // initialize gurobi variables variables here
-            GRBVar[][] studentsOfferings = new GRBVar[students.size()][offerings.size()];
-            GRBVar[][] professorsOfferings = new GRBVar[professors.size()][offerings.size()];
-            GRBVar[][] tasOfferings = new GRBVar[tas.size()][offerings.size()];
+            GRBVar[] profG = new GRBVar[profOfferings.size()];
             GRBVar[] prefG = new GRBVar[preferences.size()];
+            GRBVar[] taG = new GRBVar[taOfferings.size()];
 
-            // Create objective expression
-            GRBLinExpr obj = new GRBLinExpr();
             String gvar_name;
 
             int k = 0;
-            for (Iterator<Preference> it = preferences.iterator(); it.hasNext();)
+            for (Preference preference : preferences)
             {
-                Preference preference = it.next();
-                gvar_name = "PREF_"+ preference.getId();// student
+                gvar_name = "PREF_"+ preference.getId();// preference
 
                 prefG[k] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
                 LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "]");
                 k++;
             }
-
-            /*
-            // Name to identify Gurobi variables for optimization analysis
-            String gvar_name = "";
-            for (int j = 0; j < offerings.size(); j++) {
-                for (int i = 0; i < students.size(); i++) {
-                    //Preference pref = new Preference(students.get(i), offerings.get(j));
-                    //if(preferences.contains(pref))
-                    //boolean isContained = false;
-                    if(preferences.contains(new Preference(students.get(i), offerings.get(j))))
-                    {
-                        gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
-                                "_ST_" + String.valueOf(students.get(i).getId());  // student
-
-                        studentsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
-                        LOGGER.info("studentsOfferings[" + String.valueOf(students.get(i).getId())
-                                + "][" + String.valueOf(offerings.get(j).getId()) +"] = " + studentsOfferings[i][j]);
-                    }
-
-                    else
-                    {
-                        gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
-                                "_ST_" + String.valueOf(students.get(i).getId());  // student
-
-                        studentsOfferings[i][j] = model.addVar(0, 0, 0.0, GRB.BINARY, gvar_name);
-                        LOGGER.info("else studentsOfferings[" + String.valueOf(students.get(i).getId())
-                                + "][" + String.valueOf(offerings.get(j).getId()) +"] = " + studentsOfferings[i][j]);
-                    }//if
-                }//for i
-            }//for j
-            */
-
-            for (int j = 0; j < offerings.size(); j++) {
-                for (int i = 0; i < tas.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
-                            "_TA_" + String.valueOf(tas.get(i).getId());   // ta
-                    tasOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
-                }
-            }
-
-            for (int j = 0; j < offerings.size(); j++) {
-                for (int i = 0; i < professors.size(); i++) {
-                    gvar_name = "OF_" + String.valueOf(offerings.get(j).getId()) + // offering
-                            "_PR_" + String.valueOf(professors.get(i).getId());   // professor
-                    professorsOfferings[i][j] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
-                }
-            }
-
             model.update();
 
+            k = 0;
+            for (TaOffering taOffering : taOfferings)
+            {
+                gvar_name = "TA_"+ taOffering.getId();
+
+                taG[k] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+                LOGGER.info("taG[" + String.valueOf(taOffering.getId())+ "]");
+                k++;
+            }
+            model.update();
+
+            k = 0;
+            for (ProfessorOffering profOffering : profOfferings)
+            {
+                gvar_name = "PROF_"+ profOffering.getId();// preference
+
+                profG[k] = model.addVar(0, 1, 0.0, GRB.BINARY, gvar_name);
+                LOGGER.info("profG[" + String.valueOf(profOffering.getId())+ "]");
+                k++;
+            }
+            
             // get all constraints
             Collection<Constraint> constraints = context.getBeansOfType(Constraint.class).values();
 
             for (Constraint constraint : constraints) {
-                constraint.addConstraint(model, studentsOfferings, professorsOfferings, tasOfferings,
-                                            obj, students, offerings, professors, tas, preferences);
+                constraint.addConstraint(model, prefG, profG, taG,
+                                        students, offerings, professors, tas, taOfferings, preferences);
             }
 
-            model.update();
-            model.setObjective(obj, GRB.MINIMIZE);
-
-            model.update();// for obj
-            model.write("constraints.lp"); // constraints
+            model.update();//                              ------> comment out for production
+            model.write("constraints.lp"); // constraints  ------> comment out for production
             model.optimize();
 
             // model.computeIIS();
             // model.write("infeasible.ilp");
 
-            model.update();
-            model.write("solution.sol"); // solution
+            model.write("solution.sol"); // solution       ------> comment out for production
 
-            double[][] stud_offer = model.get(GRB.DoubleAttr.X, studentsOfferings);
-            //double[][] prof_offer = model.get(GRB.DoubleAttr.X, professorsOfferings);
-            double[][] ta_offer = model.get(GRB.DoubleAttr.X, tasOfferings);
+            double[] prefArray = model.get(GRB.DoubleAttr.X, prefG);
+            double[] taOfferArray = model.get(GRB.DoubleAttr.X, taG);
+            double[] profOfferArray = model.get(GRB.DoubleAttr.X, profG);
             double objectiveValue = model.get(GRB.DoubleAttr.ObjVal);
 
             // save results in the database
@@ -254,6 +219,7 @@ public class Scheduler{
 
             */
 
+            /*
             LOGGER.info("TAs assigned:");
             LOGGER.info("-------------------------------");
             for (int i = 0; i < tas.size(); i++) {
@@ -266,7 +232,9 @@ public class Scheduler{
                 LOGGER.info("\n");
             }
             LOGGER.info("");
+            */
 
+            /*
             LOGGER.info("Students assigned:");
             LOGGER.info("-------------------------------");
             for (int i = 0; i < students.size(); i++) {
@@ -277,6 +245,18 @@ public class Scheduler{
                                     String.valueOf(stud_offer[i][j]));
                 }
                 LOGGER.info("\n");
+            }*/
+
+            k = 0;
+            for (Iterator<Preference> it = preferences.iterator(); it.hasNext();)
+            {
+                Preference preference = it.next();
+                //if(prefArray[k] > 0)
+                    LOGGER.info("prefG["+ String.valueOf(preference.getId()) +"] = " + prefArray[k] +
+                                    "   stud["+ String.valueOf(preference.getStudent().getId()) +"]"+
+                                    "["+ String.valueOf(preference.getOffering().getId()) + "]=" +
+                                    String.valueOf(prefArray[k]));
+                k++;
             }
 
 
