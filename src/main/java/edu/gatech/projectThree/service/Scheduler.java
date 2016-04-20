@@ -203,7 +203,7 @@ public class Scheduler{
             //double objectiveValue = model.get(GRB.DoubleAttr.ObjVal);
 
             // save results in the database
-            postResultsToDb(preferences, prefArray, currSemester);
+            //postResultsToDb(preferences, prefArray, currSemester);
 
             showResultLogs(prefArray, taOfferArray, profOfferArray, preferences, taOfferings, profOfferings);
 
