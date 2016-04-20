@@ -6,8 +6,6 @@ import gurobi.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by dawu on 4/19/16.
@@ -15,22 +13,22 @@ import java.util.stream.Collectors;
 @Component
 public class ConcentrationConstraint extends BaseConstraint {
 
-    @Override
-    public void constrain(GRBModel model, GRBVar[][] studentsOfferings, GRBVar[][] professorsOfferings, GRBVar[][] tasOfferings, GRBLinExpr obj, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas) throws GRBException {
-        for (int i = 0; i < students.size(); i++) {
-            GRBLinExpr concentration = new GRBLinExpr();
-            for (int j = 0; j < offerings.size(); j++) {
-                Student student = students.get(i);
-                Course course = offerings.get(j).getCourse();
-                concentration.addTerm(1, studentsOfferings[i][j]);
 
+    @Override
+    public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferences) throws GRBException {
+        for (Student student : students) {
+            GRBLinExpr concentration = new GRBLinExpr();
+            for (int j = 0; j < preferences.size(); j++) {
                 Specialization specialization = student.getSpecialization();
-                Set<Course> preferredCourses = student.getPreferences().stream().map(Preference::getOffering).map(Offering::getCourse).collect(Collectors.toSet());
-                if (specialization.getCourses().contains(course) && preferredCourses.contains(course)) {
-                    String cname = "CONCENTRATION_Student=" + i + "_Offering=" + j;
-                    model.addConstr(concentration, GRB.EQUAL, 1, cname);
+                Preference preference = preferences.get(j);
+                Course course = preference.getOffering().getCourse();
+                if (specialization.getCourses().contains(course)) {
+                    concentration.addTerm(1, prefG[j]);
                 }
             }
+            String cname = "CONCENTRATION_Student=" + student.getId();
+            model.addConstr(concentration, GRB.EQUAL, 1, cname);
         }
+
     }
 }
