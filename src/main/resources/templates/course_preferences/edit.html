@@ -17,19 +17,20 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Courses not taken</h3>
+                            <p class="text-info">Only showing courses being offered</p>
                         </div>
                         <div class="panel-body">
                             <ul id="notTaken" class="list-group">
-                                <li th:each="course:${coursesNotTaken}" class="list-group-item" th:attr="data-course-id=${course.getId()}">
-                                    <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
-                                    <span th:text="${'CS' + course.getCourse_num() + ' - ' + course.getCourse_name()}"></span>
+                                <li th:each="offering:${offeringsNotTaken}" class="list-group-item" th:attr="data-offering-id=${offering.getId()}">
+                                    <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
+                                    <span th:text="${'CS' + offering.getCourse().getCourse_num() + ' - ' + offering.getCourse().getCourse_name()}"></span>
                                     <span class="badge"></span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-4" th:each="semester:${semesters}">
+                <div class="col-sm-4"">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title" th:text="${semester.getSeason() + ' - ' + semester.getYear()}"></h3>

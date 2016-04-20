@@ -23,6 +23,9 @@ public class Specialization implements Serializable {
             inverseJoinColumns=@JoinColumn(name="COURSE_ID", referencedColumnName="ID"))
     private Set<Course> courses= new HashSet<Course>();
 
+    public Set<Course> getCourses() {
+        return courses;
+    }
 
     @Override
     public String toString() {

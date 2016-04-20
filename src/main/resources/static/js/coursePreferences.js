@@ -24,12 +24,12 @@ $(document).ready(function() {
       var semester = $(val);
       var dataAttributes = semester.data();
       data.semester.push(dataAttributes.semesterId);
-      data["courses"] = [];
-      semester.find('[data-course-id]').each(function(j, cVal) {
-        var course = $(cVal);
-        var courseAttributes = course.data();
+      data["offerings"] = [];
+      semester.find('[data-offering-id]').each(function(j, cVal) {
+        var offering = $(cVal);
+        var offeringAttributes = offering.data();
 
-        data.courses.push(courseAttributes.courseId);
+        data.offerings.push(offeringAttributes.offeringId);
       });
     });
     $.ajax({
