@@ -28,6 +28,10 @@ public class ProfessorOffering {
     @JoinColumn(name="OPTIMIZED_ID")
     private OptimizedTime optimizedTime;
 
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name="PROFREQUEST_ID") //set to nullable to allow flexibility
+    private ProfRequest profRequest;
+
     public ProfessorOffering(){
     }
 
@@ -103,6 +107,14 @@ public class ProfessorOffering {
 
     public void setOptimizedTime(OptimizedTime optimizedTime) {
         this.optimizedTime = optimizedTime;
+    }
+
+    public ProfRequest getProfRequest() {
+        return profRequest;
+    }
+
+    public void setProfRequest(ProfRequest profRequest) {
+        this.profRequest = profRequest;
     }
 
     @Override

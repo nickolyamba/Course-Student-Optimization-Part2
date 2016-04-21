@@ -128,7 +128,8 @@ public class Scheduler{
             // get association classes corresponding to Offerings
             List<Preference> preferences = prefRepository.findByOfferingInAndRequestInOrderByIdAsc(offerings, requests);
             List<ProfessorOffering> profOfferings = profOfferingRepository.findByOfferingIn(offerings);
-            List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
+            //List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
+            List<TaOffering> taOfferings = taOfferingRepository.findLastTaOfferings(offerings);
 
             // get Studs, Profs, and Tas
             List<Student> students = studRepository.findDistinctByPreferencesInAndRequestsInOrderByIdAsc(preferences, requests);
@@ -203,10 +204,8 @@ public class Scheduler{
             //double objectiveValue = model.get(GRB.DoubleAttr.ObjVal);
 
             // save results in the database
-            //postResultsToDb(preferences, prefArray, currSemester);
-
-            showResultLogs(prefArray, taOfferArray, profOfferArray, preferences, taOfferings, profOfferings);
-
+            //postResultsToDb(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray, currSemester);
+            showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
 
             // Dispose of model and environment
             model.dispose();
@@ -220,11 +219,13 @@ public class Scheduler{
     }
 
     @Transactional
-    private void postResultsToDb(List<Preference> preferences, double [] prefArray, CurrentSemester currSem){
+    private void postResultsToDb(List<Preference> preferences, List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings,
+                                 double [] prefArray, double[] taOfferArray, double[] profOfferArray, CurrentSemester currSem){
 
         OptimizedTime timestamp = new OptimizedTime(currSem.getSemester());
         optimizedTimeRepository.save(timestamp);
 
+        //----------------------- Update Preferences ----------------------\\
         int k = 0;
         for (Preference preference : preferences)
         {
@@ -241,6 +242,44 @@ public class Scheduler{
                 preference.setAssigned(false);
                 preference.setRecommend("Didn't get in class");
                 preference.setOptimizedTime(timestamp);
+            }
+            k++;
+        }
+
+        //----------------------- Update TaOfferings -------------------\\
+        k = 0;
+        for (TaOffering taOffering : taOfferings)
+        {
+            //LOGGER.info(preference.toString());
+            if(taOfferArray[k] > 0)
+            {
+                taOffering.setAssigned(true);
+                taOffering.setOptimizedTime(timestamp);
+            }
+
+            else
+            {
+                taOffering.setAssigned(false);
+                taOffering.setOptimizedTime(timestamp);
+            }
+            k++;
+        }
+
+        //----------------------- Update ProfessorOfferings -------------------\\
+        k = 0;
+        for (ProfessorOffering profOffering : profOfferings)
+        {
+            //LOGGER.info(preference.toString());
+            if(profOfferArray[k] > 0)
+            {
+                profOffering.setAssigned(true);
+                profOffering.setOptimizedTime(timestamp);
+            }
+
+            else
+            {
+                profOffering.setAssigned(false);
+                profOffering.setOptimizedTime(timestamp);
             }
             k++;
         }
@@ -297,9 +336,8 @@ public class Scheduler{
         LOGGER.info("");
     }//showLogs()
 
-    private void showResultLogs(double[] prefArray, double[] taOfferArray, double[] profOfferArray,
-                                List<Preference> preferences, List<TaOffering> taOfferings,
-                                List<ProfessorOffering> professorOfferings){
+    private void showResultLogs(List<Preference> preferences, List<TaOffering> taOfferings, List<ProfessorOffering> professorOfferings,
+                                 double[] prefArray, double[] taOfferArray, double[] profOfferArray){
 
         LOGGER.info("Students assigned:");
         LOGGER.info("-------------------------------");

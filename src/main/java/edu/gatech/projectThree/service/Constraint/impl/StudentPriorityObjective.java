@@ -25,12 +25,12 @@ public class StudentPriorityObjective extends BaseConstraint {
     // the class, the one who have this course as a
     // Concentration course, gets into the class
     // Source: https://piazza.com/class/ij4blvpmdri3ou?cid=740
-    private static final double CONCENTRATION_K = 0.9;
+    private static final double CONCENTRATION_K = 1.0;
 
     // Coefficients for optimization based on Seniority and GPA
     private static final int SENIORITY_K = Seniority.POSTDOC.ordinal() + 1;
     private static final double GPA_K = 4.0;
-    // Constraint that also accounts for GPA and Seniority
+    // Constraint that accounts for GPA and Seniority
     //obj.addTerm(CONCENTRATION_K*priority*(SENIORITY_K - seniority.ordinal())*(GPA_K - gpa), prefG[k]);
 
     @Override

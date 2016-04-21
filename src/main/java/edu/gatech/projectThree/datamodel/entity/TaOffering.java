@@ -28,6 +28,10 @@ public class TaOffering {
 	@JoinColumn(name="OPTIMIZED_ID")
 	private OptimizedTime optimizedTime;
 
+	@ManyToOne(fetch= FetchType.LAZY)
+	@JoinColumn(name="TAREQUEST_ID") //set to nullable to allow flexibility
+	private TaRequest taRequest;
+
 	public TaOffering(){
 	}
 
@@ -105,7 +109,15 @@ public class TaOffering {
         this.optimizedTime = optimizedTime;
     }
 
-	@Override
+    public TaRequest getTaRequest() {
+        return taRequest;
+    }
+
+    public void setTaRequest(TaRequest taRequest) {
+        this.taRequest = taRequest;
+    }
+
+    @Override
 	public String toString() {
 		return "TeacherOffering{" +
 				"id=" + id +
