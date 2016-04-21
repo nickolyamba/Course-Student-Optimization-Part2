@@ -113,12 +113,13 @@ public class Scheduler{
             //can't fetch from state - returns lazyException. when accessing Preferences in a offering object
             //List<Offering> offerings = new ArrayList<>(state.getOfferings());
             List<Offering> offerings = offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
+            List<Long> offeringIDs = new ArrayList<Long>();
 
-            // remove offerings that has no preferences
+            // remove offerings that has no preferences and populate offeringIDs
             for (Iterator<Offering> it = offerings.iterator(); it.hasNext();)
             {
-
                 Offering offering = (Offering)it.next();
+                offeringIDs.add(offering.getId());
                 if(offering.getPreferences().isEmpty())
                     it.remove();
             }
@@ -127,16 +128,14 @@ public class Scheduler{
 
             // get association classes corresponding to Offerings
             List<Preference> preferences = prefRepository.findByOfferingInAndRequestInOrderByIdAsc(offerings, requests);
-            List<ProfessorOffering> profOfferings = profOfferingRepository.findByOfferingIn(offerings);
-            //List<TaOffering> taOfferings = taOfferingRepository.findByOfferingIn(offerings);
-            List<TaOffering> taOfferings = taOfferingRepository.findLastTaOfferings(offerings);
+            List<ProfessorOffering> profOfferings = profOfferingRepository.findLastProfOfferings(offeringIDs);
+            List<TaOffering> taOfferings = taOfferingRepository.findLastTaOfferings(offeringIDs);
 
             // get Studs, Profs, and Tas
             List<Student> students = studRepository.findDistinctByPreferencesInAndRequestsInOrderByIdAsc(preferences, requests);
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
-
-            showLogs(requests, preferences, students, offerings, professors, tas);
+            //showLogs(requests, preferences, students, offerings, professors, tas);
 
             // initialize gurobi variables variables here
             GRBVar[] profG = new GRBVar[profOfferings.size()];
@@ -203,8 +202,8 @@ public class Scheduler{
             double[] profOfferArray = model.get(GRB.DoubleAttr.X, profG);
             //double objectiveValue = model.get(GRB.DoubleAttr.ObjVal);
 
-            // save results in the database
-            //postResultsToDb(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray, currSemester);
+            //------------------------------------- Save results in the database -----------------------------------\\
+            postResultsToDb(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray, currSemester);
             showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
 
             // Dispose of model and environment

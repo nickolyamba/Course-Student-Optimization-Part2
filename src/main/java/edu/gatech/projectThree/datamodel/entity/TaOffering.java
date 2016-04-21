@@ -29,17 +29,17 @@ public class TaOffering {
 	private OptimizedTime optimizedTime;
 
 	@ManyToOne(fetch= FetchType.LAZY)
-	@JoinColumn(name="TAREQUEST_ID") //set to nullable to allow flexibility
+	@JoinColumn(name="TAREQUEST_ID") //nullable while developing
 	private TaRequest taRequest;
 
 	public TaOffering(){
 	}
 
 	// constructor
-	public TaOffering(Ta ta, Offering offering) {
+	public TaOffering(Ta ta, Offering offering, TaRequest taRequest) {
 		this.ta = ta;
-		//this.userType = ta.getUserType();
 		this.offering = offering;
+		this.taRequest = taRequest;
 		isAssigned = false; // by default Student is not assigned to a course, until
 		// Compute Engine produces solution that have a Student
 		// assigned to the Course. Set upon results of Gurobi computation

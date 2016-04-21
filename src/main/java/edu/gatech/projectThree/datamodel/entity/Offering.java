@@ -142,8 +142,8 @@ public class Offering implements Serializable {
         teacherOffering.setOffering(null);
     }
 
-    public void addProf(Professor teacher) {
-        ProfessorOffering teacherOffering = new ProfessorOffering(teacher, this);
+    public void addProf(Professor teacher, ProfRequest profRequest) {
+        ProfessorOffering teacherOffering = new ProfessorOffering(teacher, this, profRequest);
         profPool.add(teacherOffering);
         teacherOffering.setOffering(this);
     }
@@ -179,8 +179,8 @@ public class Offering implements Serializable {
         teacherOffering.setOffering(null);
     }
 
-    public void addTa(Ta teacher) {
-        TaOffering teacherOffering = new TaOffering(teacher, this);
+    public void addTa(Ta teacher, TaRequest taRequest) {
+        TaOffering teacherOffering = new TaOffering(teacher, this, taRequest);
         taPool.add(teacherOffering);
         teacherOffering.setOffering(this);
     }

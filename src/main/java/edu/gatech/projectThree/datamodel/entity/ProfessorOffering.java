@@ -36,9 +36,9 @@ public class ProfessorOffering {
     }
 
     // constructor
-    public ProfessorOffering(Professor professor, Offering offering) {
+    public ProfessorOffering(Professor professor, Offering offering, ProfRequest profRequest) {
         this.professor = professor;
-        //this.userType = professor.getUserType();
+        this.profRequest = profRequest;
         this.offering = offering;
         isAssigned = false; // by default Prof is not assigned to a course, until
         // Compute Engine produces solution that have a Student

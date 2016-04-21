@@ -41,8 +41,8 @@ public class Ta extends Teacher {
         teacherOffering.setTa(null);
     }
 
-    public void addOffering(Offering offering) {
-        TaOffering teacherOffering = new TaOffering(this, offering);
+    public void addOffering(Offering offering, TaRequest taRequest) {
+        TaOffering teacherOffering = new TaOffering(this, offering, taRequest);
         taOfferings.add(teacherOffering);
         teacherOffering.setTa(this);
     }

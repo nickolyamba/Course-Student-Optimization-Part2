@@ -15,10 +15,9 @@ public interface TaOfferingRepository extends CrudRepository<TaOffering, Long> {
     ArrayList<TaOffering> findAll();
     ArrayList<TaOffering> findByOfferingIn(Collection<Offering> offerings);
 
-    @Query(value = "SELECT * FROM ta_offering WHERE \n" +
-                    "(optimized_id = (SELECT OPTIMIZED_ID FROM TA_OFFERING ORDER BY id DESC LIMIT 1)\n" +
-                    "OR \n" +
-                    "optimized_id IS (SELECT OPTIMIZED_ID FROM TA_OFFERING ORDER BY id DESC LIMIT 1))\n" +
-                    "AND offering_id IN ?0", nativeQuery = true)
-    ArrayList<TaOffering> findLastTaOfferings(Collection<Offering> offerings);
+    @Query(value = "SELECT * FROM ta_offering TO WHERE TO.tarequest_id =\n" +
+                    "(SELECT RQ.id FROM ta_request RQ ORDER BY RQ.created DESC LIMIT 1)\n" +
+                    "AND TO.offering_id in ?1",
+                    nativeQuery = true)
+    ArrayList<TaOffering> findLastTaOfferings(Collection<Long> offeringIDs);
 }
