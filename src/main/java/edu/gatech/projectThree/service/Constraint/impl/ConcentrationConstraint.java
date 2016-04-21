@@ -15,11 +15,14 @@ public class ConcentrationConstraint extends BaseConstraint {
 
     @Override
     public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings, List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferences) throws GRBException {
+        // Moved and implemented as an objective
 
+        /*
         for (Student student : students) {
             GRBLinExpr concentration = new GRBLinExpr();
             Specialization specialization = student.getSpecialization();
-            boolean isConcentration = false;
+            //boolean isConcentration = false;
+            int concentrationCounter = 0;
             for (int j = 0; j < preferences.size(); j++) {
                 Preference preference = preferences.get(j);
                 Course course = preference.getOffering().getCourse();
@@ -27,17 +30,18 @@ public class ConcentrationConstraint extends BaseConstraint {
                 if (preference.getStudent() == student &&
                     specialization.getCourses().contains(course)) {
                     concentration.addTerm(1, prefG[j]);
-                    isConcentration = true;
+                    //isConcentration = true;
+                    concentrationCounter++;
                 }
             }
             //if student doesn't have any preference with the Concentration,
             // don't addConstr; Otherwise, get CONCENTRATION_Student=3: = 1 (infeasible)
-            if(isConcentration)
+            if(concentrationCounter > 0)
             {
                 String cname = "CONCENTRATION_Student=" + student.getId();
-                model.addConstr(concentration, GRB.EQUAL, 1, cname);
+                model.addConstr(concentration, GRB.EQUAL, concentrationCounter, cname);
             }
         }
-
+*/
     }
 }

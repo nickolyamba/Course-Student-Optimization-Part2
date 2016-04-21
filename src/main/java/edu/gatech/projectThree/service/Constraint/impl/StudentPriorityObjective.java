@@ -1,6 +1,7 @@
 package edu.gatech.projectThree.service.Constraint.impl;
 
 import edu.gatech.projectThree.Application;
+import edu.gatech.projectThree.constants.Seniority;
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.*;
@@ -8,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -20,23 +20,46 @@ import java.util.List;
 public class StudentPriorityObjective extends BaseConstraint {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
+    // value of 0.9 ensures that in case when 2 students
+    // have the same priorities and only one can get into
+    // the class, the one who have this course as a
+    // Concentration course, gets into the class
+    // Source: https://piazza.com/class/ij4blvpmdri3ou?cid=740
+    private static final double CONCENTRATION_K = 0.9;
+
+    // Coefficients for optimization based on Seniority and GPA
+    private static final int SENIORITY_K = Seniority.POSTDOC.ordinal() + 1;
+    private static final double GPA_K = 4.0;
+    // Constraint that also accounts for GPA and Seniority
+    //obj.addTerm(CONCENTRATION_K*priority*(SENIORITY_K - seniority.ordinal())*(GPA_K - gpa), prefG[k]);
+
     @Override
     public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
                           List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas,
-                          List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferenceList)
+                          List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferences)
                           throws GRBException {
 
         int priority;
         int k = 0;
         // Create objective expression
         GRBLinExpr obj = new GRBLinExpr();
-        for (Iterator<Preference> it = preferenceList.iterator(); it.hasNext();)
+        Seniority seniority;
+        double gpa;
+        for (Preference preference : preferences)
         {
-            Preference preference = it.next();
-
             priority = preference.getPriority();
-            obj.addTerm(priority, prefG[k]);
+            Student student = preference.getStudent();
 
+            seniority = student.getSeniority();
+            gpa = student.getGpa();
+
+            Specialization specialization = student.getSpecialization();
+            Course course = preference.getOffering().getCourse();
+
+            if (specialization.getCourses().contains(course))
+                obj.addTerm(CONCENTRATION_K*priority, prefG[k]);
+            else
+                obj.addTerm(priority, prefG[k]);
             //LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "] added");
             k++;
         }

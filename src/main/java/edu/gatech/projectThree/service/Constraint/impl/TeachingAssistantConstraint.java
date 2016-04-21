@@ -17,7 +17,7 @@ import java.util.List;
 public class TeachingAssistantConstraint extends BaseConstraint {
 
     private static final double  maxStudsPerTa = 50;  // adjust when needed
-    private static final double  minStudsPerTa = 1;   // adjust when needed
+    private static final double  minStudsPerTa = 0;   // adjust when needed
     private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
 
     @Override
