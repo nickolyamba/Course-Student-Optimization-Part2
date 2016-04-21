@@ -28,6 +28,12 @@ public class OptimizedTime implements Serializable {
     @OneToMany(mappedBy="optimizedTime", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Preference> preferences = new HashSet<Preference>();
 
+    @OneToMany(mappedBy="optimizedTime", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TaOffering> taOfferings = new HashSet<TaOffering>();
+
+    @OneToMany(mappedBy="optimizedTime", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProfessorOffering> profOfferings = new HashSet<ProfessorOffering>();
+
     public OptimizedTime(){}
 
     public OptimizedTime(Semester semester) {
@@ -88,6 +94,34 @@ public class OptimizedTime implements Serializable {
     public void setPreferences(Set<Preference> preferences) {
         for(Preference preference : preferences)
             this.addPreference(preference);
+    }
+
+    public Set<TaOffering> getTaOfferings() {
+        return taOfferings;
+    }
+
+    public void setTaOfferings(Set<TaOffering> taOfferings) {
+        for(TaOffering taOffering : taOfferings)
+            this.addTaOffering(taOffering);
+    }
+
+    public void addTaOffering(TaOffering taOffering) {
+        taOfferings.add(taOffering);
+        taOffering.setOptimizedTime(this);
+    }
+
+    public Set<ProfessorOffering> getProfOfferings() {
+        return profOfferings;
+    }
+
+    public void setProfOfferings(Set<ProfessorOffering> profOfferings) {
+        for(ProfessorOffering profOffering : profOfferings)
+            this.addProfOffering(profOffering);
+    }
+
+    public void addProfOffering(ProfessorOffering profOffering) {
+        profOfferings.add(profOffering);
+        profOffering.setOptimizedTime(this);
     }
 
     @Override

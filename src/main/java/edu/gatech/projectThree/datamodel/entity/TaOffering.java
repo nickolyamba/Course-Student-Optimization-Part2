@@ -24,6 +24,10 @@ public class TaOffering {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private boolean isAssigned;
 
+	@ManyToOne(fetch= FetchType.LAZY)
+	@JoinColumn(name="OPTIMIZED_ID")
+	private OptimizedTime optimizedTime;
+
 	public TaOffering(){
 	}
 
@@ -92,15 +96,14 @@ public class TaOffering {
 	public void setAssigned(boolean isAssigned) {
 		this.isAssigned = isAssigned;
 	}
-/*
-    public UserType getUserType() {
-        return userType;
+
+    public OptimizedTime getOptimizedTime() {
+        return optimizedTime;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setOptimizedTime(OptimizedTime optimizedTime) {
+        this.optimizedTime = optimizedTime;
     }
-*/
 
 	@Override
 	public String toString() {
