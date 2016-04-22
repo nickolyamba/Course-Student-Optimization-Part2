@@ -78,24 +78,15 @@ public class CoursePreferencesController {
         UserDetails currentUser = (UserDetails) authentication.getPrincipal();
         Student currentStudent = studRepository.findByUserName(currentUser.getUsername());
 
+
         CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
-        List<Offering> offerings =  offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
-        List<Course> coursesNotTaken = currentStudent.getCoursesNotTaken(courseRepository.findAll());
+        Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
+        List<Offering> offeringsNotTaken = allCurrentOfferings.stream()
+                                            .filter(o -> !currentStudent.getCoursesTaken().contains(o.getCourse()))
+                                            .collect(Collectors.toList());
 
-        //http://stackoverflow.com/questions/30012295/java-8-lambda-filter-by-lists
-        //remove not taken that are not in offerings for the current semester
-        // get set of available courses
-        Set<Course> availableCourses = offerings.stream()
-                .map(Offering::getCourse)
-                .collect(Collectors.toSet());
-
-        // stream the list and use the set to filter courses
-        coursesNotTaken = coursesNotTaken.stream()
-                .filter(e -> availableCourses.contains(e))
-                .collect(Collectors.toList());
-
-        model.addAttribute("coursesNotTaken", coursesNotTaken);
-        model.addAttribute("semesters", currSemester.getSemester());
+        model.addAttribute("offeringsNotTaken", offeringsNotTaken);
+        model.addAttribute("semester", currSemester.getSemester());
         return "course_preferences/edit";
     }
 
@@ -113,9 +104,8 @@ public class CoursePreferencesController {
         LOGGER.info(semester.toString());
 
         final int[] index = {0};
-        json.get("courses").forEach(courseId -> {
-            Course course = courseRepository.findOne(Integer.parseInt(courseId));
-            Offering offering = offeringRepository.findBySemesterAndCourse(semester, course);
+        json.get("offerings").forEach(offeringId -> {
+            Offering offering = offeringRepository.findOne(Long.valueOf(offeringId));
             Preference preference = new Preference(currentStudent, offering, index[0] + 1, request);
             preferenceRepository.save(preference);
             //state.getPreferences().add(preference); --- experiment with Global State - works well
