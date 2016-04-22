@@ -82,6 +82,9 @@ public class CoursePreferencesController {
         CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
         Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
         ArrayList<Offering> offeringsNotTaken = currentStudent.getCoursesNotTakenAsOfferings(allCurrentOfferings);
+        //List<Offering> tmp = allCurrentOfferings.stream()
+        //                                    .filter(o -> !currentStudent.getCoursesTaken().contains(o.getCourse()))
+        //                                    .collect(Collectors.toList());
 
         model.addAttribute("offeringsNotTaken", offeringsNotTaken);
         model.addAttribute("semester", currSemester.getSemester());
