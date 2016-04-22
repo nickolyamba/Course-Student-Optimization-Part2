@@ -5,34 +5,84 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Project 3</title>
+    <link rel="stylesheet" th:href="@{/css/optimizations.css}" href="../../css/optimizations.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.3.0/Sortable.min.js"></script>
+    <script th:src="@{/js/optimizations/new.js}"></script>
 </head>
     <body>
         <div layout:fragment="content">
             <h1>Create a new optimization</h1>
-            <form>
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <label for="semesterSelect">Select a semester</label>
-                        <select id="semesterSelect" class="form-control">
-                            <option>Fall 2016</option>
-                            <option>Spring 2017</option>
-                            <option>Summer 2017</option>
-                            <option>Fall 2018</option>
-                            <option>Spring 2018</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="courseSelect">Select courses</label>
-                        <select id="courseSelect" multiple class="form-control">
-                            <option>CS 6300 Software Development Process</option>
-                            <option>CS 6310 Software Architecture and Design</option>
-                            <option>CS 6505 Computability, Complexity and Algorithms</option>
-                            <option>CS 6601 Artificial Intelligence</option>
-                            <option>CS 7641 Machine Learning</option>
-                        </select>
+            <div class="pull-right">
+                <button type="button" class="btn btn-success" data-submit>Submit</button>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">TA's Available</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul id="tas" class="list-group">
+                                <li th:each="ta:${tas}" class="list-group-item" th:attr="data-ta-id=${ta.getId()}">
+                                    <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
+                                    <span th:text="${ta.getFirst_name() + ' ' + ta.getLast_name()}"></span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </form>
+                <div class="col-sm-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Professors Available</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul id="professors" class="list-group">
+                                <li th:each="professor:${professors}" class="list-group-item" th:attr="data-professor-id=${professor.getId()}">
+                                    <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
+                                    <span th:text="${professor.getFirst_name() + ' ' + professor.getLast_name()}"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="panel panel-default offerings">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Offerings for the semester</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="panel panel-default" th:each="offering:${offerings}" th:attr="data-offering-id=${offering.getId()}">
+                                <div class="panel-heading">
+                                    <h4 th:text="${'CS' + offering.getCourse().getCourse_num() + ' - ' + offering.getCourse().getCourse_name()}"></h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-6">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h5 class="panel-title">Add TA's</h5>
+                                            </div>
+                                            <div class="panel-body">
+                                                <ul class="ta-list list-group"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h5 class="panel-title">Add Professors</h5>
+                                            </div>
+                                            <div class="panel-body">
+                                                <ul class="professor-list list-group"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
