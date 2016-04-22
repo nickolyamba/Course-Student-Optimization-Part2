@@ -20,6 +20,9 @@ import java.util.List;
 public class StudentPriorityObjective extends BaseConstraint {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
+    // It would be great to have a slider UI to allow change of the coefficient by an admin
+    // via GlobalState, or database entity (preferable)
+
     // value of 0.9 ensures that in case when 2 students
     // have the same priorities and only one can get into
     // the class, the one who have this course as a
@@ -32,6 +35,9 @@ public class StudentPriorityObjective extends BaseConstraint {
     private static final double GPA_K = 4.0;
     // Constraint that accounts for GPA and Seniority
     //obj.addTerm(CONCENTRATION_K*priority*(SENIORITY_K - seniority.ordinal())*(GPA_K - gpa), prefG[k]);
+
+    // Minimization of TAs contribution coefficient
+    private static final double TA_MIN_COEFF = 2.4; // > 2.5 goes to the TA side on custom data sample
 
     @Override
     public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
@@ -62,6 +68,19 @@ public class StudentPriorityObjective extends BaseConstraint {
                 obj.addTerm(priority, prefG[k]);
             //LOGGER.info("prefG[" + String.valueOf(preference.getId())+ "] added");
             k++;
+        }
+
+
+        // Minimize number of TAs
+        for(Offering offering : offerings) {
+            // if taOffering contains offering
+            k = 0;
+            for (TaOffering taOffering : taOfferings) {
+                if (taOffering.getOffering() == offering) {
+                    obj.addTerm(TA_MIN_COEFF, tasOfferings[k]);
+                }
+                k++;
+            }
         }
 
         model.setObjective(obj, GRB.MINIMIZE);

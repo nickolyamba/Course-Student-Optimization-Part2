@@ -16,12 +16,12 @@ import java.util.List;
 @Component
 public class ProfessorConstraint extends BaseConstraint {
 
-    private static final int MAX_PROFESSORS = 2;
+    private static final int MAX_PROFESSORS = 2; // ML, for example
     private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
     private static final int MAX_PROF_RATIO = 1000000;
 
     /********************************************************************************
-     // Constraint: offering = const: PROF1 + PROF2 + PROF3... <= MAXIMUM_OFFERINGS_TAUGHT
+     // Constraint: offering = const: PROF1 + PROF2 + PROF3... <= MAX_PROFESSORS
      // Each course can include at least MINIMUM_PROFESSORS
      *********************************************************************************/
     @Override
@@ -32,18 +32,18 @@ public class ProfessorConstraint extends BaseConstraint {
 
         for(Offering offering : offerings)
         {
-            GRBLinExpr minProfessor = new GRBLinExpr();
+            GRBLinExpr maxProfessor = new GRBLinExpr();
             int k = 0;
             for (ProfessorOffering profOffering : profOfferings)
             {
                 if(profOffering.getOffering() == offering)
                 {
-                    minProfessor.addTerm(1, profG[k]);
+                    maxProfessor.addTerm(1, profG[k]);
                 }
                 k++;
             }
-            String cname = "MINPROF_OFFER=" + offering.getId();
-            model.addConstr(minProfessor, GRB.LESS_EQUAL, MAX_PROFESSORS, cname);
+            String cname = "MAXPROF_OFFER=" + offering.getId();
+            model.addConstr(maxProfessor, GRB.LESS_EQUAL, MAX_PROFESSORS, cname);
         }
 
 

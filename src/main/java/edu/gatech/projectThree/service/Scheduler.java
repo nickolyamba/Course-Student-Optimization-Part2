@@ -108,7 +108,7 @@ public class Scheduler{
             GRBModel model = new GRBModel(env);
 
             // get current semester
-            // CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
+            //CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
             CurrentSemester currSemester = state.getCurrentSemObject();
             //can't fetch from state - returns lazyException. when accessing Preferences in a offering object
             //List<Offering> offerings = new ArrayList<>(state.getOfferings());
@@ -135,7 +135,8 @@ public class Scheduler{
             List<Student> students = studRepository.findDistinctByPreferencesInAndRequestsInOrderByIdAsc(preferences, requests);
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
-            //showLogs(requests, preferences, students, offerings, professors, tas);
+
+            showLogs(requests, preferences, students, offerings, professors, tas);
 
             // initialize gurobi variables variables here
             GRBVar[] profG = new GRBVar[profOfferings.size()];
@@ -192,8 +193,8 @@ public class Scheduler{
             model.write("constraints.lp"); // constraints  ------> comment out for production
             model.optimize();
 
-            // model.computeIIS();
-            // model.write("infeasible.ilp");
+            //model.computeIIS();
+            //model.write("infeasible.ilp");
 
             model.write("solution.sol"); // solution       ------> comment out for production
 
@@ -212,6 +213,9 @@ public class Scheduler{
 
         } catch (GRBException e) {
             e.printStackTrace();
+            //e.
+            LOGGER.info("Gurobi Exception: " + e.getErrorCode() + " " +
+                    e.getMessage());
         }
 
         return result;
@@ -338,15 +342,16 @@ public class Scheduler{
     private void showResultLogs(List<Preference> preferences, List<TaOffering> taOfferings, List<ProfessorOffering> professorOfferings,
                                  double[] prefArray, double[] taOfferArray, double[] profOfferArray){
 
-        LOGGER.info("Students assigned:");
-        LOGGER.info("-------------------------------");
+        LOGGER.info("Students assigned:                      priority");
+        LOGGER.info("------------------------------------------------");
         int k = 0;
         for (Preference preference : preferences)
         {
-            LOGGER.info("prefG["+ String.valueOf(preference.getId()) +"] = " + prefArray[k] +
-                                "\t\tstud["+ String.valueOf(preference.getStudent().getId()) +"]"+
-                                "["+ String.valueOf(preference.getOffering().getId()) + "]=" +
-                                String.valueOf(prefArray[k]));
+            if (prefArray[k] > 0)
+                LOGGER.info("prefG["+ String.valueOf(preference.getId()) +"] = " + prefArray[k] +
+                                    "\t\tstud["+ String.valueOf(preference.getStudent().getId()) +"]"+
+                                    "["+ String.valueOf(preference.getOffering().getId()) + "]=" +
+                                    String.valueOf(prefArray[k]) + "\t\t" + preference.getPriority());
             k++;
         }
 
@@ -355,10 +360,11 @@ public class Scheduler{
         k = 0;
         for (TaOffering taOffering : taOfferings)
         {
-            LOGGER.info("taOffer["+ String.valueOf(taOffering.getId()) +"] = " + taOfferArray[k] +
-                    "\t\tta["+ String.valueOf(taOffering.getTa().getId()) +"]"+
-                    "["+ String.valueOf(taOffering.getOffering().getId()) + "]=" +
-                    String.valueOf(taOfferArray[k]));
+            if (taOfferArray[k] > 0)
+                LOGGER.info("taOffer["+ String.valueOf(taOffering.getId()) +"] = " + taOfferArray[k] +
+                        "\t\tta["+ String.valueOf(taOffering.getTa().getId()) +"]"+
+                        "["+ String.valueOf(taOffering.getOffering().getId()) + "]=" +
+                        String.valueOf(taOfferArray[k]));
             k++;
         }
 
@@ -367,10 +373,11 @@ public class Scheduler{
         k = 0;
         for (ProfessorOffering profOffering : professorOfferings)
         {
-            LOGGER.info("profOffer["+ String.valueOf(profOffering.getId()) +"] = " + profOfferArray[k] +
-                    "\t\tprof["+ String.valueOf(profOffering.getProfessor().getId()) +"]"+
-                    "["+ String.valueOf(profOffering.getOffering().getId()) + "]=" +
-                    String.valueOf(profOfferArray[k]));
+            if (profOfferArray[k] > 0)
+                LOGGER.info("profOffer["+ String.valueOf(profOffering.getId()) +"] = " + profOfferArray[k] +
+                        "\t\tprof["+ String.valueOf(profOffering.getProfessor().getId()) +"]"+
+                        "["+ String.valueOf(profOffering.getOffering().getId()) + "]=" +
+                        String.valueOf(profOfferArray[k]));
             k++;
         }
     }

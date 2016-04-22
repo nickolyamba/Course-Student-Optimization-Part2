@@ -14,7 +14,7 @@ import java.io.Serializable;
 // https://en.wikibooks.org/wiki/Java_Persistence/Inheritance#Joined.2C_Multiple_Table_Inheritance
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="userType")
+@DiscriminatorColumn(name="userType", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorOptions(force=true)
 @Table(name="USER")
 public class User implements Serializable {
