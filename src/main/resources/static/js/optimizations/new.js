@@ -57,5 +57,30 @@ $(document).ready(function() {
     })
   });
 
+  $('[data-offering-capacity]').each(function() {
+    var $this = $(this);
+    var offeringId = $this.closest('[data-offering-id]').data().offeringId
+    $this.editable({
+      ajaxOptions: {
+        type: 'put',
+        contentType: "application/json"
+      },
+      type: 'text',
+      send: 'always',
+      url: "/offerings/" + offeringId,
+      success: function(response, newValue) {
+        console.log(response);
+        console.log(newValue);
+      },
+      params: function(params) {
+        var data = {};
+        data['capacity'] = params.value;
+        return JSON.stringify(data);
+      }
+    })
+  })
+
+
+
 
 });
