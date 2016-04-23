@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>View the latest optimization</title>
+    <script th:src="@{/js/optimizations/index.js}"></script>
+</head>
+<body>
+<div layout:fragment="content" class="container">
+    <h1>View the latest optimization</h1>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Capacity</th>
+                    <th>Professor</th>
+                    <th>TAs</th>
+                    <th>Students</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="offering:${currentOfferings}" th:attr="data-offering-id=${offering.getId()}">
+                    <td th:text="${'CS - ' + offering.getCourse().getCourse_num() + ' ' + offering.getCourse().getCourse_name()}"></td>
+                    <td th:text="${offering.getCapacity()}"></td>
+                    <td>
+                        <span th:each="teacherOffering:${offering.getProfPool()}">
+                            <span th:text="${teacherOffering.getProfessor().getFirst_name() + ' ' + teacherOffering.getProfessor().getLast_name()}"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <span th:each="teacherOffering:${offering.getTaPool()}">
+                            <span th:text="${teacherOffering.getTa().getFirst_name() + ' ' + teacherOffering.getTa().getLast_name()}"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#studentList" >View student list</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal fade" id="studentList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="studentListLabel">Student list</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

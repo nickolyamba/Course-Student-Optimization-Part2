@@ -46,7 +46,7 @@ public class TeacherOffering implements Serializable {
 	/**
 	 * @return the student
 	 */
-	public User getTa() {
+	public User getProfessor() {
 		return teacher;
 	}
 

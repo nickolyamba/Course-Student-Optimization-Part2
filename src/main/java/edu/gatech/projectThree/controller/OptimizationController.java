@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by pjreed on 3/28/16.
@@ -89,5 +90,13 @@ public class OptimizationController {
             });
         });
         return "";
+    }
+
+    @RequestMapping(value = "/optimizations", method = RequestMethod.GET)
+    public String optimizations(Model model) {
+        CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
+        Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
+        model.addAttribute("currentOfferings", allCurrentOfferings);
+        return "optimizations/index";
     }
 }

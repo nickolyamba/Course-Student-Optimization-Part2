@@ -16,6 +16,7 @@
             </div>
             <div th:if="${#authentication.getPrincipal().getRole().toString()} eq 'ADMINISTRATOR'">
                 <a href="./optimizations/new" class="btn btn-default">Edit an optimization</a>
+                <a href="./optimizations" class="btn btn-default">View the results</a>
             </div>
             <form th:action="@{/logout}" method="post">
                 <input type="submit" value="Sign Out" class="btn btn-default"/>
