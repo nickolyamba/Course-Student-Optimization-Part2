@@ -22,6 +22,8 @@ $(document).ready(function() {
 
   $('[data-submit]').on('click', function() {
     var data = {};
+    data.includeGpa = {};
+    data.includeGpa[$('#include-gpa').val()] = [];
     $('[data-offering-id]').each(function() {
       var offering = $(this);
       var offeringId = offering.data().offeringId;

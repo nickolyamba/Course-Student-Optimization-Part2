@@ -77,6 +77,13 @@ public class OptimizationController {
         profRequestRepository.save(profRequest);
 
         json.forEach((offeringId, stringArrayListMap) -> {
+            try {
+                Integer.parseInt(offeringId);
+            } catch(NumberFormatException e) {
+                // do stuff here because it isn't an offering Id but is a string
+                System.out.println(offeringId);
+                return;
+            }
             Offering offering = offeringRepository.findOne(Long.valueOf(offeringId));
             stringArrayListMap.get("professors").forEach(profId -> {
                 Professor professor = professorRepository.findOne(Long.valueOf(profId));
