@@ -96,6 +96,9 @@ public class OptimizationController {
     public String optimizations(Model model) {
         CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
         Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
+        //List<Student>
+
+
         model.addAttribute("currentOfferings", allCurrentOfferings);
         return "optimizations/index";
     }

@@ -13,6 +13,7 @@ import java.util.Set;
 public class PrintOffering implements Serializable {
 
     private Offering offering;
+    private int capacity;
 
     private Set<Student> students = new HashSet<>();
     private Set<Professor> professors = new HashSet<>();
@@ -51,6 +52,14 @@ public class PrintOffering implements Serializable {
 
     public void setTas(Set<Ta> tas) {
         this.tas = tas;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     @Override

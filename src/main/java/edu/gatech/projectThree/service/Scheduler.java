@@ -254,7 +254,7 @@ public class Scheduler{
                 {
                     if(!coursesTaken.contains(prereq))
                     {
-                        issueMsg += "Prereq required: "+ "CS " +  prereq.getCourse_num() + " " +prereq.getCourse_name();
+                        issueMsg += "Prereq required: "+ "CS " +  prereq.getCourse_num() + " " + prereq.getCourse_name();
                         isPrereqIssue = true;
                     }
                     /*else

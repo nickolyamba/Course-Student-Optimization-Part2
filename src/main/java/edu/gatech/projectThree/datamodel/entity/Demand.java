@@ -16,6 +16,8 @@ public class Demand implements Serializable {
 
     private int demand;
 
+    private int total;
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="OFFERING_ID", nullable = false)
     private Offering offering;
@@ -23,6 +25,7 @@ public class Demand implements Serializable {
     public Demand(){}
 
     public Demand(Offering offering, int priority, int demand) {
+        this.offering = offering;
         this.priority = priority;
         this.demand = demand;
     }
@@ -57,6 +60,14 @@ public class Demand implements Serializable {
 
     public void setOffering(Offering offering) {
         this.offering = offering;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     @Override

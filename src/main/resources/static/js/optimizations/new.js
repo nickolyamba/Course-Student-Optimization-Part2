@@ -45,6 +45,15 @@ $(document).ready(function() {
         data[offeringId].tas.push($(this).data().taId);
       })
     });
+/*
+    // configs
+    //$("#gpa-check").val());
+    var checkGpa = $("#gpa-check").val();
+    var checkSenior = $("#senior-check").val();
+    data["checks"] = [];
+    data["checks"].push(checkGpa);
+    //console.log(data);
+*/
     $.ajax({
       url: "/optimizations/new",
       type: "post",
@@ -85,7 +94,7 @@ $(document).ready(function() {
 
   console.log('yolo');
 });
-
+/*
   function updateTextInput(val) {
         document.getElementById('slider-text').value = val;
-  }
+  }*/
