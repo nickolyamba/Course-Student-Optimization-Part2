@@ -20,13 +20,14 @@
             <div class="pull-right">
                 <button type="button" class="btn btn-success" data-submit>Submit</button>
             </div>
-            <div class="pull-right">
+            <div class="config-menu">
                 <label>Include GPA</label>
                 <input type="checkbox" name="include-gpa" checked>
                 <label>Include Seniority</label>
                 <input type="checkbox" name="include-seniority" checked>
                 <label>TA Optimization Coefficient</label>
-                <input id="slider1" type="range" min="0" max="20" step="1"/>
+                <input id="slider1" type="range" min="0" max="20" step="1" onchange="updateTextInput(this.value);"/>
+                <input type="text" id="slider-text" value="">
                 <label>Minimum Student-TA Ratio</label>
                 <input type="number" min="0" max="999">
                 <label>Maximum Student-TA Ratio</label>

@@ -85,3 +85,7 @@ $(document).ready(function() {
 
   console.log('yolo');
 });
+
+  function updateTextInput(val) {
+        document.getElementById('slider-text').value = val;
+  }
