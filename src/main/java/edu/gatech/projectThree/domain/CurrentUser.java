@@ -1,6 +1,7 @@
 package edu.gatech.projectThree.domain;
 
 import edu.gatech.projectThree.datamodel.entity.User;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 /**
@@ -12,6 +13,10 @@ public class CurrentUser extends org.springframework.security.core.userdetails.U
     public CurrentUser(User user) {
         super(user.getUserName(), user.getPassword(), AuthorityUtils.createAuthorityList(user.getUserType().toString()));
         this.user = user;
+    }
+
+    public Role getRole() {
+        return user.getUserType();
     }
 
     public User getUser() {
