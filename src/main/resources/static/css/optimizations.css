@@ -1,0 +1,12 @@
+.list-group {
+    min-height: 20px;
+}
+
+.offerings.panel {
+    height: 800px;
+    overflow-y: scroll;
+}
+
+li.list-group-item {
+    cursor: move;
+}
