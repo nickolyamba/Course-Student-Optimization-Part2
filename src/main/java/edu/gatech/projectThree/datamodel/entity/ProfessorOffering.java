@@ -24,13 +24,21 @@ public class ProfessorOffering {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private boolean isAssigned;
 
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name="OPTIMIZED_ID")
+    private OptimizedTime optimizedTime;
+
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name="PROFREQUEST_ID") //set to nullable to allow flexibility
+    private ProfRequest profRequest;
+
     public ProfessorOffering(){
     }
 
     // constructor
-    public ProfessorOffering(Professor professor, Offering offering) {
+    public ProfessorOffering(Professor professor, Offering offering, ProfRequest profRequest) {
         this.professor = professor;
-        //this.userType = professor.getUserType();
+        this.profRequest = profRequest;
         this.offering = offering;
         isAssigned = false; // by default Prof is not assigned to a course, until
         // Compute Engine produces solution that have a Student
@@ -92,15 +100,22 @@ public class ProfessorOffering {
     public void setAssigned(boolean isAssigned) {
         this.isAssigned = isAssigned;
     }
-/*
-    public UserType getUserType() {
-        return userType;
+
+    public OptimizedTime getOptimizedTime() {
+        return optimizedTime;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setOptimizedTime(OptimizedTime optimizedTime) {
+        this.optimizedTime = optimizedTime;
     }
-*/
+
+    public ProfRequest getProfRequest() {
+        return profRequest;
+    }
+
+    public void setProfRequest(ProfRequest profRequest) {
+        this.profRequest = profRequest;
+    }
 
     @Override
     public String toString() {

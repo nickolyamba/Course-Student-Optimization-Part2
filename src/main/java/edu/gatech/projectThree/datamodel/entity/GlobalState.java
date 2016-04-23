@@ -1,5 +1,6 @@
 package edu.gatech.projectThree.datamodel.entity;
 
+import edu.gatech.projectThree.repository.ConfigRepository;
 import edu.gatech.projectThree.repository.CurrentSemesterRepository;
 import edu.gatech.projectThree.repository.OfferingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ public class GlobalState {
     // these two used often, so makes sense to store them in the global state
     private CurrentSemesterRepository currentSemesterRepository;
     private OfferingRepository offeringRepository;
+    private ConfigRepository configRepository;
 
     private CurrentSemester currentSemObject;
+    private Config config;
     private Semester currentSemester;
     private List<Offering> offerings = new ArrayList<>();
     private List<Preference> preferences = new ArrayList<>();
@@ -117,6 +120,18 @@ public class GlobalState {
         this.currentSemesterRepository = currentSemesterRepository;
     }
 
+    @Autowired
+    public void setConfigRepository(ConfigRepository configRepository) {
+        this.configRepository = configRepository;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public void setConfig(Config config) {
+        this.config = config;
+    }
 
     //http://stackoverflow.com/questions/30454643
     @PostConstruct
@@ -125,6 +140,8 @@ public class GlobalState {
         // can't access Prefernces or semester.getYear() due to LAZY fetch in other beans...
         currentSemObject = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
         currentSemester = currentSemObject.getSemester();
+        config = configRepository.findTopByOrderByIdDesc();
         //offerings =  offeringRepository.findBySemesterOrderByIdAsc(currentSemester);
+
     }
 }

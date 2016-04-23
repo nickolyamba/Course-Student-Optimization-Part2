@@ -24,14 +24,22 @@ public class TaOffering {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private boolean isAssigned;
 
+	@ManyToOne(fetch= FetchType.LAZY)
+	@JoinColumn(name="OPTIMIZED_ID")
+	private OptimizedTime optimizedTime;
+
+	@ManyToOne(fetch= FetchType.LAZY)
+	@JoinColumn(name="TAREQUEST_ID") //nullable while developing
+	private TaRequest taRequest;
+
 	public TaOffering(){
 	}
 
 	// constructor
-	public TaOffering(Ta ta, Offering offering) {
+	public TaOffering(Ta ta, Offering offering, TaRequest taRequest) {
 		this.ta = ta;
-		//this.userType = ta.getUserType();
 		this.offering = offering;
+		this.taRequest = taRequest;
 		isAssigned = false; // by default Student is not assigned to a course, until
 		// Compute Engine produces solution that have a Student
 		// assigned to the Course. Set upon results of Gurobi computation
@@ -92,17 +100,24 @@ public class TaOffering {
 	public void setAssigned(boolean isAssigned) {
 		this.isAssigned = isAssigned;
 	}
-/*
-    public UserType getUserType() {
-        return userType;
+
+    public OptimizedTime getOptimizedTime() {
+        return optimizedTime;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setOptimizedTime(OptimizedTime optimizedTime) {
+        this.optimizedTime = optimizedTime;
     }
-*/
 
-	@Override
+    public TaRequest getTaRequest() {
+        return taRequest;
+    }
+
+    public void setTaRequest(TaRequest taRequest) {
+        this.taRequest = taRequest;
+    }
+
+    @Override
 	public String toString() {
 		return "TeacherOffering{" +
 				"id=" + id +
