@@ -1,13 +1,7 @@
 package edu.gatech.projectThree.controller;
 
-import edu.gatech.projectThree.datamodel.entity.Offering;
-import edu.gatech.projectThree.datamodel.entity.Professor;
-import edu.gatech.projectThree.datamodel.entity.Semester;
-import edu.gatech.projectThree.datamodel.entity.Ta;
-import edu.gatech.projectThree.repository.CurrentSemesterRepository;
-import edu.gatech.projectThree.repository.OfferingRepository;
-import edu.gatech.projectThree.repository.ProfessorRepository;
-import edu.gatech.projectThree.repository.TaRepository;
+import edu.gatech.projectThree.datamodel.entity.*;
+import edu.gatech.projectThree.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +24,9 @@ public class OptimizationController {
     private TaRepository taRepository;
     private ProfessorRepository professorRepository;
     private OfferingRepository offeringRepository;
+    private TaRequestRepository taRequestRepository;
+    private ProfRequestRepository profRequestRepository;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OptimizationController.class);
 
@@ -44,6 +41,16 @@ public class OptimizationController {
 
     @Autowired
     public void setOfferingRepository(OfferingRepository offeringRepository) { this.offeringRepository = offeringRepository; }
+
+    @Autowired
+    public void setTaRequestRepository(TaRequestRepository taRequestRepository) {
+        this.taRequestRepository = taRequestRepository;
+    }
+
+    @Autowired
+    public void setProfRequestRepository(ProfRequestRepository profRequestRepository) {
+        this.profRequestRepository = profRequestRepository;
+    }
 
     @RequestMapping(value = "/optimizations/new", method = RequestMethod.GET)
     public String newOptimization(Model model) {
@@ -62,16 +69,22 @@ public class OptimizationController {
     @RequestMapping(value = "/optimizations/new", method = RequestMethod.POST)
     @ResponseBody
     public String newOptimizationPost(@RequestBody Map<String, Map<String, ArrayList<String>>> json) {
+        TaRequest taRequest = new TaRequest();
+        taRequestRepository.save(taRequest);
+
+        ProfRequest profRequest = new ProfRequest();
+        profRequestRepository.save(profRequest);
+
         json.forEach((offeringId, stringArrayListMap) -> {
             Offering offering = offeringRepository.findOne(Long.valueOf(offeringId));
             stringArrayListMap.get("professors").forEach(profId -> {
                 Professor professor = professorRepository.findOne(Long.valueOf(profId));
-                professor.addOffering(offering);
+                professor.addOffering(offering, profRequest);
                 professorRepository.save(professor);
             });
             stringArrayListMap.get("tas").forEach(taId -> {
                 Ta ta = taRepository.findOne(Long.valueOf(taId));
-                ta.addOffering(offering);
+                ta.addOffering(offering, taRequest);
                 taRepository.save(ta);
             });
         });
