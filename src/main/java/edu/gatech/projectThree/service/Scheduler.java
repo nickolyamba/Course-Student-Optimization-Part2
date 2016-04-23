@@ -32,6 +32,7 @@ public class Scheduler{
     private ProfessorOfferingRepository profOfferingRepository;
     private TaOfferingRepository taOfferingRepository;
     private OptimizedTimeRepository optimizedTimeRepository;
+    private PreferenceRepository preferenceRepository;
     private RequestRepository requestRepository;
     private GlobalState state;
 
@@ -94,6 +95,11 @@ public class Scheduler{
     }
 
     @Autowired
+    public void setPreferenceRepository(PreferenceRepository preferenceRepository) {
+        this.preferenceRepository = preferenceRepository;
+    }
+
+    @Autowired
     public void setState(GlobalState state) {
         this.state = state;
     }
@@ -136,7 +142,7 @@ public class Scheduler{
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
 
-            showLogs(requests, preferences, students, offerings, professors, tas);
+            //showLogs(requests, preferences, students, offerings, professors, tas);
 
             // initialize gurobi variables variables here
             GRBVar[] profG = new GRBVar[profOfferings.size()];
@@ -230,24 +236,55 @@ public class Scheduler{
 
         //----------------------- Update Preferences ----------------------\\
         int k = 0;
+        Student student;
+        Set<Course> coursesTaken;
+        Set<Course> prereqCourses;
+        String issueMsg = "", recommendMsg = "";
+        boolean isPrereqIssue = false;
         for (Preference preference : preferences)
         {
             //LOGGER.info(preference.toString());
+            //
             if(prefArray[k] > 0)
             {
+                coursesTaken = preference.getStudent().getCoursesTaken();
+                prereqCourses = preference.getOffering().getCourse().getPrereqs();
+
+                for(Course prereq : prereqCourses)
+                {
+                    if(!coursesTaken.contains(prereq))
+                    {
+                        issueMsg += "Prereq required: "+ "CS " +  prereq.getCourse_num() + " " +prereq.getCourse_name();
+                        isPrereqIssue = true;
+                    }
+                    /*else
+                    {
+                        LOGGER.info("Stud" + preference.getStudent().getId() + " " + " Course: " +
+                                preference.getOffering().getCourse().getId() + " " + "Prereq " + prereq.getId() + " satisfied");
+                    }*/
+                }
+                recommendMsg = (isPrereqIssue) ? "You've being assigned, but " + issueMsg : "You've being assigned";
+                //if(isPrereqIssue)
+                //    LOGGER.info( "Course: " + preference.getOffering().getCourse().getId() + " " +  recommendMsg);
                 preference.setAssigned(true);
-                preference.setRecommend("You've being assigned");
-                preference.setOptimizedTime(timestamp);
-            }
+                preference.setRecommend(recommendMsg);
+                //preference.setOptimizedTime(timestamp);
+                issueMsg = "";
+                recommendMsg = "";
+                isPrereqIssue = false;
+
+            }//if
 
             else
             {
                 preference.setAssigned(false);
                 preference.setRecommend("Didn't get in class");
-                preference.setOptimizedTime(timestamp);
+                //preference.setOptimizedTime(timestamp);
             }
             k++;
-        }
+
+            preferenceRepository.save(preference);
+        }//for
 
         //----------------------- Update TaOfferings -------------------\\
         k = 0;
@@ -266,6 +303,7 @@ public class Scheduler{
                 taOffering.setOptimizedTime(timestamp);
             }
             k++;
+            taOfferingRepository.save(taOffering);
         }
 
         //----------------------- Update ProfessorOfferings -------------------\\
@@ -285,6 +323,7 @@ public class Scheduler{
                 profOffering.setOptimizedTime(timestamp);
             }
             k++;
+            profOfferingRepository.save(profOffering);
         }
 
     }//postResultsToDb()
@@ -347,7 +386,7 @@ public class Scheduler{
         int k = 0;
         for (Preference preference : preferences)
         {
-            if (prefArray[k] > 0)
+            //if (prefArray[k] > 0)
                 LOGGER.info("prefG["+ String.valueOf(preference.getId()) +"] = " + prefArray[k] +
                                     "\t\tstud["+ String.valueOf(preference.getStudent().getId()) +"]"+
                                     "["+ String.valueOf(preference.getOffering().getId()) + "]=" +

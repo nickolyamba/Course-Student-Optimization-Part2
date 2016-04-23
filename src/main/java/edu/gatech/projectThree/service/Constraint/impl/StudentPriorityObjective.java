@@ -62,7 +62,7 @@ public class StudentPriorityObjective extends BaseConstraint {
 
         if (state.getConfig().isGpa() && state.getConfig().isSeniority())
         {
-            LOGGER.info("BOTH ARE TRUE");
+            //LOGGER.info("BOTH ARE TRUE");
             for (Preference preference : preferences)
             {
                 priority = preference.getPriority();
@@ -86,7 +86,7 @@ public class StudentPriorityObjective extends BaseConstraint {
 
         else if(state.getConfig().isGpa())
         {
-            LOGGER.info("isGpa() is TRUE");
+            //LOGGER.info("isGpa() is TRUE");
             for (Preference preference : preferences)
             {
                 priority = preference.getPriority();
@@ -110,7 +110,7 @@ public class StudentPriorityObjective extends BaseConstraint {
 
         else if(state.getConfig().isSeniority())
         {
-            LOGGER.info("isSeniority() is TRUE");
+            //LOGGER.info("isSeniority() is TRUE");
             for (Preference preference : preferences)
             {
                 priority = preference.getPriority();
@@ -133,7 +133,7 @@ public class StudentPriorityObjective extends BaseConstraint {
 
         // Both False
         else
-        {   LOGGER.info("BOTH ARE FALSE");
+        {   //LOGGER.info("BOTH ARE FALSE");
             for (Preference preference : preferences)
             {
                 priority = preference.getPriority();
