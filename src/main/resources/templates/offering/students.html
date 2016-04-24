@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout_no_container">
+<body>
+    <div layout:fragment="content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Priority</th>
+                    <th>Seniority</th>
+                    <th>GPA</th>
+                    <th>Concentration</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="student:${offering.getStudents()}">
+                    <td th:text="${student.getFirst_name() + ' ' + student.getLast_name()}"></td>
+                    <td></td>
+                    <td></td>
+                    <td th:text="${student.getGpa()}"></td>
+                    <td th:text="${student.getSpecialization().getName()}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
