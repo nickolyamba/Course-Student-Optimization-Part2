@@ -75,26 +75,26 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="offering:${currentOfferings}" th:attr="data-offering-id=${offering.getId()}">
-                    <td th:text="${'CS - ' + offering.getCourse().getCourse_num() + ' ' + offering.getCourse().getCourse_name()}"></td>
-                    <td th:text="${offering.getCapacity()}"></td>
+                <tr th:each="printOffering:${currentOfferings}" th:attr="data-offering-id=${printOffering.getOffering().getId()}">
+                    <td th:text="${'ID# ' + printOffering.getOffering().getId() + '  CS - ' + printOffering.getOffering().getCourse().getCourse_num() + ' ' + printOffering.getOffering().getCourse().getCourse_name()}"></td>
+                    <td th:text="${printOffering.getCapacity()}"></td>
                     <td>
-                        <span th:each="teacherOffering:${offering.getProfPool()}">
-                            <span th:text="${teacherOffering.getProfessor().getFirst_name() + ' ' + teacherOffering.getProfessor().getLast_name()}"></span>
+                        <span th:each="professor:${printOffering.getProfessors()}">
+                            <span th:text="${professor.getFirst_name() + ' ' + professor.getLast_name() + ', '}"></span>
                         </span>
                     </td>
                     <td>
-                        <span th:each="teacherOffering:${offering.getTaPool()}">
-                            <span th:text="${teacherOffering.getTa().getFirst_name() + ' ' + teacherOffering.getTa().getLast_name()}"></span>
+                        <span th:each="ta:${printOffering.getTas()}">
+                            <span th:text="${ta.getFirst_name() + ' ' + ta.getLast_name() + ', '}"></span>
                         </span>
                     </td>
                     <td>
-                        <span th:each="preference:${offering.getPreferences()}">
-                            <span th:text="${preference.getStudent().getFirst_name() + ' ' + preference.getStudent().getLast_name()}"></span>
+                        <span th:each="preference:${printOffering.getPreferences()}">
+                            <span th:text="${'pref #' + preference.getId() + ' ' + preference.getStudent().getFirst_name() + ' ' + preference.getStudent().getLast_name() + ', Optimized: ' + preference.getOptimizedTime()}"></span>
                         </span>
                     </td>
-                    <td>                                      <!--      May be we can store list of students as an Javasceipt array? -->
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#studentList" th:attr="data-student=${offering.getId()}">View student list</button>
+                    <td>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#studentList">View student list</button>
 
                         <div class="modal fade" id="studentList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                             <div class="modal-dialog" role="document">
@@ -102,17 +102,19 @@
                                     <div class="modal-header">
                                         <h4 class="modal-title" id="studentListLabel">Student list</h4>
                                     </div>
+
                                     <div class="modal-body">
                                         <table id="studs">
                                             <tbody>
-                                            <tr th:each="preference:${offering.getPreferences()}">
-                                                 <td th:text="${preference.getStudent().getFirst_name() + ' ' + preference.getStudent().getLast_name()}">1</td>
+                                            <tr th:each="student:${printOffering.getStudents()}">
+                                                 <td th:text="${student.getFirst_name() + ' ' + student.getLast_name()}">1</td>
                                                 <!-- <td th:text="${preference.getPriority()">Thymus Thymi</td>-->
                                             </tr>
                                             </tbody>
                                         </table>
 
                                     </div>
+
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-default" data-dismiss="modal" id="closeBtn">Close</button>
                                     </div>

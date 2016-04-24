@@ -3,8 +3,8 @@ package edu.gatech.projectThree.datamodel.entity;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nick on 3/18/16.
@@ -15,9 +15,10 @@ public class PrintOffering implements Serializable {
     private Offering offering;
     private int capacity;
 
-    private Set<Student> students = new HashSet<>();
-    private Set<Professor> professors = new HashSet<>();
-    private Set<Ta> tas = new HashSet<>();
+    private List<Student> students = new ArrayList<>();
+    private List<Professor> professors = new ArrayList<>();
+    private List<Ta> tas = new ArrayList<>();
+    private List<Preference> preferences = new ArrayList<>();
 
     public PrintOffering(){}
     public PrintOffering(Offering offering){this.offering = offering;}
@@ -30,27 +31,27 @@ public class PrintOffering implements Serializable {
         this.offering = offering;
     }
 
-    public Set<Student> getStudents() {
+    public List<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(Set<Student> students) {
+    public void setStudents(List<Student> students) {
         this.students = students;
     }
 
-    public Set<Professor> getProfessors() {
+    public List<Professor> getProfessors() {
         return professors;
     }
 
-    public void setProfessors(Set<Professor> professors) {
+    public void setProfessors(List<Professor> professors) {
         this.professors = professors;
     }
 
-    public Set<Ta> getTas() {
+    public List<Ta> getTas() {
         return tas;
     }
 
-    public void setTas(Set<Ta> tas) {
+    public void setTas(List<Ta> tas) {
         this.tas = tas;
     }
 
@@ -62,10 +63,22 @@ public class PrintOffering implements Serializable {
         this.capacity = capacity;
     }
 
-    @Override
+    public List<Preference> getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(List<Preference> preferences) {
+        this.preferences = preferences;
+    }
+
+   @Override
     public String toString() {
-        return "Offering{" +
-                "offering=" + offering.toString() +
-                '}';
+        return "PrintOffering{" +
+            "offering=" + getOffering().getId() +
+            ", tas='" + tas.toString() + '\'' +
+            ", prof='" + professors.toString() + '\'' +
+            "studs=" + students.toString() +
+            //", offering=" + offerings +
+            '}';
     }
 }
