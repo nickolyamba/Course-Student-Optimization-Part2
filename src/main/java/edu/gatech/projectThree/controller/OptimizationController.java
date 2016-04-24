@@ -106,8 +106,8 @@ public class OptimizationController {
     public String optimizations(Model model) {
         CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
         // fetches all the Offerings...
-        List<Offering> allCurrentOfferings = offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
-        //Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
+        //List<Offering> allCurrentOfferings = offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
+        Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
 
         OptimizedTime lastOptimized = optimizedTimeRepository.findTopByOrderByTimestampDesc();
         LOGGER.info("!!!!!!OptimzedTime: " + lastOptimized.toString());
@@ -186,13 +186,6 @@ public class OptimizationController {
             LOGGER.info(printOffering.toString());
 
         }//for
-
-        LOGGER.info("!!!Preferences!!! requested:");
-        LOGGER.info("-------------------------------");
-        for (PrintOffering printOffering : printOfferings) {
-            LOGGER.info(printOffering.toString());
-        }
-        LOGGER.info("");
 
         model.addAttribute("currentOfferings", printOfferings);
         return "optimizations/index";

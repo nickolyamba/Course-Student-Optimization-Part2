@@ -124,7 +124,7 @@ public class Scheduler{
             // remove offerings that has no preferences and populate offeringIDs
             for (Iterator<Offering> it = offerings.iterator(); it.hasNext();)
             {
-                Offering offering = (Offering)it.next();
+                Offering offering = it.next();
                 offeringIDs.add(offering.getId());
                 if(offering.getPreferences().isEmpty())
                     it.remove();
@@ -211,7 +211,7 @@ public class Scheduler{
 
             //------------------------------------- Save results in the database -----------------------------------\\
             postResultsToDb(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray, currSemester);
-            showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
+            //showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
 
             // Dispose of model and environment
             model.dispose();
@@ -268,7 +268,7 @@ public class Scheduler{
                 //    LOGGER.info( "Course: " + preference.getOffering().getCourse().getId() + " " +  recommendMsg);
                 preference.setAssigned(true);
                 preference.setRecommend(recommendMsg);
-                //preference.setOptimizedTime(timestamp);
+                preference.setOptimizedTime(timestamp);
                 issueMsg = "";
                 recommendMsg = "";
                 isPrereqIssue = false;
@@ -279,7 +279,7 @@ public class Scheduler{
             {
                 preference.setAssigned(false);
                 preference.setRecommend("Didn't get in class");
-                //preference.setOptimizedTime(timestamp);
+                preference.setOptimizedTime(timestamp);
             }
             k++;
 
@@ -386,7 +386,7 @@ public class Scheduler{
         int k = 0;
         for (Preference preference : preferences)
         {
-            //if (prefArray[k] > 0)
+            if (prefArray[k] > 0)
                 LOGGER.info("prefG["+ String.valueOf(preference.getId()) +"] = " + prefArray[k] +
                                     "\t\tstud["+ String.valueOf(preference.getStudent().getId()) +"]"+
                                     "["+ String.valueOf(preference.getOffering().getId()) + "]=" +
