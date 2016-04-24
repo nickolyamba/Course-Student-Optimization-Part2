@@ -20,10 +20,17 @@ $(document).ready(function() {
     });
   });
 
+  $('#min-ta').val("1");
+  $('#max-ta').val("50");
+
   $('[data-submit]').on('click', function() {
     var data = {};
     data.includeGpa = {};
-    data.includeGpa[$('#include-gpa').val()] = [];
+    data.includeGpa["configs"] = [$('#include-gpa').is(':checked'),
+                                    $('#include-seniority').is(':checked'),
+                                    $('#ta-coefficient').val(),
+                                    $('#min-ta').val(),
+                                    $('#max-ta').val()];
     $('[data-offering-id]').each(function() {
       var offering = $(this);
       var offeringId = offering.data().offeringId;

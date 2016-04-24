@@ -2,6 +2,8 @@ package edu.gatech.projectThree.datamodel.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by nick on 3/18/16.
@@ -12,11 +14,11 @@ public class Demand implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private int priority;
-
-    private int demand;
-
-    private int total;
+    @ElementCollection
+    @MapKeyColumn(name="demand")
+    @Column(name="priority")
+    @CollectionTable(name="demand_priority", joinColumns=@JoinColumn(name="priority_id"))
+    Map<String, Integer> demand = new HashMap<String, Integer>();
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="OFFERING_ID", nullable = false)
@@ -24,10 +26,8 @@ public class Demand implements Serializable {
 
     public Demand(){}
 
-    public Demand(Offering offering, int priority, int demand) {
+    public Demand(Offering offering) {
         this.offering = offering;
-        this.priority = priority;
-        this.demand = demand;
     }
 
     public long getId() {
@@ -38,22 +38,6 @@ public class Demand implements Serializable {
         this.id = id;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public int getDemand() {
-        return demand;
-    }
-
-    public void setDemand(int demand) {
-        this.demand = demand;
-    }
-
     public Offering getOffering() {
         return offering;
     }
@@ -62,12 +46,12 @@ public class Demand implements Serializable {
         this.offering = offering;
     }
 
-    public int getTotal() {
-        return total;
+    public Map<String, Integer> getDemandMap() {
+        return demand;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
+    public void setDemandMap(Map<String, Integer> demand) {
+        this.demand = demand;
     }
 
     @Override
@@ -75,8 +59,7 @@ public class Demand implements Serializable {
         return "Demand{" +
                 "id=" + id +
                 ", offering=" + offering.toString()+
-                ", priority=" + priority +
-                ", demand=" + demand +
+                ", demand=" + demand.toString() +
                 '}';
     }
 }

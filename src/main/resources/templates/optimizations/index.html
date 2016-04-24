@@ -69,6 +69,7 @@
                 <tr>
                     <th>Course</th>
                     <th>Capacity</th>
+                    <th>Demand</th>
                     <th>Professor</th>
                     <th>TAs</th>
                     <th>Students</th>
@@ -78,6 +79,7 @@
                 <tr th:each="printOffering:${currentOfferings}" th:attr="data-offering-id=${printOffering.getOffering().getId()}">
                     <td th:text="${'ID# ' + printOffering.getOffering().getId() + '  CS - ' + printOffering.getOffering().getCourse().getCourse_num() + ' ' + printOffering.getOffering().getCourse().getCourse_name()}"></td>
                     <td th:text="${printOffering.getCapacity()}"></td>
+                    <td th:text="${printOffering.getDemand().getDemandMap().get('total')}"></td>
                     <td>
                         <span th:each="professor:${printOffering.getProfessors()}">
                             <span th:text="${professor.getFirst_name() + ' ' + professor.getLast_name() + ', '}"></span>

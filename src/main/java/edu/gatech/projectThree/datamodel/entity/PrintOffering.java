@@ -14,6 +14,7 @@ public class PrintOffering implements Serializable {
 
     private Offering offering;
     private int capacity;
+    private Demand demand;
 
     private List<Student> students = new ArrayList<>();
     private List<Professor> professors = new ArrayList<>();
@@ -71,13 +72,21 @@ public class PrintOffering implements Serializable {
         this.preferences = preferences;
     }
 
-   @Override
+    public Demand getDemand() {
+        return demand;
+    }
+
+    public void setDemand(Demand demand) {
+        this.demand = demand;
+    }
+
+    @Override
     public String toString() {
         return "PrintOffering{" +
             "offering=" + getOffering().getId() +
             ", tas='" + tas.toString() + '\'' +
             ", prof='" + professors.toString() + '\'' +
-            "studs=" + students.toString() +
+            ", studs=" + students.toString() +
             //", offering=" + offerings +
             '}';
     }
