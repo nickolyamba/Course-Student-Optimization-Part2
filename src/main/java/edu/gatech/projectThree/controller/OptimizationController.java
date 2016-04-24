@@ -110,7 +110,7 @@ public class OptimizationController {
         Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
 
         OptimizedTime lastOptimized = optimizedTimeRepository.findTopByOrderByTimestampDesc();
-        LOGGER.info("!!!!!!OptimzedTime: " + lastOptimized.toString());
+        //LOGGER.info("!!!!!!OptimzedTime: " + lastOptimized.toString());
 /*
         ArrayList<Preference> preferences = preferenceRepository.findLastOptimizedPreferencesByOffering();
         ArrayList<Offering> offerings = new ArrayList<Offering>();
@@ -183,7 +183,7 @@ public class OptimizationController {
             printOfferings.add(printOffering);
             //printOffering.setDemand(demand);
 
-            LOGGER.info(printOffering.toString());
+            //LOGGER.info(printOffering.toString());
 
         }//for
 

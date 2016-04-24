@@ -169,7 +169,7 @@ public class StudentPriorityObjective extends BaseConstraint {
         }
 
         model.setObjective(obj, GRB.MINIMIZE);
-        model.update(); ///// ----------> remove in production
+        //model.update(); ///// ----------> remove in production
 
     }//constrain()
 }//class

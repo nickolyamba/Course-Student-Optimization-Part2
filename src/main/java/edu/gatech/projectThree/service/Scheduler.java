@@ -110,7 +110,7 @@ public class Scheduler{
         double result = 0;
         try {
             GRBEnv env = new GRBEnv("mip1.log");
-            env.set(GRB.IntParam.LogToConsole, 1);
+            env.set(GRB.IntParam.LogToConsole, 0);
             GRBModel model = new GRBModel(env);
 
             // get current semester
@@ -195,14 +195,14 @@ public class Scheduler{
                                                             preferences);
             }
 
-            model.update();//                              ------> comment out for production
-            model.write("constraints.lp"); // constraints  ------> comment out for production
+            //model.update();//                              ------> comment out for production
+            //model.write("constraints.lp"); // constraints  ------> comment out for production
             model.optimize();
 
             //model.computeIIS();
             //model.write("infeasible.ilp");
 
-            model.write("solution.sol"); // solution       ------> comment out for production
+            //model.write("solution.sol"); // solution       ------> comment out for production
 
             double[] prefArray = model.get(GRB.DoubleAttr.X, prefG);
             double[] taOfferArray = model.get(GRB.DoubleAttr.X, taG);

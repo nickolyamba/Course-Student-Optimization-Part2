@@ -90,7 +90,7 @@
                     </td>
                     <td>
                         <span th:each="preference:${printOffering.getPreferences()}">
-                            <span th:text="${'pref #' + preference.getId() + ' ' + preference.getStudent().getFirst_name() + ' ' + preference.getStudent().getLast_name() + ', Optimized: ' + preference.getOptimizedTime()}"></span>
+                            <span th:text="${preference.getStudent().getFirst_name() + ' ' + preference.getStudent().getLast_name() + ', '}"></span>
                         </span>
                     </td>
                     <td>
