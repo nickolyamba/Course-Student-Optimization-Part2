@@ -110,7 +110,7 @@ public class Scheduler{
         double result = 0;
         try {
             GRBEnv env = new GRBEnv("mip1.log");
-            env.set(GRB.IntParam.LogToConsole, 1);
+            env.set(GRB.IntParam.LogToConsole, 0);
             GRBModel model = new GRBModel(env);
 
             // get current semester
@@ -124,7 +124,7 @@ public class Scheduler{
             // remove offerings that has no preferences and populate offeringIDs
             for (Iterator<Offering> it = offerings.iterator(); it.hasNext();)
             {
-                Offering offering = (Offering)it.next();
+                Offering offering = it.next();
                 offeringIDs.add(offering.getId());
                 if(offering.getPreferences().isEmpty())
                     it.remove();
@@ -195,14 +195,14 @@ public class Scheduler{
                                                             preferences);
             }
 
-            model.update();//                              ------> comment out for production
-            model.write("constraints.lp"); // constraints  ------> comment out for production
+            //model.update();//                              ------> comment out for production
+            //model.write("constraints.lp"); // constraints  ------> comment out for production
             model.optimize();
 
             //model.computeIIS();
             //model.write("infeasible.ilp");
 
-            model.write("solution.sol"); // solution       ------> comment out for production
+            //model.write("solution.sol"); // solution       ------> comment out for production
 
             double[] prefArray = model.get(GRB.DoubleAttr.X, prefG);
             double[] taOfferArray = model.get(GRB.DoubleAttr.X, taG);
@@ -211,7 +211,7 @@ public class Scheduler{
 
             //------------------------------------- Save results in the database -----------------------------------\\
             postResultsToDb(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray, currSemester);
-            showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
+            //showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
 
             // Dispose of model and environment
             model.dispose();
@@ -254,7 +254,7 @@ public class Scheduler{
                 {
                     if(!coursesTaken.contains(prereq))
                     {
-                        issueMsg += "Prereq required: "+ "CS " +  prereq.getCourse_num() + " " +prereq.getCourse_name();
+                        issueMsg += "Prereq required: "+ "CS " +  prereq.getCourse_num() + " " + prereq.getCourse_name();
                         isPrereqIssue = true;
                     }
                     /*else
@@ -268,7 +268,7 @@ public class Scheduler{
                 //    LOGGER.info( "Course: " + preference.getOffering().getCourse().getId() + " " +  recommendMsg);
                 preference.setAssigned(true);
                 preference.setRecommend(recommendMsg);
-                //preference.setOptimizedTime(timestamp);
+                preference.setOptimizedTime(timestamp);
                 issueMsg = "";
                 recommendMsg = "";
                 isPrereqIssue = false;
@@ -279,7 +279,7 @@ public class Scheduler{
             {
                 preference.setAssigned(false);
                 preference.setRecommend("Didn't get in class");
-                //preference.setOptimizedTime(timestamp);
+                preference.setOptimizedTime(timestamp);
             }
             k++;
 
@@ -386,7 +386,7 @@ public class Scheduler{
         int k = 0;
         for (Preference preference : preferences)
         {
-            //if (prefArray[k] > 0)
+            if (prefArray[k] > 0)
                 LOGGER.info("prefG["+ String.valueOf(preference.getId()) +"] = " + prefArray[k] +
                                     "\t\tstud["+ String.valueOf(preference.getStudent().getId()) +"]"+
                                     "["+ String.valueOf(preference.getOffering().getId()) + "]=" +

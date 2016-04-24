@@ -6,6 +6,19 @@ $(document).ready(function() {
     console.log(offeringId);
     $.getJSON('/offerings/' + offeringId).done(function(data) {
       console.log(data);
+      //for(i = 0; i < data._links.preferences.length; i++)
     })
+
+
+    /*
+    $("#studs").html("");
+    for (var index = 0; index < contact_name.length; ++index) {
+        var div_inner =
+        '<li class="list-group-item" id="';
+
+        $(".contact_element").append(div_inner);
+    }*/
+
+   }
   })
 });

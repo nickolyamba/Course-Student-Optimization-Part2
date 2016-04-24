@@ -7,5 +7,6 @@ import org.springframework.data.repository.CrudRepository;
  * Created by Kolya on 4/2/2016.
  */
 public interface OptimizedTimeRepository extends CrudRepository<OptimizedTime, Long> {
+    OptimizedTime findTopByOrderByTimestampDesc();
     //OptimizedTime save(OptimizedTime timestamp);
 }

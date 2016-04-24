@@ -5,7 +5,60 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>View the latest optimization</title>
-    <script th:src="@{/js/optimizations/index.js}"></script>
+    <!-- <script th:src="@{/js/optimizations/index.js}" type="text/javascript" th:inline="text"></script> -->
+
+     <script th:inline="javascript">
+
+ </script>
+
+    <!-- http://blog.florentlim.com/how-to-write-javascript-including-thymeleaf/
+    http://stackoverflow.com/questions/25687816/setting-up-a-javascript-variable-from-spring-model-by-using-thymeleaf-->
+     <script type="text/javascript" th:inline="javascript">
+         /*<![CDATA[*/
+         $(document).ready(function(){
+             $('#studentList').on('show.bs.modal', function (event) {
+                 var button = $(event.relatedTarget)
+                 var offeringId = button.closest('[data-offering-id]').data().offeringId;
+                 console.log(button)
+                 console.log(offeringId);
+                 $.getJSON('/offerings/' + offeringId).done(function(data) {
+                    console.log(data);
+
+                 })
+
+             // showDialog([[#{currentOfferings}]]);
+            /* is not evaluated - produces empty result
+             $('table#studs tbody').append(
+             "<tr th:each='preference:${offering.getPreferences()}'>"+
+                 "<td th:text='${preference.getStudent().getFirst_name() + preference.getStudent().getLast_name()}'>"+"</td>"+
+             "</tr>")
+             */
+
+    });//onclick
+
+ });
+         /*]]>*/
+     </script>
+
+     <!--
+     <script>
+         $(document).ready(function(){
+           $('input#addFileRow').live('click', function(){
+           var fileIndex = $('table#uploadFiles tbody').children().length;
+           $('table#uploadFiles tbody').append(
+             "<tr>" +
+               "<th>[[#{label.file}]] " + (fileIndex + 1) + "</th>" +
+               "<td>" +
+                 "<input type='file' name='filename[" + fileIndex + "]' />" +
+               "</td>" +
+             "</tr>");
+           });
+         });
+
+                          //var message = [[${currentOfferings}]];
+                 //console.log(message);
+     </script> -->
+
 </head>
 <body>
 <div layout:fragment="content" class="container">
@@ -16,47 +69,67 @@
                 <tr>
                     <th>Course</th>
                     <th>Capacity</th>
+                    <th>Demand</th>
                     <th>Professor</th>
                     <th>TAs</th>
                     <th>Students</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="offering:${currentOfferings}" th:attr="data-offering-id=${offering.getId()}">
-                    <td th:text="${'CS - ' + offering.getCourse().getCourse_num() + ' ' + offering.getCourse().getCourse_name()}"></td>
-                    <td th:text="${offering.getCapacity()}"></td>
+                <tr th:each="printOffering:${currentOfferings}" th:attr="data-offering-id=${printOffering.getOffering().getId()}">
+                    <td th:text="${'ID# ' + printOffering.getOffering().getId() + '  CS - ' + printOffering.getOffering().getCourse().getCourse_num() + ' ' + printOffering.getOffering().getCourse().getCourse_name()}"></td>
+                    <td th:text="${printOffering.getCapacity()}"></td>
+                    <td th:text="${printOffering.getDemand().getDemandMap().get('total')}"></td>
                     <td>
-                        <span th:each="teacherOffering:${offering.getProfPool()}">
-                            <span th:text="${teacherOffering.getProfessor().getFirst_name() + ' ' + teacherOffering.getProfessor().getLast_name()}"></span>
+                        <span th:each="professor:${printOffering.getProfessors()}">
+                            <span th:text="${professor.getFirst_name() + ' ' + professor.getLast_name() + ', '}"></span>
                         </span>
                     </td>
                     <td>
-                        <span th:each="teacherOffering:${offering.getTaPool()}">
-                            <span th:text="${teacherOffering.getTa().getFirst_name() + ' ' + teacherOffering.getTa().getLast_name()}"></span>
+                        <span th:each="ta:${printOffering.getTas()}">
+                            <span th:text="${ta.getFirst_name() + ' ' + ta.getLast_name() + ', '}"></span>
                         </span>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#studentList" >View student list</button>
+                        <span th:each="preference:${printOffering.getPreferences()}">
+                            <span th:text="${preference.getStudent().getFirst_name() + ' ' + preference.getStudent().getLast_name() + ', '}"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#studentList">View student list</button>
+
+                        <div class="modal fade" id="studentList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="studentListLabel">Student list</h4>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <table id="studs">
+                                            <tbody>
+                                            <tr th:each="student:${printOffering.getStudents()}">
+                                                 <td th:text="${student.getFirst_name() + ' ' + student.getLast_name()}">1</td>
+                                                <!-- <td th:text="${preference.getPriority()">Thymus Thymi</td>-->
+                                            </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" id="closeBtn">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <div class="modal fade" id="studentList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="studentListLabel">Student list</h4>
-                </div>
-                <div class="modal-body">
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 </body>
 </html>

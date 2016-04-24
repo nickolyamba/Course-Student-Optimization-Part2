@@ -20,8 +20,17 @@ $(document).ready(function() {
     });
   });
 
+  $('#min-ta').val("1");
+  $('#max-ta').val("50");
+
   $('[data-submit]').on('click', function() {
     var data = {};
+    data.includeGpa = {};
+    data.includeGpa["configs"] = [$('#include-gpa').is(':checked'),
+                                    $('#include-seniority').is(':checked'),
+                                    $('#ta-coefficient').val(),
+                                    $('#min-ta').val(),
+                                    $('#max-ta').val()];
     $('[data-offering-id]').each(function() {
       var offering = $(this);
       var offeringId = offering.data().offeringId;
@@ -45,6 +54,15 @@ $(document).ready(function() {
         data[offeringId].tas.push($(this).data().taId);
       })
     });
+/*
+    // configs
+    //$("#gpa-check").val());
+    var checkGpa = $("#gpa-check").val();
+    var checkSenior = $("#senior-check").val();
+    data["checks"] = [];
+    data["checks"].push(checkGpa);
+    //console.log(data);
+*/
     $.ajax({
       url: "/optimizations/new",
       type: "post",
@@ -86,6 +104,3 @@ $(document).ready(function() {
   console.log('yolo');
 });
 
-  function updateTextInput(val) {
-        document.getElementById('slider-text').value = val;
-  }

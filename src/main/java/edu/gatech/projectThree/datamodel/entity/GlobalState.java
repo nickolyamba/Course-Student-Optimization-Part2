@@ -131,6 +131,7 @@ public class GlobalState {
 
     public void setConfig(Config config) {
         this.config = config;
+        configRepository.save(config);
     }
 
     //http://stackoverflow.com/questions/30454643
@@ -142,6 +143,5 @@ public class GlobalState {
         currentSemester = currentSemObject.getSemester();
         config = configRepository.findTopByOrderByIdDesc();
         //offerings =  offeringRepository.findBySemesterOrderByIdAsc(currentSemester);
-
     }
 }

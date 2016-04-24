@@ -44,15 +44,15 @@ public class StudentPriorityObjective extends BaseConstraint {
     //obj.addTerm(CONCENTRATION_K*priority*(SENIORITY_K - seniority.ordinal())*(GPA_K - gpa), prefG[k]);
 
     // Minimization of TAs contribution coefficient
-    private double TA_MIN_COEFF = 2.5; //2.4; // > 2.5 goes to the TA side on custom data sample
+    private double TA_COEFF;// = 2.5; //2.4; // > 2.5 goes to the TA side on small custom data sample
 
     @Override
     public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings, GRBVar[] tasOfferings,
                           List<Student> students, List<Offering> offerings, List<Professor> professors, List<Ta> tas,
                           List<TaOffering> taOfferings, List<ProfessorOffering> profOfferings, List<Preference> preferences)
                           throws GRBException {
-        LOGGER.info("Config: " + state.getConfig());
-        TA_MIN_COEFF = state.getConfig().getTaCoeff();
+        //LOGGER.info("Config: " + state.getConfig());
+        TA_COEFF = state.getConfig().getTaCoeff();
         int priority;
         int k = 0;
         // Create objective expression
@@ -162,14 +162,14 @@ public class StudentPriorityObjective extends BaseConstraint {
             k = 0;
             for (TaOffering taOffering : taOfferings) {
                 if (taOffering.getOffering() == offering) {
-                    obj.addTerm(TA_MIN_COEFF, tasOfferings[k]);
+                    obj.addTerm(TA_COEFF, tasOfferings[k]);
                 }
                 k++;
             }
         }
 
         model.setObjective(obj, GRB.MINIMIZE);
-        model.update(); ///// ----------> remove in production
+        //model.update(); ///// ----------> remove in production
 
     }//constrain()
 }//class

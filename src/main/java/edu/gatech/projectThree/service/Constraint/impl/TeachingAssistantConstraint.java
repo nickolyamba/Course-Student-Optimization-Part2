@@ -1,8 +1,12 @@
 package edu.gatech.projectThree.service.Constraint.impl;
 
+import edu.gatech.projectThree.Application;
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.service.Constraint.BaseConstraint;
 import gurobi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
@@ -15,10 +19,18 @@ import java.util.List;
  */
 @Component
 public class TeachingAssistantConstraint extends BaseConstraint {
+    private GlobalState state;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-    private static final double  maxStudsPerTa = 50;  // adjust when needed
-    private static final double  minStudsPerTa = 1;   // adjust when needed
-    private static final int MAXIMUM_OFFERINGS_TAUGHT = 5;
+    private static double  maxStudsPerTa;// 50;  // adjust when needed
+    private static double  minStudsPerTa;// 1;   // adjust when needed
+    private static int MAXIMUM_OFFERINGS_TAUGHT = 5;
+
+
+    @Autowired
+    public void setState(GlobalState state) {
+        this.state = state;
+    }
 
     @Override
     public void constrain(GRBModel model, GRBVar[] prefG, GRBVar[] professorsOfferings,
@@ -26,6 +38,10 @@ public class TeachingAssistantConstraint extends BaseConstraint {
                           List<Professor> professors, List<Ta> tas, List<TaOffering> taOfferings,
                           List<ProfessorOffering> profOfferings, List<Preference> preferences
                           ) throws GRBException {
+
+        maxStudsPerTa = state.getConfig().getMaxTa();
+        minStudsPerTa = state.getConfig().getMinTa();
+        //LOGGER.info("minTA:" + String.valueOf(minStudsPerTa)+ "  maxTA: " + String.valueOf(maxStudsPerTa));
 
         /********************************************************************************
         // Constraint: min*TA <= Studs <= max*TA
