@@ -121,13 +121,13 @@ public class Scheduler{
             List<Offering> offerings = offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester());
             List<Long> offeringIDs = new ArrayList<Long>();
 
-            // remove offerings that has no preferences and populate offeringIDs
+            // offerings that has no preferences and populate offeringIDs
             for (Iterator<Offering> it = offerings.iterator(); it.hasNext();)
             {
                 Offering offering = it.next();
                 offeringIDs.add(offering.getId());
-                if(offering.getPreferences().isEmpty())
-                    it.remove();
+                //if(offering.getPreferences().isEmpty())
+                //    it.remove();
             }
 
             List<Request> requests = requestRepository.findLastReqestsByStudent();
@@ -142,7 +142,7 @@ public class Scheduler{
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
 
-            //showLogs(requests, preferences, students, offerings, professors, tas);
+            showLogs(requests, preferences, students, offerings, professors, tas);
 
             // initialize gurobi variables variables here
             GRBVar[] profG = new GRBVar[profOfferings.size()];
@@ -211,7 +211,7 @@ public class Scheduler{
 
             //------------------------------------- Save results in the database -----------------------------------\\
             postResultsToDb(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray, currSemester);
-            //showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
+            showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
 
             // Dispose of model and environment
             model.dispose();
@@ -284,6 +284,9 @@ public class Scheduler{
             k++;
 
             preferenceRepository.save(preference);
+            offeringRepository.save(preference.getOffering());
+
+            //LOGGER.info(" Contains or not?"+String.valueOf(preference.getOffering().getPreferences().contains(preference)));
         }//for
 
         //----------------------- Update TaOfferings -------------------\\
@@ -304,6 +307,7 @@ public class Scheduler{
             }
             k++;
             taOfferingRepository.save(taOffering);
+            offeringRepository.save(taOffering.getOffering());
         }
 
         //----------------------- Update ProfessorOfferings -------------------\\
@@ -324,6 +328,7 @@ public class Scheduler{
             }
             k++;
             profOfferingRepository.save(profOffering);
+            offeringRepository.save(profOffering.getOffering());
         }
 
     }//postResultsToDb()
@@ -335,6 +340,10 @@ public class Scheduler{
         LOGGER.info("-------------------------------");
         for (Offering offering : offerings) {
             LOGGER.info(String.valueOf(offering.getId()));
+
+            LOGGER.info("Preferences:");
+            for (Preference preference : offering.getPreferences())
+                LOGGER.info(String.valueOf(preference.getId()));
         }
         LOGGER.info("");
 

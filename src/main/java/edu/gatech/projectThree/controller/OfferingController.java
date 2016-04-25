@@ -1,8 +1,11 @@
 package edu.gatech.projectThree.controller;
 
+import edu.gatech.projectThree.Application;
 import edu.gatech.projectThree.datamodel.entity.*;
 import edu.gatech.projectThree.repository.OfferingRepository;
 import edu.gatech.projectThree.repository.OptimizedTimeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +24,7 @@ import java.util.Set;
 public class OfferingController {
     private OfferingRepository offeringRepository;
     private OptimizedTimeRepository optimizedTimeRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 
     @Autowired
@@ -46,21 +50,22 @@ public class OfferingController {
         //LOGGER.info("Offering: " + offering.getId());
         for(Preference preference :  preferences)
         {
+            //LOGGER.info("Preference: " + preference.toString());
             if(preference.getOptimizedTime() == lastOptimized &&
                     preference.isAssigned())
             {
                 students.add(preference.getStudent());
                 preferenceList.add(preference);
-                //LOGGER.info("Preference: " + preference.getId());
+
             }
         }
         printOffering.setStudents(students);
         printOffering.setCapacity(offering.getCapacity());
         printOffering.setPreferences(preferenceList);
 
-
-        model.addAttribute("offering", printOffering);
-//        model.addAttribute("students", offering.getPreferences());
+        model.addAttribute("preferences", preferenceList);
+        //model.addAttribute("offering", printOffering);
+        //model.addAttribute("students", offering.getPreferences());
         return "offering/students";
     }
 }

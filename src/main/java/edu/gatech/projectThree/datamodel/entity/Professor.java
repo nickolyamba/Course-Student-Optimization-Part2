@@ -45,6 +45,7 @@ public class Professor extends Teacher{
         ProfessorOffering teacherOffering = new ProfessorOffering(this, offering, profRequest);
         profOfferings.add(teacherOffering);
         teacherOffering.setProfessor(this);
+        //offering.addProfOffering();
     }
 
     public void removeOffering(Offering offering) {

@@ -99,15 +99,19 @@ public class CoursePreferencesController {
         Request request = new Request(currentStudent);
         requestRepository.save(request);
 
-        Semester semester = semesterRepository.findOne(Integer.parseInt(json.get("semester").get(0)));
-        LOGGER.info("Semester requested:");
-        LOGGER.info(semester.toString());
+        //Semester semester = semesterRepository.findOne(Integer.parseInt(json.get("semester").get(0)));
 
         final int[] index = {0};
         json.get("offerings").forEach(offeringId -> {
             Offering offering = offeringRepository.findOne(Long.valueOf(offeringId));
             Preference preference = new Preference(currentStudent, offering, index[0] + 1, request);
+
+            offering.addPreference(preference);
+            currentStudent.addPreference(preference);
+
             preferenceRepository.save(preference);
+            offeringRepository.save(offering);
+            studRepository.save(currentStudent);
             //state.getPreferences().add(preference); --- experiment with Global State - works well
             index[0]++;
         });
