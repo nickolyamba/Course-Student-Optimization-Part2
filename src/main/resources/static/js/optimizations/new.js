@@ -22,6 +22,7 @@ $(document).ready(function() {
 
   $('#min-ta').val("1");
   $('#max-ta').val("50");
+  $('#ta-coefficient').val("1");
 
   $('[data-submit]').on('click', function() {
     var data = {};

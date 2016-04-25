@@ -14,16 +14,22 @@
                     <th>Concentration</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody><!--
                 <tr th:each="student:${offering.getStudents()}">
                     <td th:text="${student.getFirst_name() + ' ' + student.getLast_name()}"></td>
                     <td></td>
                     <td></td>
                     <td th:text="${student.getGpa()}"></td>
-                    <td th:text="${student.getSpecialization().getName()}"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</body>
-</html>
+                    <td th:text="${student.getSpecialization().getName()}"></td> -->
+                    <tr th:each="preference:${preferences}">
+                         <td th:text="${preference.getStudent().getFirst_name() + ' ' + preference.getStudent().getLast_name()}"></td>
+                         <td th:text="${preference.getPriority()}"></td>
+                         <td th:text="${preference.getStudent().getSeniority()}"></td>
+                         <td th:text="${preference.getStudent().getGpa()}"></td>
+                         <td th:text="${preference.getStudent().getSpecialization().getName()}"></td>
+                     </tr>
+                 </tbody>
+             </table>
+         </div>
+     </body>
+     </html>

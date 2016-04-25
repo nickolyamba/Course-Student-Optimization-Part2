@@ -32,6 +32,8 @@ public class OptimizationController {
     private Scheduler scheduler;
     private ConfigRepository configRepository;
     private DemandRepository demandRepository;
+    private ProfessorOfferingRepository profOfferingRepository;
+    private TaOfferingRepository taOfferingRepository;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OptimizationController.class);
@@ -86,6 +88,16 @@ public class OptimizationController {
     @Autowired
     public void setDemandRepository(DemandRepository demandRepository) {
         this.demandRepository = demandRepository;
+    }
+
+    @Autowired
+    public void setProfOfferingRepository(ProfessorOfferingRepository profOfferingRepository) {
+        this.profOfferingRepository = profOfferingRepository;
+    }
+
+    @Autowired
+    public void setTaOfferingRepository(TaOfferingRepository taOfferingRepository) {
+        this.taOfferingRepository = taOfferingRepository;
     }
 
     @RequestMapping(value = "/optimizations/new", method = RequestMethod.GET)
@@ -173,13 +185,26 @@ public class OptimizationController {
             Offering offering = offeringRepository.findOne(Long.valueOf(offeringId));
             stringArrayListMap.get("professors").forEach(profId -> {
                 Professor professor = professorRepository.findOne(Long.valueOf(profId));
-                professor.addOffering(offering, profRequest);
+                ProfessorOffering professorOffering = new ProfessorOffering(professor, offering, profRequest);
+
+                offering.addProfOffering(professorOffering);
+                professor.addProfessorPool(professorOffering);
+
                 professorRepository.save(professor);
+                profOfferingRepository.save(professorOffering);
+                offeringRepository.save(offering);
             });
             stringArrayListMap.get("tas").forEach(taId -> {
                 Ta ta = taRepository.findOne(Long.valueOf(taId));
-                ta.addOffering(offering, taRequest);
+                TaOffering taOffering = new TaOffering(ta, offering, taRequest);
+
+                offering.addTaOffering(taOffering);
+                ta.addTaOffering(taOffering);
+
+                //ta.addOffering(offering, taRequest);
+                taOfferingRepository.save(taOffering);
                 taRepository.save(ta);
+                offeringRepository.save(offering);
             });
         });
 
@@ -191,7 +216,7 @@ public class OptimizationController {
     @RequestMapping(value = "/optimizations", method = RequestMethod.GET)
     public String optimizations(Model model) {
         CurrentSemester currSemester = currentSemesterRepository.findTopByOrderBySemesterIdDesc();
-        Set<Offering> allCurrentOfferings = currSemester.getSemester().getOfferings();
+        List<Offering> allCurrentOfferings = offeringRepository.findBySemesterOrderByIdAsc(currSemester.getSemester()); //currSemester.getSemester().getOfferings();
         OptimizedTime lastOptimized = optimizedTimeRepository.findTopByOrderByTimestampDesc();
 
         ArrayList<PrintOffering> printOfferings = new ArrayList<PrintOffering>();
@@ -206,11 +231,13 @@ public class OptimizationController {
             int totalDemand = 0;
             // get Preferences
 
+
             Set<Preference> preferences = offering.getPreferences();
             demand.getDemandMap().put("total", preferences.size());
-            //LOGGER.info("Offering: " + offering.getId());
+            LOGGER.info("Offering: " + offering.getId());
             for(Preference preference :  preferences)
             {
+                LOGGER.info("Preference: " + preference.getId());
                 if(preference.getOptimizedTime() == lastOptimized &&
                         preference.isAssigned())
                 {
