@@ -114,6 +114,12 @@ public class CoursePreferencesController {
             studRepository.save(currentStudent);
             //state.getPreferences().add(preference); --- experiment with Global State - works well
             index[0]++;
+/*
+            LOGGER.info(String.valueOf(offering.getId()));
+
+            LOGGER.info("Preferences:");
+            for (Preference pref : offering.getPreferences())
+                LOGGER.info(String.valueOf(pref.getId()));*/
         });
 
         scheduler.schedule(); // we can populate the lists we need right from here if we choose so

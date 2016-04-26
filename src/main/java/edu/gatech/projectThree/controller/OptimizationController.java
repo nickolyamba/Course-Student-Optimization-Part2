@@ -172,8 +172,6 @@ public class OptimizationController {
         //set the State
         state.setConfig(config);
 
-
-
         json.forEach((offeringId, stringArrayListMap) -> {
             try {
                 Integer.parseInt(offeringId);
@@ -234,10 +232,10 @@ public class OptimizationController {
 
             Set<Preference> preferences = offering.getPreferences();
             demand.getDemandMap().put("total", preferences.size());
-            LOGGER.info("Offering: " + offering.getId());
+            //LOGGER.info("Offering: " + offering.getId());
             for(Preference preference :  preferences)
             {
-                LOGGER.info("Preference: " + preference.getId());
+                //LOGGER.info("Preference: " + preference.getId());
                 if(preference.getOptimizedTime() == lastOptimized &&
                         preference.isAssigned())
                 {
@@ -284,5 +282,64 @@ public class OptimizationController {
 
         model.addAttribute("currentOfferings", printOfferings);
         return "optimizations/index";
+    }
+
+
+    @RequestMapping(value = "/optimizations/renew", method = RequestMethod.POST)
+    @ResponseBody
+    public String renewOptimizationPost(@RequestBody Map<String, Map<String, ArrayList<String>>> json) {
+
+        // ----------------- Optimization Configs ---------------------\\
+        Config config = configRepository.findTopByOrderByIdDesc();
+        ArrayList<String> configs = json.get("includeGpa").get("configs");
+        LOGGER.info(configs.toString());
+
+        double taFactor = 0;
+        int minTa = 1, maxTa = 50;
+        //GPA
+        if(configs.get(0).equals("true"))
+            config.setGpa(true);
+        else
+            config.setGpa(false);
+
+        //Seniority
+        if(configs.get(1).equals("true"))
+            config.setSeniority(true);
+        else
+            config.setSeniority(false);
+
+        //TA factor
+        try {
+            taFactor = Double.parseDouble(configs.get(2));
+        }
+        catch(NumberFormatException e) {
+            System.out.print(e.getMessage());
+        }
+
+        // minTA and maxTA
+        try {
+            minTa = Integer.parseInt(configs.get(3));
+        }
+        catch(NumberFormatException e) {
+            System.out.print(e.getMessage());
+        }
+
+        try {
+            maxTa = Integer.parseInt(configs.get(4));
+        }
+        catch(NumberFormatException e) {
+            System.out.print(e.getMessage());
+        }
+
+        config.setTaCoeff(taFactor);
+        config.setMinTa(minTa);
+        config.setMaxTa(maxTa);
+        //LOGGER.info(config.toString());
+        //set the State
+        state.setConfig(config);
+
+        scheduler.schedule();
+
+        return "";
     }
 }

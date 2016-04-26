@@ -142,7 +142,7 @@ public class Scheduler{
             List<Professor> professors = profRepository.findDistinctByProfOfferingsInOrderByIdAsc(profOfferings);
             List<Ta> tas = taRepository.findDistinctByTaOfferingsInOrderByIdAsc(taOfferings);
 
-            showLogs(requests, preferences, students, offerings, professors, tas);
+            //showLogs(requests, preferences, students, offerings, professors, tas);
 
             // initialize gurobi variables variables here
             GRBVar[] profG = new GRBVar[profOfferings.size()];
@@ -211,7 +211,7 @@ public class Scheduler{
 
             //------------------------------------- Save results in the database -----------------------------------\\
             postResultsToDb(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray, currSemester);
-            showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
+            //showResultLogs(preferences, taOfferings, profOfferings, prefArray, taOfferArray, profOfferArray);
 
             // Dispose of model and environment
             model.dispose();

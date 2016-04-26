@@ -4,6 +4,7 @@ This project requires [maven](https://maven.apache.org/index.html) to run. For h
 
 ### Build Project
 ```
+Place testdb.mv.db in the same folder as a 'src' folder
 $ mvn clean install
 ```
 

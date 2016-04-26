@@ -72,7 +72,7 @@ $(document).ready(function() {
       data: JSON.stringify(data)
     }).complete(function(data) {
       console.log(data);
-      window.location.assign(window.location.href.replace('/new', ''));
+      window.location.assign(window.location.href.replace('/renew', ''));
     })
   });
 
