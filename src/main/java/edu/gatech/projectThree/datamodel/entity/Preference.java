@@ -128,7 +128,7 @@ public class Preference implements Serializable {
     public void setOptimizedTime(OptimizedTime optimizedTime) {
         this.optimizedTime = optimizedTime;
     }
-
+/*
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -146,6 +146,7 @@ public class Preference implements Serializable {
 		result = 31 * result + offering.hashCode();
 		return result;
 	}
+*/
 
 	@Override
     public String toString() {
