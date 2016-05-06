@@ -126,7 +126,7 @@ public class GlobalState {
     }
 
     public Config getConfig() {
-        return config;
+        return configRepository.findTopByOrderByIdDesc();
     }
 
     public void setConfig(Config config) {
