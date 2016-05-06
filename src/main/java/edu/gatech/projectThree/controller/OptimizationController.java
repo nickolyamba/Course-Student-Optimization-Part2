@@ -219,6 +219,15 @@ public class OptimizationController {
 
         ArrayList<PrintOffering> printOfferings = new ArrayList<PrintOffering>();
 
+        double gpa=0.0;
+        double seniority = 0;
+        double studTaRatio;
+        int studCounter = 0;
+        int taCounter = 0;
+        int priority = 0;
+        double gpaPrior = 0;
+        double seniorPrior = 0;
+
         for (Offering offering : allCurrentOfferings) {
             List<Student> students = new ArrayList<>();
             List<Ta> tas = new ArrayList<Ta>();
@@ -241,9 +250,16 @@ public class OptimizationController {
                 {
                     students.add(preference.getStudent());
                     preferenceList.add(preference);
+
+                    gpa += preference.getStudent().getGpa();
+                    seniority += preference.getStudent().getSeniority().ordinal();
+                    studCounter++;
+                    priority += preference.getPriority();
                     //LOGGER.info("Preference: " + preference.getId());
                 }
             }
+            gpaPrior += gpa*priority;
+            seniorPrior += seniority*priority;
             //LOGGER.info("\n");
 
             // get TAs
@@ -252,7 +268,11 @@ public class OptimizationController {
             {
                 if(taOffering.getOptimizedTime() == lastOptimized &&
                         taOffering.isAssigned())
+                {
                     tas.add(taOffering.getTa());
+                    taCounter++;
+                }
+                    
             }
 
 
@@ -280,7 +300,18 @@ public class OptimizationController {
             //LOGGER.info(printOffering.toString());
         }//for
 
+        gpa = gpaPrior/allCurrentOfferings.size();
+        seniority = seniorPrior/allCurrentOfferings.size();
+        studTaRatio = (double)studCounter/taCounter;
+
         model.addAttribute("currentOfferings", printOfferings);
+        model.addAttribute("config", state.getConfig());
+        /* Uncomment for testing
+        model.addAttribute("gpa", gpa);
+        model.addAttribute("seniority", seniority);
+        model.addAttribute("studTaRatio", studTaRatio);
+        */
+        
         return "optimizations/index";
     }
 
@@ -292,7 +323,7 @@ public class OptimizationController {
         // ----------------- Optimization Configs ---------------------\\
         Config config = configRepository.findTopByOrderByIdDesc();
         ArrayList<String> configs = json.get("includeGpa").get("configs");
-        LOGGER.info(configs.toString());
+        //LOGGER.info(configs.toString());
 
         double taFactor = 0;
         int minTa = 1, maxTa = 50;

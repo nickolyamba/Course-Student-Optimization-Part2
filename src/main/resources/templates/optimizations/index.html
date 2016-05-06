@@ -14,9 +14,9 @@
     <div class="row">
         <div class="col-sm-6">
             <label>Include GPA</label>
-            <input type="checkbox" id="include-gpa" name="include-gpa">
+            <input type="checkbox" id="include-gpa" name="include-gpa" th:checked="${config.isGpa()}">
             <label>Include Seniority</label>
-            <input type="checkbox" id="include-seniority" name="include-seniority">
+            <input type="checkbox" id="include-seniority" name="include-seniority" th:checked="${config.isSeniority()}">
         </div>
         <div class="col-sm-6">
             <label>Minimum Student-TA Ratio (keep default due to small dataset)</label>
@@ -37,12 +37,18 @@
                 <span class="glyphicon glyphicon-arrow-right"></span>
             </a>
         </label>
-        <input id="ta-coefficient" type="range" min="0" max="20" step="1"/>
+        <input id="ta-coefficient" type="range" min="0" max="20" step="1" th:value="${config.getTaCoeff()}"/>
     </div>
 
     <div class="row">
         <div class="col-sm-6">
             <button type="button" class="btn btn-success" data-submit>Re-optimize</button>
+            <!-- Uncomment for testing
+
+            <label th:text="${'Mean GPA: ' + gpa}"></label>
+            <label th:text="${'Mean Seniority: ' + seniority}"></label>
+            <label th:text="${'Mean Stud/TA: ' + studTaRatio}"></label>
+            -->
         </div>
     </div>
     <div class="row">
