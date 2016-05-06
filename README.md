@@ -17,7 +17,7 @@ $ mvn spring-boot:run
 
 Navigate to http://127.0.0.1:8080/ . The site will prompt you to login.
 
-To login as a student who hasn't completed two Foundation Courses nad assigned to at most 2 classes:
+To login as a student who hasn't completed two Foundation Courses and assigned to at most 2 classes:
 username: ABERGE1
 password: 123
 
